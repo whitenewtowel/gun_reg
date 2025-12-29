@@ -24,24 +24,34 @@ import {
     UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
+import pistolLicenseImg from '@/assets/pistol-license.png';
+import rifleLicenseImg from '@/assets/rifle-license.png';
+import shotgunLicenseImg from '@/assets/shotgun-license.png';
+import heroImg from '@/assets/hero-image.png';
+import aboutImg from '@/assets/about-image.png';
+import ghCivImg from '@/assets/ghanaian-civilian.png';
+import ghSecImg from '@/assets/ghanaian-security.png';
+import ghOffImg from '@/assets/ghanaian-official.png';
+import ghHuntImg from '@/assets/ghanaian-hunter.png';
+
 
 export default function LandingPage() {
     const licenseCategories = [
         {
             title: 'Pistol Licenses',
-            image: '/assets/pistol-license.png',
+            image: pistolLicenseImg,
             description: 'Personal defense and sport shooting',
             count: '2,500+ active',
         },
         {
             title: 'Rifle Licenses',
-            image: '/assets/rifle-license.png',
+            image: rifleLicenseImg,
             description: 'Hunting and sport shooting',
             count: '1,800+ active',
         },
         {
             title: 'Shotgun Licenses',
-            image: '/assets/shotgun-license.png',
+            image: shotgunLicenseImg,
             description: 'Hunting and clay shooting',
             count: '3,200+ active',
         },
@@ -75,14 +85,14 @@ export default function LandingPage() {
     ];
 
     const successStories = [
-        { image: '/assets/user-1.jpg', name: 'Licensed Owner' },
-        { image: '/assets/user-2.jpg', name: 'Security Professional' },
-        { image: '/assets/user-3.jpg', name: 'Sport Shooter' },
-        { image: '/assets/user-4.jpg', name: 'Licensed Dealer' },
-        { image: '/assets/user-5.jpg', name: 'Hunting Enthusiast' },
-        { image: '/assets/user-6.jpg', name: 'Range Officer' },
-        { image: '/assets/user-7.jpg', name: 'Collector' },
-        { image: '/assets/user-8.jpg', name: 'Agency Director' },
+        { image: ghCivImg, name: 'Licensed Owner' },
+        { image: ghSecImg, name: 'Security Professional' },
+        { image: ghHuntImg, name: 'Sport Shooter' },
+        { image: ghOffImg, name: 'Licensed Dealer' },
+        { image: ghHuntImg, name: 'Hunting Enthusiast' },
+        { image: ghSecImg, name: 'Range Officer' },
+        { image: ghCivImg, name: 'Collector' },
+        { image: ghOffImg, name: 'Agency Director' },
     ];
 
     const featuredServices = [
@@ -119,7 +129,7 @@ export default function LandingPage() {
         <div className="min-h-screen bg-[#0B1021] text-white font-technical selection:bg-[#D4AF37] selection:text-black relative">
             {/* Global Background Texture */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 opacity-20 bg-[url('/assets/hero-bg.png')] bg-cover bg-center mix-blend-overlay"></div>
+                <div className="absolute inset-0 opacity-90 bg-[url('/assets/hero-bg.png')] bg-cover bg-center mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(11,16,33,0.8),rgba(11,16,33,0.95))]"></div>
             </div>
 
@@ -302,7 +312,7 @@ export default function LandingPage() {
                                                 <ShieldCheckIcon className="h-48 w-48 text-[#D4AF37] opacity-30" />
                                             </div>
 
-                                            <div className="absolute inset-0 bg-[url('/assets/hero-image.png')] bg-cover bg-center opacity-100 group-hover:scale-105 transition-transform duration-700"></div>
+                                            <div className="absolute inset-0 bg-cover bg-center opacity-100 group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${heroImg})` }}></div>
 
                                             <div className="absolute bottom-6 left-6 z-20 bg-black/70 backdrop-blur-md p-4 border-l-2 border-[#D4AF37]">
                                                 <p className="text-[#D4AF37] text-xs font-bold tracking-[0.2em] uppercase mb-1">
@@ -427,7 +437,7 @@ export default function LandingPage() {
                                     <div className="relative overflow-hidden bg-[#1A2035] border border-white/5 hover:border-[#D4AF37]/50 transition-all duration-300">
                                         <div className="aspect-[4/3] bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden relative">
                                             <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url(${category.image})` }}></div>
-                                            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-all duration-300"></div>
+                                            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-300"></div>
                                             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6">
                                                 <h3 className="text-2xl font-bold text-white mb-1 font-stencil tracking-wide uppercase">{category.title}</h3>
                                                 <p className="text-sm text-gray-300 mb-2">{category.description}</p>
@@ -562,7 +572,58 @@ export default function LandingPage() {
                         </svg>
                     </div>
                 </section >
+                < section className="py-24 bg-[#0B1021]" >
+                    <div className="container mx-auto px-4">
+                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-[#D4AF37] transform rotate-3 opacity-10"></div>
+                                <div className="relative bg-[#1A2035] p-2 border border-white/5 overflow-hidden">
+                                    <div className="aspect-[4/3] bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-cover bg-center opacity-80 hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${aboutImg})` }}></div>
+                                        <div className="absolute inset-0 bg-black/20"></div>
+                                        <div className="absolute bottom-12 right-12 bg-black/90 px-8 py-4 border-l-4 border-[#D4AF37] shadow-xl backdrop-blur-sm z-10">
+                                            <p className="text-[#D4AF37] text-3xl font-bold">21 Days</p>
+                                            <p className="text-white text-sm uppercase tracking-wider">Avg. Processing</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <div>
+                                <h2 className="text-3xl font-stencil text-white mb-6 uppercase tracking-wider">About NFLTMS</h2>
+                                <p className="text-gray-300 mb-6 leading-relaxed">
+                                    The <span className="text-[#D4AF37] font-semibold">National Firearm Licensing & Tracking Management System</span> is a government-owned digital platform operated by the Ghana Police Service in partnership with the Ministry of Interior.
+                                </p>
+                                <p className="text-gray-300 mb-8 leading-relaxed">
+                                    Launched in 2025, our mission is to modernize Ghana&apos;s firearm regulation through secure digital infrastructure while maintaining the highest standards of public safety and regulatory compliance.
+                                </p>
+                                <ul className="space-y-6">
+                                    {[
+                                        { title: 'Centralized Registry', desc: 'Single source of truth for all firearms in Ghana' },
+                                        { title: 'Ghana Card Integration', desc: '100% biometric verification for every license' },
+                                        { title: 'Real-time Tracking', desc: 'Complete audit trail from import to ownership' },
+                                        { title: 'Mobile Access', desc: 'Digital licenses accessible anywhere, anytime' },
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex gap-4">
+                                            <CheckCircleIcon className="h-6 w-6 text-[#D4AF37] flex-shrink-0 mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-lg mb-1">{item.title}</h4>
+                                                <p className="text-gray-400 text-sm">{item.desc}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <Link to="/about">
+                                    <Button variant="outline" className="mt-10 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black clip-chamfer rounded-none">
+                                        Learn More About Us
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </section >
+                
                 {/* People Using System - Success Stories */}
                 < section className="py-24 bg-[#0F1629]" >
                     <div className="container mx-auto px-4">
@@ -722,62 +783,12 @@ export default function LandingPage() {
                 </section >
 
                 {/* About Section with Image */}
-                < section className="py-24 bg-[#0B1021]" >
-                    <div className="container mx-auto px-4">
-                        <div className="grid lg:grid-cols-2 gap-16 items-center">
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-[#D4AF37] transform rotate-3 opacity-10"></div>
-                                <div className="relative bg-[#1A2035] p-2 border border-white/5 overflow-hidden">
-                                    <div className="aspect-[4/3] bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-[url('/assets/about-image.png')] bg-cover bg-center opacity-80 hover:scale-105 transition-transform duration-700"></div>
-                                        <div className="absolute inset-0 bg-black/20"></div>
-                                        <div className="absolute bottom-12 right-12 bg-black/90 px-8 py-4 border-l-4 border-[#D4AF37] shadow-xl backdrop-blur-sm z-10">
-                                            <p className="text-[#D4AF37] text-3xl font-bold">21 Days</p>
-                                            <p className="text-white text-sm uppercase tracking-wider">Avg. Processing</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h2 className="text-3xl font-stencil text-white mb-6 uppercase tracking-wider">About NFLTMS</h2>
-                                <p className="text-gray-300 mb-6 leading-relaxed">
-                                    The <span className="text-[#D4AF37] font-semibold">National Firearm Licensing & Tracking Management System</span> is a government-owned digital platform operated by the Ghana Police Service in partnership with the Ministry of Interior.
-                                </p>
-                                <p className="text-gray-300 mb-8 leading-relaxed">
-                                    Launched in 2025, our mission is to modernize Ghana&apos;s firearm regulation through secure digital infrastructure while maintaining the highest standards of public safety and regulatory compliance.
-                                </p>
-                                <ul className="space-y-6">
-                                    {[
-                                        { title: 'Centralized Registry', desc: 'Single source of truth for all firearms in Ghana' },
-                                        { title: 'Ghana Card Integration', desc: '100% biometric verification for every license' },
-                                        { title: 'Real-time Tracking', desc: 'Complete audit trail from import to ownership' },
-                                        { title: 'Mobile Access', desc: 'Digital licenses accessible anywhere, anytime' },
-                                    ].map((item, i) => (
-                                        <li key={i} className="flex gap-4">
-                                            <CheckCircleIcon className="h-6 w-6 text-[#D4AF37] flex-shrink-0 mt-1" />
-                                            <div>
-                                                <h4 className="text-white font-bold text-lg mb-1">{item.title}</h4>
-                                                <p className="text-gray-400 text-sm">{item.desc}</p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <Link to="/about">
-                                    <Button variant="outline" className="mt-10 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black clip-chamfer rounded-none">
-                                        Learn More About Us
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </section >
+           
 
                 {/* Newsletter with Diagonal Background */}
                 < section className="relative py-16 overflow-hidden" >
                     <div className="absolute inset-0 bg-[#0B1021]">
-                        <div className="absolute inset-0 opacity-20 bg-[url('/assets/pistol-license.png')] bg-cover bg-center mix-blend-overlay"></div>
+                        <div className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay" style={{ backgroundImage: `url(${pistolLicenseImg})` }}></div>
                         <div className="absolute left-0 top-0 bottom-0 right-1/2 bg-[#0F1629]/95 transform skew-x-12 origin-top-left"></div>
                         <div className="absolute right-0 top-0 bottom-0 left-1/3 bg-gradient-to-r from-[#D4AF37]/90 to-[#B4941F]/90 transform -skew-x-12 origin-bottom-right"></div>
                     </div>
