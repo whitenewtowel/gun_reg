@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Saira+Stencil+One&display=swap');
+
+@layer utilities {
+  .clip-chamfer {
+    clip-path: polygon(10px 0, 100% 0,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        0 100%, 0 10px);
+  }
+
+  .clip-trapezoid {
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  }
+
+  .clip-angled-bar {
+    clip-path: polygon(0 0,
+        100% 0,
+        calc(100% - 20px) 100%,
+        20px 100%);
+  }
+
+  .font-stencil {
+    font-family: 'Saira Stencil One', system-ui, sans-serif;
+  }
+
+  .font-technical {
+    font-family: 'Rajdhani', system-ui, sans-serif;
+  }
+}
+
 @font-face {
   font-family: 'Inter';
   src: url('./assets/font/Inter-VariableFont_opsz,wght.ttf') format('truetype');

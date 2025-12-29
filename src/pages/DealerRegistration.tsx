@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronDown, Upload, Loader2, ChevronLeft, X, Info } from 'lucide-react'
+import { Check, ChevronLeft, X, Info } from 'lucide-react'
 import { IMAGES } from '../assets/images'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -76,13 +76,13 @@ const steps = [
   },
 ]
 
-const FileUploadField = ({ 
-  label, 
-  name, 
-  setValue, 
-  watch, 
-  errors 
-}: { 
+const FileUploadField = ({
+  label,
+  name,
+  setValue,
+  watch,
+  errors
+}: {
   label: string
   name: keyof DealerFormValues
   setValue: any
@@ -90,7 +90,7 @@ const FileUploadField = ({
   errors: any
 }) => {
   const file = watch(name)
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -110,22 +110,21 @@ const FileUploadField = ({
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <Info size={14} className="text-gray-400" />
       </div>
-      <div className={`relative flex flex-col items-center justify-center rounded-xl border border-dashed p-8 transition-colors ${
-        errors[name] ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:bg-gray-50'
-      }`}>
+      <div className={`relative flex flex-col items-center justify-center rounded-xl border border-dashed p-8 transition-colors ${errors[name] ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:bg-gray-50'
+        }`}>
         <input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           className="absolute inset-0 cursor-pointer opacity-0"
           onChange={handleFileChange}
         />
-        
+
         {file ? (
           <div className="flex items-center gap-2 z-10">
-             <span className="text-sm font-medium text-gray-900">{file.name}</span>
-             <button onClick={removeFile} className="p-1 hover:bg-gray-200 rounded-full">
-               <X size={16} className="text-gray-500" />
-             </button>
+            <span className="text-sm font-medium text-gray-900">{file.name}</span>
+            <button onClick={removeFile} className="p-1 hover:bg-gray-200 rounded-full">
+              <X size={16} className="text-gray-500" />
+            </button>
           </div>
         ) : (
           <>
@@ -143,7 +142,6 @@ const FileUploadField = ({
 
 export default function DealerRegistration() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'submitting' | 'success'>('idle')
   const navigate = useNavigate()
 
@@ -169,7 +167,7 @@ export default function DealerRegistration() {
   const nextStep = async () => {
     const fields = steps[currentStep].fields
     const isStepValid = await trigger(fields as any)
-    
+
     if (isStepValid) {
       if (currentStep === steps.length - 1) {
         // Submit logic
@@ -197,7 +195,7 @@ export default function DealerRegistration() {
     <div className="flex min-h-screen w-full relative">
       {/* Submission Processing Overlay */}
       {submissionStatus === 'submitting' && (
-        <div 
+        <div
           role="status"
           aria-live="polite"
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md"
@@ -219,7 +217,7 @@ export default function DealerRegistration() {
 
       {/* Success Overlay */}
       {submissionStatus === 'success' && (
-        <div 
+        <div
           role="alertdialog"
           aria-labelledby="success-title"
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50"
@@ -304,7 +302,7 @@ export default function DealerRegistration() {
         <div className="relative flex flex-col gap-12">
           {/* Vertical Line */}
           <div className="absolute left-[15px] top-2 h-[calc(100%-40px)] w-[2px] bg-[#FCEDDC]">
-            <div 
+            <div
               className="absolute top-0 w-full bg-[#FCEDDC] transition-all duration-500"
               style={{ height: `${(currentStep / (steps.length - 1)) * 100}%` }}
             />
@@ -313,11 +311,10 @@ export default function DealerRegistration() {
           {steps.map((step, index) => (
             <div key={index} className="relative z-10 flex items-start gap-6">
               <div
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#FCEDDC] transition-all duration-300 ${
-                  index <= currentStep
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#FCEDDC] transition-all duration-300 ${index <= currentStep
                     ? 'border-yellow-500 bg-[#FCEDDC] text-[#2C1402]'
                     : 'border-white/40 bg-[#2C1402]'
-                }`}
+                  }`}
               >
                 {index < currentStep ? (
                   <Check size={16} strokeWidth={3} />
@@ -337,7 +334,7 @@ export default function DealerRegistration() {
       {/* Right Content */}
       <div className="flex w-full flex-col items-center bg-white p-4 sm:p-6 lg:p-8 lg:w-2/3 min-h-screen">
         <div className={`flex h-full w-full max-w-lg lg:max-w-3xl ${currentStep >= 1 ? 'max-w-full lg:max-w-3xl' : 'max-w-lg'} flex-col`}>
-          
+
           <div className="my-auto w-full">
             <div className="mb-12 flex flex-col items-center text-center">
               <img src={IMAGES.LOGIN2} alt="Coat of Arms" className="mb-6 h-18 w-auto" />
@@ -443,20 +440,20 @@ export default function DealerRegistration() {
                   <h3 className="font-medium text-gray-900">Eligibility</h3>
                   <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         {...register('is18Plus')}
-                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]" 
+                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]"
                       />
                       <span className="text-sm text-gray-600">You're at least 18 years old</span>
                     </label>
                     {errors.is18Plus && <p className="text-xs text-red-500 ml-8">{errors.is18Plus.message}</p>}
 
                     <label className="flex items-center gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         {...register('isIdMatch')}
-                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]" 
+                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]"
                       />
                       <span className="text-sm text-gray-600">Your ID and personal details match what you put on the application</span>
                     </label>
@@ -470,30 +467,30 @@ export default function DealerRegistration() {
                   <h3 className="font-medium text-gray-900">Legal / Discipline</h3>
                   <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         {...register('noCriminalRecord')}
-                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]" 
+                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]"
                       />
                       <span className="text-sm text-gray-600">I have once been convicted of a criminal offence</span>
                     </label>
                     {errors.noCriminalRecord && <p className="text-xs text-red-500 ml-8">{errors.noCriminalRecord.message}</p>}
 
                     <label className="flex items-center gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         {...register('noPendingCases')}
-                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]" 
+                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]"
                       />
                       <span className="text-sm text-gray-600">I have pending court cases against me</span>
                     </label>
                     {errors.noPendingCases && <p className="text-xs text-red-500 ml-8">{errors.noPendingCases.message}</p>}
 
                     <label className="flex items-center gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         {...register('noDismissal')}
-                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]" 
+                        className="h-5 w-5 rounded border-gray-300 text-[#9D7000] focus:ring-[#9D7000]"
                       />
                       <span className="text-sm text-gray-600">I have once been dismissed from employment or school for misconduct</span>
                     </label>
@@ -517,21 +514,19 @@ export default function DealerRegistration() {
                 <div className="flex border-b border-gray-200">
                   <button
                     onClick={() => setValue('operationType', 'import')}
-                    className={`flex-1 pb-4 text-sm font-medium transition-colors ${
-                      operationType === 'import'
+                    className={`flex-1 pb-4 text-sm font-medium transition-colors ${operationType === 'import'
                         ? 'border-b-2 border-[#9D7000] text-[#9D7000]'
                         : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                      }`}
                   >
                     Register Imported Firearms
                   </button>
                   <button
                     onClick={() => setValue('operationType', 'sell')}
-                    className={`flex-1 pb-4 text-sm font-medium transition-colors ${
-                      operationType === 'sell'
+                    className={`flex-1 pb-4 text-sm font-medium transition-colors ${operationType === 'sell'
                         ? 'border-b-2 border-[#9D7000] text-[#9D7000]'
                         : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                      }`}
                   >
                     Sell / Transfer Firearm
                   </button>
@@ -576,9 +571,9 @@ export default function DealerRegistration() {
                 )}
 
                 {operationType === 'sell' && (
-                   <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <p className="text-center text-gray-500 py-8">Sell / Transfer functionality coming soon.</p>
-                   </div>
+                  <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <p className="text-center text-gray-500 py-8">Sell / Transfer functionality coming soon.</p>
+                  </div>
                 )}
 
                 <button
@@ -594,14 +589,14 @@ export default function DealerRegistration() {
           {/* Pagination Dots & Navigation */}
           <div className="mt-12 flex items-center justify-center gap-4 pb-8">
             {currentStep > 0 && (
-              <button 
+              <button
                 onClick={prevStep}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
               >
                 <ChevronLeft size={16} />
               </button>
             )}
-            
+
             <div className="flex gap-2">
               {steps.map((_, index) => (
                 <button
@@ -613,14 +608,13 @@ export default function DealerRegistration() {
                       const fields = steps[currentStep].fields
                       const isStepValid = await trigger(fields as any)
                       if (isStepValid && index === currentStep + 1) {
-                         setCurrentStep(index)
+                        setCurrentStep(index)
                       }
                     }
                   }}
                   disabled={index > currentStep + 1}
-                  className={`h-1.5 w-12 rounded-full transition-colors ${
-                    index === currentStep ? 'bg-[#9D7000]' : 'bg-gray-200'
-                  } ${index < currentStep ? 'cursor-pointer hover:bg-[#9D7000]/70' : ''} ${index === currentStep + 1 ? 'cursor-pointer hover:bg-gray-300' : ''}`}
+                  className={`h-1.5 w-12 rounded-full transition-colors ${index === currentStep ? 'bg-[#9D7000]' : 'bg-gray-200'
+                    } ${index < currentStep ? 'cursor-pointer hover:bg-[#9D7000]/70' : ''} ${index === currentStep + 1 ? 'cursor-pointer hover:bg-gray-300' : ''}`}
                 />
               ))}
             </div>

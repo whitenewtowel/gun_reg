@@ -1,14 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-export type UserRole = 'RENEWAL_USER' | 'GUN_DEALER' | 'ADMIN'
-
-export interface User {
-  id: string
-  email: string
-  name: string
-  role: UserRole
-}
+import { authService } from '@/services/authService'
+import type { User } from '@/types'
 
 interface AuthContextType {
   user: User | null
@@ -21,34 +14,45 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Dummy credentials check
-    await new Promise(resolve => setTimeout(resolve, 500)) // Simulate API delay
-
-    if (password !== 'password123') return false
-
-    let role: UserRole | null = null
-    let name = ''
-
-    if (email === 'user@renewal.com') {
-      role = 'RENEWAL_USER'
-      name = 'Renewal User'
-    } else if (email === 'dealer@guns.com') {
-      role = 'GUN_DEALER'
-      name = 'Gun Dealer'
-    } else if (email === 'admin@police.gov.gh') {
-      role = 'ADMIN'
-      name = 'Police Admin'
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = localStorage.getItem('access_token')
+      if (token) {
+        try {
+          const { valid, user: userData } = await authService.verifyToken()
+          if (valid && userData) {
+            setUser(userData)
+          } else {
+            // Token invalid
+            logout()
+          }
+        } catch (error) {
+          console.error('Auth initialization failed', error)
+          logout()
+        }
+      }
+      setLoading(false)
     }
 
-    if (role) {
-      const newUser = { id: '1', email, name, role }
-      setUser(newUser)
-      
+    initAuth()
+  }, [])
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await authService.login({ email, password })
+      const { user, tokens } = response
+
+      // Store tokens
+      localStorage.setItem('access_token', tokens.accessToken)
+      localStorage.setItem('refresh_token', tokens.refreshToken)
+
+      setUser(user)
+
       // Redirect based on role
-      switch (role) {
+      switch (user.role) {
         case 'RENEWAL_USER':
           navigate('/renewal')
           break
@@ -56,23 +60,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           navigate('/dealer-registration')
           break
         case 'ADMIN':
+        case 'POLICE':
           navigate('/dashboard')
           break
+        default:
+          navigate('/dashboard')
       }
       return true
+    } catch (error) {
+      console.error('Login failed:', error)
+      return false
     }
-
-    return false
   }
 
   const logout = () => {
+    // Call API logout if needed, but primarily clear local state
+    // authService.logout().catch(console.error) 
+
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     setUser(null)
     navigate('/login')
   }
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   )
 }
