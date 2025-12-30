@@ -19,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import authService from '@/services/authService';
+import { useAuth } from '@/context/AuthContext';
 
 interface LocationState {
     kyc_session_id?: string;
@@ -45,6 +46,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function KYCCompletePage() {
     const navigate = useNavigate();
+    const { setAuth } = useAuth();
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const state = location.state as LocationState;
@@ -89,21 +91,26 @@ export default function KYCCompletePage() {
         }
 
         try {
-            await authService.setupPassword({
+            const response = await authService.setupPassword({
                 token: setupToken,
                 password: data.password
             });
 
+            // Store tokens and user data using AuthContext
+            if (response.access_token && response.refresh_token) {
+                setAuth(response.data, {
+                    access_token: response.access_token,
+                    refresh_token: response.refresh_token
+                });
+            }
+
             toast.success('Account created successfully!', {
-                description: 'You can now login with your credentials',
+                description: 'You are now logged in.',
             });
 
-            navigate('/login', {
-                state: {
-                    email: state?.emailOrPhone,
-                    message: 'Account created! Please login to continue.',
-                },
-            });
+            // Redirect to user type selection
+            navigate('/onboarding/select-user-type');
+
         } catch (error) {
             toast.error('Failed to create account', {
                 description: error instanceof Error ? error.message : 'Please try again',

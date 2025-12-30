@@ -26,12 +26,13 @@ export const authService = {
   /**
    * Setup password (first-time users)
    */
-  async setupPassword(data: { token: string; password: string }): Promise<void> {
+  async setupPassword(data: { token: string; password: string }): Promise<LoginResponse> {
     try {
-      await apiClient.post(API_ENDPOINTS.AUTH.PASSWORD_SETUP, {
+      const response = await apiClient.post<LoginResponse>(API_ENDPOINTS.AUTH.PASSWORD_SETUP, {
         setupToken: data.token,
         password: data.password
       });
+      return response.data;
     } catch (error) {
       throw new Error(handleApiError(error));
     }

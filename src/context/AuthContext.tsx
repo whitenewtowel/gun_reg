@@ -8,6 +8,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
   isAuthenticated: boolean
+  setAuth: (user: User, tokens: { access_token: string; refresh_token: string }) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -50,6 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth()
   }, [])
 
+
+
+  const setAuth = (userData: User, tokens: { access_token: string; refresh_token: string }) => {
+    localStorage.setItem('access_token', tokens.access_token)
+    localStorage.setItem('refresh_token', tokens.refresh_token)
+    setUser(userData)
+  }
+
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await authService.login({ email, password })
@@ -81,7 +90,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           navigate('/dashboard')
           break
         default:
-          navigate('/dashboard')
+          // If no specific role matched or empty, go to safe default
+          if (!userData.role) {
+            navigate('/onboarding/select-user-type')
+          } else {
+            navigate('/dashboard')
+          }
       }
       return true
     } catch (error) {
@@ -93,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, setAuth, isAuthenticated: !!user }}>
       {!loading && children}
     </AuthContext.Provider>
   )
