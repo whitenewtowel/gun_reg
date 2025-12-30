@@ -81,7 +81,7 @@ export const kycService = {
   /**
    * Verify OTP and create account
    */
-  async verifyOTP(data: OTPVerificationData): Promise<{ success: boolean }> {
+  async verifyOTP(data: OTPVerificationData): Promise<{ success: boolean; setup_code?: string; message?: string }> {
     try {
       const response = await apiClient.post(API_ENDPOINTS.KYC.VERIFY_OTP, data);
       return response.data;

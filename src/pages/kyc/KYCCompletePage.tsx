@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,10 +18,12 @@ import {
     LockClosedIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
+import authService from '@/services/authService';
 
 interface LocationState {
-    kyc_session_id: string;
-    emailOrPhone: string;
+    kyc_session_id?: string;
+    emailOrPhone?: string;
+    setupToken?: string;
 }
 
 // Password validation schema
@@ -44,7 +46,11 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 export default function KYCCompletePage() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [searchParams] = useSearchParams();
     const state = location.state as LocationState;
+
+    // Get token from URL query params or state
+    const setupToken = searchParams.get('token') || state?.setupToken;
 
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -72,12 +78,21 @@ export default function KYCCompletePage() {
 
     const strengthScore = Object.values(passwordStrength).filter(Boolean).length;
 
-    const onSubmit = async (_data: PasswordFormData) => {
+    const onSubmit = async (data: PasswordFormData) => {
         setIsLoading(true);
 
+        if (!setupToken) {
+            toast.error('Missing setup token', {
+                description: 'Please click the link sent to your email/phone',
+            });
+            return;
+        }
+
         try {
-            // Simulate API call delay for now
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await authService.setupPassword({
+                token: setupToken,
+                password: data.password
+            });
 
             toast.success('Account created successfully!', {
                 description: 'You can now login with your credentials',

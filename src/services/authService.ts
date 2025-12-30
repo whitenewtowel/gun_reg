@@ -28,7 +28,10 @@ export const authService = {
    */
   async setupPassword(data: { token: string; password: string }): Promise<void> {
     try {
-      await apiClient.post(API_ENDPOINTS.AUTH.PASSWORD_SETUP, data);
+      await apiClient.post(API_ENDPOINTS.AUTH.PASSWORD_SETUP, {
+        setupToken: data.token,
+        password: data.password
+      });
     } catch (error) {
       throw new Error(handleApiError(error));
     }

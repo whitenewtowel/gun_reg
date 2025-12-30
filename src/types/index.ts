@@ -17,18 +17,18 @@ export interface User {
   updatedAt: string;
 }
 
-export type UserRole = 
-  | 'ADMIN' 
-  | 'POLICE' 
-  | 'RENEWAL_USER' 
-  | 'GUN_DEALER' 
-  | 'SECURITY_AGENCY' 
+export type UserRole =
+  | 'ADMIN'
+  | 'POLICE'
+  | 'RENEWAL_USER'
+  | 'GUN_DEALER'
+  | 'SECURITY_AGENCY'
   | 'INDIVIDUAL';
 
-export type UserStatus = 
-  | 'ACTIVE' 
-  | 'PENDING' 
-  | 'SUSPENDED' 
+export type UserStatus =
+  | 'ACTIVE'
+  | 'PENDING'
+  | 'SUSPENDED'
   | 'INACTIVE';
 
 // Auth Types
@@ -43,8 +43,12 @@ export interface LoginCredentials {
 }
 
 export interface LoginResponse {
-  user: User;
-  tokens: AuthTokens;
+  success: boolean;
+  message: string;
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  data: any; // Using any temporarily or Partial<User> because backend fields (user_id) might differ from frontend User (id)
 }
 
 // Application Types
@@ -62,18 +66,18 @@ export interface Application {
   rejectionReason?: string;
 }
 
-export type ApplicationType = 
-  | 'NEW_LICENSE' 
-  | 'RENEWAL' 
-  | 'TRANSFER' 
+export type ApplicationType =
+  | 'NEW_LICENSE'
+  | 'RENEWAL'
+  | 'TRANSFER'
   | 'REPLACEMENT';
 
-export type ApplicationStatus = 
-  | 'DRAFT' 
-  | 'SUBMITTED' 
-  | 'UNDER_REVIEW' 
-  | 'APPROVED' 
-  | 'REJECTED' 
+export type ApplicationStatus =
+  | 'DRAFT'
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'APPROVED'
+  | 'REJECTED'
   | 'PENDING_PAYMENT';
 
 // Firearm Types
@@ -91,18 +95,18 @@ export interface Firearm {
   updatedAt: string;
 }
 
-export type FirearmType = 
-  | 'PISTOL' 
-  | 'REVOLVER' 
-  | 'RIFLE' 
-  | 'SHOTGUN' 
+export type FirearmType =
+  | 'PISTOL'
+  | 'REVOLVER'
+  | 'RIFLE'
+  | 'SHOTGUN'
   | 'OTHER';
 
-export type FirearmStatus = 
-  | 'ACTIVE' 
-  | 'LOST' 
-  | 'STOLEN' 
-  | 'DEACTIVATED' 
+export type FirearmStatus =
+  | 'ACTIVE'
+  | 'LOST'
+  | 'STOLEN'
+  | 'DEACTIVATED'
   | 'TRANSFERRED';
 
 export interface FirearmDetails {
@@ -126,15 +130,15 @@ export interface Licence {
   firearms: Firearm[];
 }
 
-export type LicenceType = 
-  | 'INDIVIDUAL' 
-  | 'DEALER' 
+export type LicenceType =
+  | 'INDIVIDUAL'
+  | 'DEALER'
   | 'SECURITY_AGENCY';
 
-export type LicenceStatus = 
-  | 'ACTIVE' 
-  | 'EXPIRED' 
-  | 'SUSPENDED' 
+export type LicenceStatus =
+  | 'ACTIVE'
+  | 'EXPIRED'
+  | 'SUSPENDED'
   | 'REVOKED';
 
 // Document Types
@@ -147,18 +151,18 @@ export interface Document {
   status: DocumentStatus;
 }
 
-export type DocumentType = 
-  | 'GHANA_CARD' 
-  | 'PASSPORT_PHOTO' 
-  | 'PROOF_OF_ADDRESS' 
-  | 'POLICE_REPORT' 
-  | 'BUSINESS_LICENSE' 
-  | 'TAX_CLEARANCE' 
+export type DocumentType =
+  | 'GHANA_CARD'
+  | 'PASSPORT_PHOTO'
+  | 'PROOF_OF_ADDRESS'
+  | 'POLICE_REPORT'
+  | 'BUSINESS_LICENSE'
+  | 'TAX_CLEARANCE'
   | 'OTHER';
 
-export type DocumentStatus = 
-  | 'PENDING' 
-  | 'VERIFIED' 
+export type DocumentStatus =
+  | 'PENDING'
+  | 'VERIFIED'
   | 'REJECTED';
 
 // Payment Types
@@ -175,16 +179,16 @@ export interface Payment {
   completedAt?: string;
 }
 
-export type PaymentMethod = 
-  | 'MOBILE_MONEY' 
-  | 'BANK_CARD' 
+export type PaymentMethod =
+  | 'MOBILE_MONEY'
+  | 'BANK_CARD'
   | 'BANK_TRANSFER';
 
-export type PaymentStatus = 
-  | 'PENDING' 
-  | 'PROCESSING' 
-  | 'COMPLETED' 
-  | 'FAILED' 
+export type PaymentStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED'
   | 'CANCELLED';
 
 // Dashboard Types
@@ -214,15 +218,15 @@ export interface Alert {
   read: boolean;
 }
 
-export type AlertType = 
-  | 'LICENCE_EXPIRING' 
-  | 'APPLICATION_UPDATE' 
-  | 'PAYMENT_REQUIRED' 
+export type AlertType =
+  | 'LICENCE_EXPIRING'
+  | 'APPLICATION_UPDATE'
+  | 'PAYMENT_REQUIRED'
   | 'SYSTEM_NOTIFICATION';
 
-export type AlertSeverity = 
-  | 'INFO' 
-  | 'WARNING' 
+export type AlertSeverity =
+  | 'INFO'
+  | 'WARNING'
   | 'ERROR';
 
 // Region Types

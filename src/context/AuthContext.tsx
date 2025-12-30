@@ -17,6 +17,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
+  const logout = () => {
+    // Call API logout if needed, but primarily clear local state
+    // authService.logout().catch(console.error) 
+
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    setUser(null)
+    navigate('/login')
+  }
+
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('access_token')
@@ -43,16 +53,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await authService.login({ email, password })
-      const { user, tokens } = response
+      const { access_token, refresh_token, data } = response
 
       // Store tokens
-      localStorage.setItem('access_token', tokens.accessToken)
-      localStorage.setItem('refresh_token', tokens.refreshToken)
+      localStorage.setItem('access_token', access_token)
+      localStorage.setItem('refresh_token', refresh_token)
 
-      setUser(user)
+      // Map backend user data to frontend User interface
+      // Backend returns user_id, frontend expects id
+      const userData = {
+        ...data,
+        id: data.user_id || data.id,
+      }
+
+      setUser(userData)
 
       // Redirect based on role
-      switch (user.role) {
+      switch (userData.role) {
         case 'RENEWAL_USER':
           navigate('/renewal')
           break
@@ -73,15 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const logout = () => {
-    // Call API logout if needed, but primarily clear local state
-    // authService.logout().catch(console.error) 
 
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    setUser(null)
-    navigate('/login')
-  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>

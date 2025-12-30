@@ -66,10 +66,13 @@ export default function KYCVerifyPage() {
         setIsLoading(true);
 
         try {
-            await kycService.verifyOTP({
+            const response: any = await kycService.verifyOTP({
                 kyc_session_id: state.kyc_session_id,
                 otp,
             });
+
+            // Allow for different response structures (direct token or nested in data or setup_code)
+            const setupToken = response?.setup_code || response?.resetToken || response?.setupToken || response?.data?.setupToken || response?.token;
 
             toast.success('Code verified!', {
                 description: 'Now set up your password',
@@ -79,6 +82,7 @@ export default function KYCVerifyPage() {
                 state: {
                     kyc_session_id: state.kyc_session_id,
                     emailOrPhone: state.emailOrPhone,
+                    setupToken: setupToken
                 },
             });
         } catch (error) {

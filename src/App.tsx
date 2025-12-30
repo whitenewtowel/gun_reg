@@ -35,6 +35,7 @@ function App() {
           <Route path="/kyc/start" element={<KYCStartPage />} />
           <Route path="/kyc/verify" element={<KYCVerifyPage />} />
           <Route path="/kyc/complete" element={<KYCCompletePage />} />
+          <Route path="/auth/password-setup" element={<KYCCompletePage />} />
 
           {/* Protected Routes */}
 
