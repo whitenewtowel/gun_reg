@@ -6,34 +6,52 @@
 import apiClient, { handleApiError } from '@/lib/apiClient';
 import { API_ENDPOINTS } from '@/config/api.config';
 
-export interface KYCStartData {
-  emailOrPhone: string;
-  firstName: string;
-  lastName: string;
-  ghanaCardNumber: string;
+export interface EmergencyContact {
+  name?: string;
+  phone?: string;
+  relationship?: string;
+  email?: string;
 }
 
-export interface KYCSession {
-  sessionId: string;
-  emailOrPhone: string;
-  status: 'PENDING_OTP' | 'VERIFIED' | 'COMPLETED';
+export interface KYCStartData {
+  email: string;
+  phone: string;
+  ghana_card_number: string;
+  delivery_channel: 'sms' | 'email';
+  region_code: string;
+  city: string;
+  emergency_contact?: EmergencyContact;
+}
+
+export interface KYCStartResponseData {
+  kyc_session_id: string;
+  email_masked: string;
+  phone_masked: string;
+  delivery_channel: string;
+  otp_expires_in: number;
+  max_attempts: number;
+}
+
+export interface KYCStartResponse {
+  success: boolean;
+  message: string;
+  data: KYCStartResponseData;
 }
 
 export interface OTPVerificationData {
-  sessionId: string;
+  kyc_session_id: string;
   otp: string;
-  password: string;
 }
 
 export const kycService = {
   /**
    * Get existing KYC session
    */
-  async getSession(emailOrPhone: string): Promise<KYCSession | null> {
+  async getSession(contact: string): Promise<any | null> {
     try {
-      const response = await apiClient.get<KYCSession>(
+      const response = await apiClient.get<any>(
         API_ENDPOINTS.KYC.GET_SESSION,
-        { params: { emailOrPhone } }
+        { params: { contact } }
       );
       return response.data;
     } catch (error) {
@@ -44,14 +62,18 @@ export const kycService = {
   /**
    * Start KYC process
    */
-  async startKYC(data: KYCStartData): Promise<KYCSession> {
+  async startKYC(data: KYCStartData): Promise<KYCStartResponse> {
     try {
-      const response = await apiClient.post<KYCSession>(
+      const response = await apiClient.post<KYCStartResponse>(
         API_ENDPOINTS.KYC.START,
         data
       );
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      // Re-throw the error object if it has a specific response structure we need
+      if (error.response && error.response.data) {
+        throw error.response.data;
+      }
       throw new Error(handleApiError(error));
     }
   },
@@ -74,7 +96,7 @@ export const kycService = {
   async resendOTP(sessionId: string): Promise<{ success: boolean }> {
     try {
       const response = await apiClient.post(API_ENDPOINTS.KYC.RESEND_OTP, {
-        sessionId,
+        kyc_session_id: sessionId,
       });
       return response.data;
     } catch (error) {

@@ -102,13 +102,13 @@ export default function OTPInput({
                     onFocus={() => setActiveIndex(index)}
                     disabled={disabled}
                     className={cn(
-                        'w-12 h-14 text-center text-2xl font-semibold rounded-lg border-2 transition-all',
+                        'w-12 h-14 text-center text-2xl text-slate-700 font-semibold rounded-lg border-none transition-all',
                         'focus:outline-none focus:ring-2 focus:ring-offset-2',
                         error
                             ? 'border-red-500 focus:ring-red-500'
                             : activeIndex === index
-                                ? 'border-green-600 focus:ring-green-600'
-                                : 'border-slate-300 focus:ring-green-600',
+                                ? 'border-yellow-600 '
+                                : 'border-slate-300',
                         disabled && 'bg-slate-100 cursor-not-allowed opacity-50'
                     )}
                     aria-label={`OTP digit ${index + 1}`}

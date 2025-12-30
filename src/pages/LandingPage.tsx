@@ -33,7 +33,7 @@ import ghCivImg from '@/assets/ghanaian-civilian.png';
 import ghSecImg from '@/assets/ghanaian-security.png';
 import ghOffImg from '@/assets/ghanaian-official.png';
 import ghHuntImg from '@/assets/ghanaian-hunter.png';
-
+import logo from '@/assets/images/logo2.png';
 
 export default function LandingPage() {
     const licenseCategories = [
@@ -160,12 +160,9 @@ export default function LandingPage() {
                     <div className="container mx-auto px-4 py-4">
                         <div className="flex items-center justify-between">
                             {/* Logo */}
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
                                 <div className="relative group">
-                                    <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37] to-[#B4941F] rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-                                    <div className="relative h-12 w-12 bg-black rounded-lg border border-[#D4AF37]/30 flex items-center justify-center">
-                                        <ShieldCheckIcon className="h-8 w-8 text-[#D4AF37]" />
-                                    </div>
+                                      <img src={logo} alt="Logo" className='w-14 h-14 object-contain'/>
                                 </div>
                                 <div>
                                     <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white leading-none">
@@ -193,7 +190,7 @@ export default function LandingPage() {
 
                             {/* Actions */}
                             <div className="flex items-center gap-3">
-                                <Link to="/licenses/check" className="hidden sm:block">
+                                <Link to="/licenses" className="hidden sm:block">
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -214,7 +211,7 @@ export default function LandingPage() {
                 </header >
 
                 {/* Hero Section */}
-                < section className="relative min-h-[90vh] flex items-center overflow-hidden" >
+                <section id="home" className="relative min-h-[90vh] flex items-center overflow-hidden">
                     <div className="absolute inset-0 bg-[#0B1021]/80">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(212,175,55,0.08),transparent_60%)]"></div>
                     </div>
@@ -264,7 +261,7 @@ export default function LandingPage() {
                                             </span>
                                         </Button>
                                     </Link>
-                                    <Link to="/licenses/check" className="w-full sm:w-auto">
+                                    <Link to="/licenses" className="w-full sm:w-auto">
                                         <Button
                                             size="lg"
                                             variant="outline"
@@ -365,7 +362,7 @@ export default function LandingPage() {
                 </section >
 
                 {/* Find Your License - Curved Section */}
-                < section className="bg-[#0F1629] py-20 relative" >
+                <section id="licenses" className="bg-[#0F1629] py-20 relative">
                     <div className="container mx-auto px-4">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-5xl font-stencil mb-4 text-white uppercase tracking-wider">Find Your Gun Model</h2>
@@ -414,10 +411,12 @@ export default function LandingPage() {
 
                                     {/* Button */}
                                     <div className="md:col-span-3">
-                                        <Button className="w-full h-14 bg-[#D4AF37] hover:bg-[#B4941F] text-black font-bold uppercase tracking-widest rounded-none">
-                                            <MagnifyingGlassIcon className="mr-2 h-5 w-5" />
-                                            SEARCH DB
-                                        </Button>
+                                        <Link to="/licenses" className="w-full">
+                                            <Button className="w-full h-14 bg-[#D4AF37] hover:bg-[#B4941F] text-black font-bold uppercase tracking-widest rounded-none">
+                                                <MagnifyingGlassIcon className="mr-2 h-5 w-5" />
+                                                SEARCH DB
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -446,7 +445,7 @@ export default function LandingPage() {
                                         </div>
                                         <div className="p-4 bg-[#1A2035]">
                                             <Link
-                                                to={`/licenses/${category.title.toLowerCase().split(' ')[0]}`}
+                                                to="/licenses"
                                                 className="text-[#D4AF37] text-sm font-bold flex items-center group-hover:gap-2 transition-all"
                                             >
                                                 View Requirements
@@ -475,7 +474,7 @@ export default function LandingPage() {
                 < section className="bg-[#D4AF37] py-12" >
                     <div className="container mx-auto px-4">
                         <div className="grid md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-black/10">
-                            <Link to="/licenses/check" className="flex items-center justify-center gap-4 group p-4">
+                            <Link to="/licenses" className="flex items-center justify-center gap-4 group p-4">
                                 <div className="bg-black/10 p-3 clip-chamfer group-hover:bg-black transition-colors">
                                     <MagnifyingGlassIcon className="h-6 w-6 text-black group-hover:text-[#D4AF37] transition-colors" />
                                 </div>
@@ -485,7 +484,7 @@ export default function LandingPage() {
                                 </div>
                             </Link>
 
-                            <Link to="/firearms/report" className="flex items-center justify-center gap-4 group p-4">
+                            <Link to="/alerts" className="flex items-center justify-center gap-4 group p-4">
                                 <div className="bg-black/10 p-3 clip-chamfer group-hover:bg-black transition-colors">
                                     <ExclamationTriangleIcon className="h-6 w-6 text-black group-hover:text-[#D4AF37] transition-colors" />
                                 </div>
@@ -495,7 +494,7 @@ export default function LandingPage() {
                                 </div>
                             </Link>
 
-                            <Link to="/applications/track" className="flex items-center justify-center gap-4 group p-4">
+                            <Link to="/dashboard" className="flex items-center justify-center gap-4 group p-4">
                                 <div className="bg-black/10 p-3 clip-chamfer group-hover:bg-black transition-colors">
                                     <DocumentTextIcon className="h-6 w-6 text-black group-hover:text-[#D4AF37] transition-colors" />
                                 </div>
@@ -623,7 +622,7 @@ export default function LandingPage() {
                         </div>
                     </div>
                 </section >
-                
+
                 {/* People Using System - Success Stories */}
                 < section className="py-24 bg-[#0F1629]" >
                     <div className="container mx-auto px-4">
@@ -680,7 +679,7 @@ export default function LandingPage() {
                 </section >
 
                 {/* Services & Pricing */}
-                < section className="py-24 bg-[#0B1021]" >
+                <section id="services" className="py-24 bg-[#0B1021]">
                     <div className="container mx-auto px-4">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl md:text-4xl font-stencil mb-4 text-white uppercase tracking-wider">Featured Services</h2>
@@ -719,14 +718,16 @@ export default function LandingPage() {
                                             </li>
                                         ))}
                                     </ul>
-                                    <Button
-                                        className={`w-full ${service.popular
-                                            ? 'bg-[#D4AF37] hover:bg-[#B4941F] text-black'
-                                            : 'bg-white/5 hover:bg-white/10 text-white'
-                                            } clip-chamfer rounded-none uppercase tracking-wider font-bold`}
-                                    >
-                                        Get Started
-                                    </Button>
+                                    <Link to={index === 0 ? "/kyc/start" : index === 1 ? "/renewal" : "/dealer-registration"}>
+                                        <Button
+                                            className={`w-full ${service.popular
+                                                ? 'bg-[#D4AF37] hover:bg-[#B4941F] text-black'
+                                                : 'bg-white/5 hover:bg-white/10 text-white'
+                                                } clip-chamfer rounded-none uppercase tracking-wider font-bold`}
+                                        >
+                                            Get Started
+                                        </Button>
+                                    </Link>
                                 </motion.div>
                             ))}
                         </div>
@@ -783,10 +784,60 @@ export default function LandingPage() {
                 </section >
 
                 {/* About Section with Image */}
-           
+                <section id="about" className="py-24 bg-[#0B1021]">
+                    <div className="container mx-auto px-4">
+                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-[#D4AF37] transform rotate-3 opacity-10"></div>
+                                <div className="relative bg-[#1A2035] p-2 border border-white/5 overflow-hidden">
+                                    <div className="aspect-[4/3] bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-cover bg-center opacity-80 hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${aboutImg})` }}></div>
+                                        <div className="absolute inset-0 bg-black/20"></div>
+                                        <div className="absolute bottom-12 right-12 bg-black/90 px-8 py-4 border-l-4 border-[#D4AF37] shadow-xl backdrop-blur-sm z-10">
+                                            <p className="text-[#D4AF37] text-3xl font-bold">21 Days</p>
+                                            <p className="text-white text-sm uppercase tracking-wider">Avg. Processing</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h2 className="text-3xl font-stencil text-white mb-6 uppercase tracking-wider">About NFLTMS</h2>
+                                <p className="text-gray-300 mb-6 leading-relaxed">
+                                    The <span className="text-[#D4AF37] font-semibold">National Firearm Licensing & Tracking Management System</span> is a government-owned digital platform operated by the Ghana Police Service in partnership with the Ministry of Interior.
+                                </p>
+                                <p className="text-gray-300 mb-8 leading-relaxed">
+                                    Launched in 2025, our mission is to modernize Ghana&apos;s firearm regulation through secure digital infrastructure while maintaining the highest standards of public safety and regulatory compliance.
+                                </p>
+                                <ul className="space-y-6">
+                                    {[
+                                        { title: 'Centralized Registry', desc: 'Single source of truth for all firearms in Ghana' },
+                                        { title: 'Ghana Card Integration', desc: '100% biometric verification for every license' },
+                                        { title: 'Real-time Tracking', desc: 'Complete audit trail from import to ownership' },
+                                        { title: 'Mobile Access', desc: 'Digital licenses accessible anywhere, anytime' },
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex gap-4">
+                                            <CheckCircleIcon className="h-6 w-6 text-[#D4AF37] flex-shrink-0 mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-lg mb-1">{item.title}</h4>
+                                                <p className="text-gray-400 text-sm">{item.desc}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <Link to="/about">
+                                    <Button variant="outline" className="mt-10 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black clip-chamfer rounded-none">
+                                        Learn More About Us
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 {/* Newsletter with Diagonal Background */}
-                < section className="relative py-16 overflow-hidden" >
+                <section id="contact" className="relative py-16 overflow-hidden">
                     <div className="absolute inset-0 bg-[#0B1021]">
                         <div className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay" style={{ backgroundImage: `url(${pistolLicenseImg})` }}></div>
                         <div className="absolute left-0 top-0 bottom-0 right-1/2 bg-[#0F1629]/95 transform skew-x-12 origin-top-left"></div>
