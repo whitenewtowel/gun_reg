@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import kycService from '@/services/kycService';
-
+import logo from '@/assets/images/logo2.png'
 // --- Validation Schema ---
 const phoneRegex = /^(0|\+233)[0-9]{9}$/;
 
@@ -172,10 +172,12 @@ export default function KYCStartPage() {
 
             {/* Header */}
             <header className="border-b border-white/5 bg-[#0B1021]/95 backdrop-blur-md sticky top-0 z-40">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                <Link className="container mx-auto px-4 py-4 flex items-center justify-between" to="/">
+             
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 bg-black rounded border border-[#D4AF37]/30 flex items-center justify-center">
-                            <ShieldCheckIcon className="h-6 w-6 text-[#D4AF37]" />
+                        <div className="h-10 w-10  flex items-center justify-center">
+                            <img src={logo} alt="Logo" className='w-14 h-12 object-contain' />
+
                         </div>
                         <div>
                             <h1 className="text-lg font-bold tracking-tight text-white leading-none">NFLTMS</h1>
@@ -186,7 +188,7 @@ export default function KYCStartPage() {
                         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
                         Encrypted Session
                     </div>
-                </div>
+                </Link>
             </header>
 
             <div className="flex-1 container mx-auto px-4 py-8 max-w-2xl relative z-10">

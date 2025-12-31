@@ -10,6 +10,7 @@ import {
     StarIcon
 } from '@heroicons/react/24/outline';
 import heroBg from '@/assets/hero-bg.png';
+import { ShootingStars } from '@/components/ui/shooting-stars';
 
 const UserTypeCard = ({
     type,
@@ -128,7 +129,7 @@ export default function SelectUserTypePage() {
             icon: UserIcon,
             title: 'New Firearm License Application',
             description: 'Apply for a personal firearm license for self-defense, hunting, or sport shooting. Includes comprehensive background checks.',
-            route: '/applications/new?type=INDIVIDUAL',
+            route: '/renewal',
             popular: true,
         },
         {
@@ -159,9 +160,18 @@ export default function SelectUserTypePage() {
                     style={{ backgroundImage: `url(${heroBg})` }}
                 />
                 <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#D4AF37]/10 blur-[150px] rounded-full mix-blend-color-dodge" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/10 blur-[150px] rounded-full mix-blend-color-dodge" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/10 blur-[150px]  rounded-full mix-blend-color-dodge" />
                 <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] bg-[#D4AF37]/5 blur-[100px] rounded-full mix-blend-screen" />
-                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] mix-blend-overlay" />
+                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-0 mix-blend-overlay" />
+                <ShootingStars
+                    starColor="#D4AF37"
+                    trailColor="#FFFFFF"
+                    minSpeed={15}
+                    maxSpeed={35}
+                    minDelay={1000}
+                    maxDelay={3000}
+                    className="absolute inset-0 z-0"
+                />
             </div>
 
             <main className="relative z-10 container mx-auto px-4 py-12 md:py-20 max-w-[95rem]">

@@ -13,26 +13,26 @@ import { motion } from 'framer-motion'
 const renewalSchema = z.object({
   // Step 0
   serialNumber: z.string().min(1, 'Serial Number is required'),
-  
+
   // Step 1
   ghanaCardNumber: z.string().min(1, 'Ghana Card Number is required'),
   name: z.string().min(1, 'Name is required'),
   expiryDate: z.string().min(1, 'Expiry Date is required'),
-  
+
   // Step 2
   policeReport: z.any().optional(), // File validation can be complex, keeping simple for now
   medicalClearance: z.any().optional(),
   address: z.string().min(1, 'Address is required'),
   region: z.string().min(1, 'Region is required'),
-  
+
   // Step 3
   paymentOption: z.string().min(1, 'Payment Option is required'),
   amount: z.string().min(1, 'Amount is required'),
-  
+
   // Mobile Money
   mobileNetwork: z.string().optional(),
   mobileNumber: z.string().optional(),
-  
+
   // Card
   cardNumber: z.string().optional(),
   cardExpiry: z.string().optional(),
@@ -55,7 +55,7 @@ const renewalSchema = z.object({
       })
     }
   }
-  
+
   if (data.paymentOption === 'Card') {
     if (!data.cardNumber) {
       ctx.addIssue({
@@ -92,7 +92,7 @@ type RenewalFormValues = z.infer<typeof renewalSchema>
 
 const steps = [
   {
-    title: 'Renew Licence',
+    title: 'New Licence Application',
     subtitle: 'Confirm weapon details',
     fields: ['serialNumber'],
   },
@@ -113,13 +113,13 @@ const steps = [
   },
 ]
 
-const FileUploadField = ({ 
-  label, 
-  name, 
-  setValue, 
-  watch, 
-  errors 
-}: { 
+const FileUploadField = ({
+  label,
+  name,
+  setValue,
+  watch,
+  errors
+}: {
   label: string
   name: keyof RenewalFormValues
   register: any
@@ -128,7 +128,7 @@ const FileUploadField = ({
   errors: any
 }) => {
   const file = watch(name)
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -145,22 +145,21 @@ const FileUploadField = ({
   return (
     <div>
       <label className="mb-2 block text-sm font-medium text-gray-700">{label}</label>
-      <div className={`relative flex flex-col items-center justify-center rounded-xl border border-dashed p-8 transition-colors ${
-        errors[name] ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:bg-gray-50'
-      }`}>
+      <div className={`relative flex flex-col items-center justify-center rounded-xl border border-dashed p-8 transition-colors ${errors[name] ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:bg-gray-50'
+        }`}>
         <input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           className="absolute inset-0 cursor-pointer opacity-0"
           onChange={handleFileChange}
         />
-        
+
         {file ? (
           <div className="flex items-center gap-2 z-10">
-             <span className="text-sm font-medium text-gray-900">{file.name}</span>
-             <button onClick={removeFile} className="p-1 hover:bg-gray-200 rounded-full">
-               <X size={16} className="text-gray-500" />
-             </button>
+            <span className="text-sm font-medium text-gray-900">{file.name}</span>
+            <button onClick={removeFile} className="p-1 hover:bg-gray-200 rounded-full">
+              <X size={16} className="text-gray-500" />
+            </button>
           </div>
         ) : (
           <>
@@ -206,7 +205,7 @@ export default function Renewal() {
   const nextStep = async () => {
     const fields = steps[currentStep].fields
     const isStepValid = await trigger(fields as any)
-    
+
     if (isStepValid) {
       if (currentStep === steps.length - 1) {
         handlePayment()
@@ -233,7 +232,7 @@ export default function Renewal() {
   const handleVerify = async () => {
     const isValid = await trigger('serialNumber')
     if (!isValid) return
-    
+
     setIsLoading(true)
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500))
@@ -252,120 +251,120 @@ export default function Renewal() {
   return (
     <div className="flex min-h-screen w-full relative">
       {/* Payment Processing Overlay */}
-   {/* Payment Processing Overlay – Pure Tailwind */}
-{paymentStatus === 'processing' && (
-  <div 
-    role="status"
-    aria-live="polite"
-    className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md"
-  >
-    <div className="relative w-32 h-32 mb-8">
-      {/* Outer rotating ring */}
-      <div className="absolute inset-0 rounded-full border-8 border-gray-200"></div>
-      <div className="absolute inset-0 rounded-full border-8 border-t-[#9D7000] border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-      
-      {/* Inner pulsing circle */}
-      <div className="absolute inset-4 rounded-full bg-[#9D7000]/10 animate-ping"></div>
-      <div className="absolute inset-6 rounded-full bg-[#9D7000]/20 animate-pulse"></div>
-      
-      {/* Lock icon in center */}
-      <svg className="absolute inset-0 m-auto w-12 h-12 text-[#9D7000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-      </svg>
-    </div>
-
-    <h2 className="text-2xl font-bold text-gray-900 mb-2">Processing Payment</h2>
-    <p className="text-gray-600 text-center max-w-xs px-6">
-      We’re securely renewing your license. This won’t take long.
-    </p>
-    <p className="text-sm text-gray-400 mt-4 animate-pulse">Do not close or refresh this page</p>
-  </div>
-)}
-
-{/* Payment Success Overlay – Pure Tailwind + Inline SVG Morph */}
-{paymentStatus === 'success' && (
-  <div 
-    role="alertdialog"
-    aria-labelledby="success-title"
-    className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50"
-  >
-    {/* Animated Checkmark SVG (morphs from circle → check) */}
-    <div className="relative mb-10">
-      <svg width="140" height="140" viewBox="0 0 140 140" className="drop-shadow-2xl">
-        {/* Circle → Check stroke animation */}
-        <motion.circle
-          cx="70" cy="70" r="62"
-          fill="none"
-          stroke="#9D7000"
-          strokeWidth="8"
-          strokeLinecap="round"
-          className="stroke-current text-amber-500"
-          pathLength="1"
-          strokeDasharray="1"
-          strokeDashoffset="1"
-          initial={{ strokeDashoffset: 1 }}
-          animate={{ strokeDashoffset: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-        <motion.polyline
-          points="38,70 60,92 102,48"
-          fill="none"
-          stroke="#9D7000"
-          strokeWidth="10"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-amber-600"
-          pathLength="1"
-          strokeDasharray="1"
-          strokeDashoffset="1"
-          initial={{ strokeDashoffset: 1 }}
-          animate={{ strokeDashoffset: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-        />
-      </svg>
-
-      {/* Success burst particles (pure CSS/Tailwind) */}
-      {[...Array(8)].map((_, i) => (
+      {/* Payment Processing Overlay – Pure Tailwind */}
+      {paymentStatus === 'processing' && (
         <div
-          key={i}
-          // @ts-ignore – Tailwind supports arbitrary values
-          className={`animate-ping absolute top-1/2 left-1/2 w-3 h-3 bg-amber-400 rounded-full origin-center`}
-          style={{
-            transform: `rotate(${i * 45}deg) translateX(80px)`,
-            animationDelay: `${i * 0.05}s`
-          }}
-        />
-      ))}
-    </div>
+          role="status"
+          aria-live="polite"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md"
+        >
+          <div className="relative w-32 h-32 mb-8">
+            {/* Outer rotating ring */}
+            <div className="absolute inset-0 rounded-full border-8 border-gray-200"></div>
+            <div className="absolute inset-0 rounded-full border-8 border-t-[#9D7000] border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
 
-    <h2 id="success-title" className="text-4xl font-black text-[#2C1402] mb-3">
-      Payment Successful!
-    </h2>
-    <p className="text-gray-600 text-center max-w-md px-8 leading-relaxed">
-      Your license has been renewed. A confirmation email is on its way.
-    </p>
+            {/* Inner pulsing circle */}
+            <div className="absolute inset-4 rounded-full bg-[#9D7000]/10 animate-ping"></div>
+            <div className="absolute inset-6 rounded-full bg-[#9D7000]/20 animate-pulse"></div>
 
-    <div className="flex gap-4 mt-10">
-      <button
-        // onClick={handleViewLicense}
-        className="px-10 py-4 bg-[#9D7000] text-white font-bold rounded-2xl shadow-lg hover:bg-[#856000] hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300"
-      >
-        View License
-      </button>
-      <button
-        onClick={handleLogout}
-        className="px-10 py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-2xl hover:bg-gray-50 hover:border-gray-400 transform hover:-translate-y-1 transition-all duration-200"
-      >
-        Sign Out
-      </button>
-    </div>
+            {/* Lock icon in center */}
+            <svg className="absolute inset-0 m-auto w-12 h-12 text-[#9D7000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
 
-    <p className="text-xs text-gray-400 mt-8 flex items-center gap-1">
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/></svg>
-      256-bit encryption • PCI DSS compliant
-    </p>
-  </div>
-)}
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Processing Payment</h2>
+          <p className="text-gray-600 text-center max-w-xs px-6">
+            We’re securely renewing your license. This won’t take long.
+          </p>
+          <p className="text-sm text-gray-400 mt-4 animate-pulse">Do not close or refresh this page</p>
+        </div>
+      )}
+
+      {/* Payment Success Overlay – Pure Tailwind + Inline SVG Morph */}
+      {paymentStatus === 'success' && (
+        <div
+          role="alertdialog"
+          aria-labelledby="success-title"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50"
+        >
+          {/* Animated Checkmark SVG (morphs from circle → check) */}
+          <div className="relative mb-10">
+            <svg width="140" height="140" viewBox="0 0 140 140" className="drop-shadow-2xl">
+              {/* Circle → Check stroke animation */}
+              <motion.circle
+                cx="70" cy="70" r="62"
+                fill="none"
+                stroke="#9D7000"
+                strokeWidth="8"
+                strokeLinecap="round"
+                className="stroke-current text-amber-500"
+                pathLength="1"
+                strokeDasharray="1"
+                strokeDashoffset="1"
+                initial={{ strokeDashoffset: 1 }}
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              />
+              <motion.polyline
+                points="38,70 60,92 102,48"
+                fill="none"
+                stroke="#9D7000"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-amber-600"
+                pathLength="1"
+                strokeDasharray="1"
+                strokeDashoffset="1"
+                initial={{ strokeDashoffset: 1 }}
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+              />
+            </svg>
+
+            {/* Success burst particles (pure CSS/Tailwind) */}
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                // @ts-ignore – Tailwind supports arbitrary values
+                className={`animate-ping absolute top-1/2 left-1/2 w-3 h-3 bg-amber-400 rounded-full origin-center`}
+                style={{
+                  transform: `rotate(${i * 45}deg) translateX(80px)`,
+                  animationDelay: `${i * 0.05}s`
+                }}
+              />
+            ))}
+          </div>
+
+          <h2 id="success-title" className="text-4xl font-black text-[#2C1402] mb-3">
+            Payment Successful!
+          </h2>
+          <p className="text-gray-600 text-center max-w-md px-8 leading-relaxed">
+            Your license has been renewed. A confirmation email is on its way.
+          </p>
+
+          <div className="flex gap-4 mt-10">
+            <button
+              // onClick={handleViewLicense}
+              className="px-10 py-4 bg-[#9D7000] text-white font-bold rounded-2xl shadow-lg hover:bg-[#856000] hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300"
+            >
+              View License
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-10 py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-2xl hover:bg-gray-50 hover:border-gray-400 transform hover:-translate-y-1 transition-all duration-200"
+            >
+              Sign Out
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 mt-8 flex items-center gap-1">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+            256-bit encryption • PCI DSS compliant
+          </p>
+        </div>
+      )}
 
       {/* Left Sidebar */}
       <div className="hidden w-1/3 flex-col bg-[#2C1402] p-12 text-white lg:flex">
@@ -378,7 +377,7 @@ export default function Renewal() {
         <div className="relative flex flex-col gap-12">
           {/* Vertical Line */}
           <div className="absolute left-[15px] top-2 h-[calc(100%-40px)] w-[2px] bg-[#FCEDDC]">
-            <div 
+            <div
               className="absolute top-0 w-full bg-yellow-500 transition-all duration-500"
               style={{ height: `${(currentStep / (steps.length - 1)) * 100}%` }}
             />
@@ -387,11 +386,10 @@ export default function Renewal() {
           {steps.map((step, index) => (
             <div key={index} className="relative z-10 flex items-start gap-6">
               <div
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#FCEDDC] transition-all duration-300 ${
-                  index <= currentStep
-                    ? 'border-yellow-500 bg-[#FCEDDC] text-[#2C1402]'
-                    : 'border-white/40 bg-[#2C1402]'
-                }`}
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#FCEDDC] transition-all duration-300 ${index <= currentStep
+                  ? 'border-yellow-500 bg-[#FCEDDC] text-[#2C1402]'
+                  : 'border-white/40 bg-[#2C1402]'
+                  }`}
               >
                 {index < currentStep ? (
                   <Check size={16} strokeWidth={3} />
@@ -411,7 +409,7 @@ export default function Renewal() {
       {/* Right Content */}
       <div className="flex w-full flex-col items-center bg-white p-4 sm:p-6 lg:p-8 lg:w-2/3 min-h-screen ">
         <div className={`flex h-full w-full max-w-lg ${currentStep === 1 ? 'max-w-full lg:max-w-3xl' : currentStep === 2 ? 'max-w-full lg:max-w-3xl' : 'max-w-lg'}  flex-col`}>
-          
+
           <div className="my-auto w-full">
             <div className="mb-12 flex flex-col items-center text-center">
               <img src={IMAGES.LOGIN2} alt="Coat of Arms" className="mb-6 h-18 w-auto" />
@@ -437,7 +435,7 @@ export default function Renewal() {
                   />
                   {errors.serialNumber && <p className="mt-1 text-sm text-red-500">{errors.serialNumber.message}</p>}
                 </div>
-               
+
                 {isLoading && (
                   <div className="flex flex-col items-center justify-center py-8 text-gray-500">
                     <Loader2 className="mb-2 h-8 w-8 animate-spin text-[#9D7000]" />
@@ -476,11 +474,10 @@ export default function Renewal() {
                 <button
                   onClick={handleStep0Action}
                   disabled={!serialNumber || isLoading || !!errors.serialNumber}
-                  className={`w-full rounded-lg py-4 font-semibold text-white transition-colors ${
-                    !serialNumber || isLoading || !!errors.serialNumber
-                      ? 'bg-[#959595] cursor-not-allowed'
-                      : 'bg-[#9D7000] hover:bg-[#856000]'
-                  }`}
+                  className={`w-full rounded-lg py-4 font-semibold text-white transition-colors ${!serialNumber || isLoading || !!errors.serialNumber
+                    ? 'bg-[#959595] cursor-not-allowed'
+                    : 'bg-[#9D7000] hover:bg-[#856000]'
+                    }`}
                 >
                   {isLoading ? 'Verifying...' : showGunDetails ? 'Proceed' : 'Verify'}
                 </button>
@@ -571,7 +568,7 @@ export default function Renewal() {
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">Region for verification</label>
                     <div className="relative">
-                      <select 
+                      <select
                         {...register('region')}
                         className={`focus:border-primary focus:ring-primary w-full appearance-none rounded-lg border bg-white px-4 py-3 outline-none focus:ring-1 ${errors.region ? 'border-red-500' : 'border-gray-200'}`}
                       >
@@ -622,7 +619,7 @@ export default function Renewal() {
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">Payment Option</label>
                   <div className="relative">
-                    <select 
+                    <select
                       {...register('paymentOption')}
                       className={`focus:border-primary focus:ring-primary w-full appearance-none rounded-lg border bg-white px-4 py-3 outline-none focus:ring-1 ${errors.paymentOption ? 'border-red-500' : 'border-gray-200'}`}
                     >
@@ -640,7 +637,7 @@ export default function Renewal() {
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">Network</label>
                       <div className="relative">
-                        <select 
+                        <select
                           {...register('mobileNetwork')}
                           className={`focus:border-primary focus:ring-primary w-full appearance-none rounded-lg border bg-white px-4 py-3 outline-none focus:ring-1 ${errors.mobileNetwork ? 'border-red-500' : 'border-gray-200'}`}
                         >
@@ -726,7 +723,7 @@ export default function Renewal() {
                   />
                 </div>
 
-                <button 
+                <button
                   onClick={nextStep}
                   className="w-full rounded-lg bg-[#9D7000] py-4 font-bold text-white transition-colors hover:bg-[#856000]"
                 >
@@ -739,14 +736,14 @@ export default function Renewal() {
           {/* Pagination Dots & Navigation */}
           <div className="mt-12 flex items-center justify-center gap-4 pb-8">
             {currentStep > 0 && (
-              <button 
+              <button
                 onClick={prevStep}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
               >
                 <ChevronLeft size={16} />
               </button>
             )}
-            
+
             <div className="flex gap-2">
               {steps.map((_, index) => (
                 <button
@@ -759,14 +756,13 @@ export default function Renewal() {
                       const fields = steps[currentStep].fields
                       const isStepValid = await trigger(fields as any)
                       if (isStepValid && index === currentStep + 1) {
-                         setCurrentStep(index)
+                        setCurrentStep(index)
                       }
                     }
                   }}
                   disabled={index > currentStep + 1} // Can only go to next step or previous steps
-                  className={`h-1.5 w-12 rounded-full transition-colors ${
-                    index === currentStep ? 'bg-[#9D7000]' : 'bg-gray-200'
-                  } ${index < currentStep ? 'cursor-pointer hover:bg-[#9D7000]/70' : ''} ${index === currentStep + 1 ? 'cursor-pointer hover:bg-gray-300' : ''}`}
+                  className={`h-1.5 w-12 rounded-full transition-colors ${index === currentStep ? 'bg-[#9D7000]' : 'bg-gray-200'
+                    } ${index < currentStep ? 'cursor-pointer hover:bg-[#9D7000]/70' : ''} ${index === currentStep + 1 ? 'cursor-pointer hover:bg-gray-300' : ''}`}
                 />
               ))}
             </div>

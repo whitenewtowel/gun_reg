@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import logo from '@/assets/images/logo2.png'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -58,13 +59,17 @@ export default function Login() {
           <Link to="/" className="inline-flex items-center gap-2 text-[#D4AF37] hover:text-[#B4941F] mb-8 transition-colors">
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-12 w-12 bg-black/50 border border-[#D4AF37]/30 rounded-lg flex items-center justify-center">
-              <ShieldCheck className="h-7 w-7 text-[#D4AF37]" />
+          <div className="flex items-center gap-4 mb-5">
+            <div className="relative group">
+              <img src={logo} alt="Logo" className='w-14 h-12 object-contain' />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-white">NFLTMS</h2>
-              <p className="text-xs text-[#D4AF37] tracking-widest uppercase">Official Secure Portal</p>
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white leading-none">
+                NFLTMS
+              </h1>
+              <p className="text-[0.65rem] md:text-xs text-[#D4AF37] tracking-widest uppercase mt-1">
+                National Firearm Licensing
+              </p>
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
