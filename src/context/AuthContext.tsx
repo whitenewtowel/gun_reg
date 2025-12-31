@@ -69,34 +69,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('refresh_token', refresh_token)
 
       // Map backend user data to frontend User interface
-      // Backend returns user_id, frontend expects id
+      // Backend returns: { user_id, email, roles: [], onboarding_context: { type, status } }
       const userData = {
-        ...data,
-        id: data.user_id || data.id,
-      }
+        id: data.user_id,
+        email: data.email,
+        role: data.roles?.[0] || null, // Take first role from roles array
+        firstName: '', // Will be populated from /users/me endpoint
+        lastName: '',
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as User
 
       setUser(userData)
 
-      // Redirect based on role
-      switch (userData.role) {
-        case 'RENEWAL_USER':
-          navigate('/renewal')
-          break
-        case 'GUN_DEALER':
-          navigate('/dealer-registration')
-          break
-        case 'ADMIN':
-        case 'POLICE':
-          navigate('/dashboard')
-          break
-        default:
-          // If no specific role matched or empty, go to safe default
-          if (!userData.role) {
-            navigate('/onboarding/select-user-type')
-          } else {
-            navigate('/dashboard')
-          }
+      // Store onboarding context for routing decisions
+      if (data.onboarding_context) {
+        localStorage.setItem('onboarding_context', JSON.stringify(data.onboarding_context))
       }
+
+      // Route based on onboarding_context.type
+      // If type is "NONE", user hasn't selected their user type yet
+      if (data.onboarding_context?.type === 'NONE') {
+        navigate('/onboarding/select-user-type')
+      } else {
+        // User has completed onboarding, route to dashboard
+        navigate('/dashboard')
+      }
+
       return true
     } catch (error) {
       console.error('Login failed:', error)

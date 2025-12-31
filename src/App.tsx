@@ -16,6 +16,11 @@ import KYCVerifyPage from './pages/kyc/KYCVerifyPage'
 import KYCCompletePage from './pages/kyc/KYCCompletePage'
 import SelectUserTypePage from './pages/onboarding/SelectUserTypePage'
 import CompleteApplications from './pages/individuals/CompleteApplications'
+import ApplicationsPage from './pages/individuals/ApplicationsPage'
+import MyFirearmsPage from './pages/individuals/MyFirearmsPage'
+import PaymentsPage from './pages/individuals/PaymentsPage'
+import HistoryPage from './pages/individuals/HistoryPage'
+import SettingsPage from './pages/individuals/SettingsPage'
 import DashboardRedirectHandler from './components/auth/DashboardRedirectHandler'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -49,6 +54,11 @@ function App() {
             {/* Dashboard & Management */}
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardRedirectHandler />} />
+              <Route path="/applications" element={<ApplicationsPage />} />
+              <Route path="/firearms" element={<MyFirearmsPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/history" element={<HistoryPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/licenses" element={<LicenseManagement />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/profile" element={<ProfilePage />} />

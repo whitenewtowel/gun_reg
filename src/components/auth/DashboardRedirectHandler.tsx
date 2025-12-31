@@ -1,22 +1,23 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
 import Dashboard from '@/pages/Dashboard';
 
 export default function DashboardRedirectHandler() {
-    const { user } = useAuth();
+    // Check onboarding context to determine if user needs to complete onboarding
+    const onboardingContextStr = localStorage.getItem('onboarding_context');
 
-    // If user is logged in but has no role or is "INDIVIDUAL" without completed setup (if applicable)
-    // For now, relying on "missing role" or specific condition as per user request.
-    // Assuming "missing role" means checking if user.role is null/undefined or empty string?
-    // User type defines role as UserRole enum.
-    // The user request says: "check if they dont have role".
+    if (onboardingContextStr) {
+        try {
+            const onboardingContext = JSON.parse(onboardingContextStr);
 
-    if (user && !user.role) {
-        return <Navigate to="/onboarding/select-user-type" replace />;
+            // If type is "NONE", user hasn't selected their user type yet
+            if (onboardingContext.type === 'NONE') {
+                return <Navigate to="/onboarding/select-user-type" replace />;
+            }
+        } catch (error) {
+            console.error('Failed to parse onboarding context:', error);
+        }
     }
 
-    // Also if we have a flag hasCompletedOnboarding (which we don't have in type yet, but assuming we rely on role)
-    // If role is present, proceed to dashboard.
-
+    // If no onboarding context or type is not "NONE", show dashboard
     return <Dashboard />;
 }
