@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import Dashboard from '@/pages/Dashboard';
+import IndividualDashboard from '@/pages/dashboards/IndividualDashboard';
 
 export default function DashboardRedirectHandler() {
     // Check onboarding context to determine if user needs to complete onboarding
@@ -19,5 +19,5 @@ export default function DashboardRedirectHandler() {
     }
 
     // If no onboarding context or type is not "NONE", show dashboard
-    return <Dashboard />;
+    return <IndividualDashboard />;
 }

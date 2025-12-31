@@ -18,6 +18,9 @@ import SelectUserTypePage from './pages/onboarding/SelectUserTypePage'
 import CompleteApplications from './pages/individuals/CompleteApplications'
 import ApplicationsPage from './pages/individuals/ApplicationsPage'
 import ApplicationDetailPage from './pages/individuals/ApplicationDetailPage'
+import DealersPage from './pages/individuals/DealersPage'
+import DealerDetailPage from './pages/individuals/DealerDetailPage'
+import PurchaseWizard from './pages/individuals/purchasing/PurchaseWizard'
 import MyFirearmsPage from './pages/individuals/MyFirearmsPage'
 import PaymentsPage from './pages/individuals/PaymentsPage'
 import HistoryPage from './pages/individuals/HistoryPage'
@@ -57,6 +60,9 @@ function App() {
               <Route path="/dashboard" element={<DashboardRedirectHandler />} />
               <Route path="/applications" element={<ApplicationsPage />} />
               <Route path="/applications/:id" element={<ApplicationDetailPage />} />
+              <Route path="/dealers" element={<DealersPage />} />
+              <Route path="/dealers/:id" element={<DealerDetailPage />} />
+              <Route path="/dealers/:dealerId/purchase/:itemId" element={<PurchaseWizard />} />
               <Route path="/firearms" element={<MyFirearmsPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/history" element={<HistoryPage />} />

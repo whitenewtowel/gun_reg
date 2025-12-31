@@ -75,15 +75,15 @@ export default function MyFirearmsPage() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'ACTIVE':
-                return 'text-green-400 bg-green-500/10 border-green-500/30';
+                return 'text-green-600 bg-green-50 border-green-200';
             case 'EXPIRED':
-                return 'text-red-400 bg-red-500/10 border-red-500/30';
+                return 'text-red-600 bg-red-50 border-red-200';
             case 'PENDING':
-                return 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/30';
+                return 'text-[#1A2035] bg-gray-100 border-gray-200';
             case 'SUSPENDED':
-                return 'text-orange-400 bg-orange-500/10 border-orange-500/30';
+                return 'text-orange-600 bg-orange-50 border-orange-200';
             default:
-                return 'text-gray-400 bg-gray-500/10 border-gray-500/30';
+                return 'text-gray-500 bg-gray-100 border-gray-200';
         }
     };
 
@@ -116,8 +116,8 @@ export default function MyFirearmsPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">My Firearms</h1>
-                    <p className="text-gray-400">View and manage your registered firearms</p>
+                    <h1 className="text-3xl font-bold text-[#1A2035] mb-2">My Firearms</h1>
+                    <p className="text-gray-500">View and manage your registered firearms</p>
                 </div>
             </div>
 
@@ -129,44 +129,44 @@ export default function MyFirearmsPage() {
                     placeholder="Search by make, model, or serial number..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-[#1A2035] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-[#D4AF37] focus:outline-none"
+                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-[#1A2035] placeholder-gray-400 focus:border-[#1A2035] focus:ring-1 focus:ring-[#1A2035] focus:outline-none shadow-sm"
                 />
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#1A2035] border border-white/10 rounded-lg p-6">
+                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
-                        <ShieldCheckIcon className="w-8 h-8 text-green-400" />
+                        <ShieldCheckIcon className="w-8 h-8 text-green-600" />
                         <div>
-                            <p className="text-2xl font-bold text-white">
+                            <p className="text-2xl font-bold text-[#1A2035]">
                                 {firearms.filter(f => f.status === 'ACTIVE').length}
                             </p>
-                            <p className="text-sm text-gray-400">Active Firearms</p>
+                            <p className="text-sm text-gray-500">Active Firearms</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[#1A2035] border border-white/10 rounded-lg p-6">
+                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
-                        <ClockIcon className="w-8 h-8 text-[#D4AF37]" />
+                        <ClockIcon className="w-8 h-8 text-[#1A2035]" />
                         <div>
-                            <p className="text-2xl font-bold text-white">
+                            <p className="text-2xl font-bold text-[#1A2035]">
                                 {firearms.filter(f => isExpiringSoon(f.licenseExpiresAt)).length}
                             </p>
-                            <p className="text-sm text-gray-400">Expiring Soon</p>
+                            <p className="text-sm text-gray-500">Expiring Soon</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[#1A2035] border border-white/10 rounded-lg p-6">
+                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
-                        <ExclamationTriangleIcon className="w-8 h-8 text-red-400" />
+                        <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
                         <div>
-                            <p className="text-2xl font-bold text-white">
+                            <p className="text-2xl font-bold text-[#1A2035]">
                                 {firearms.filter(f => f.status === 'EXPIRED' || f.status === 'SUSPENDED').length}
                             </p>
-                            <p className="text-sm text-gray-400">Needs Attention</p>
+                            <p className="text-sm text-gray-500">Needs Attention</p>
                         </div>
                     </div>
                 </div>
@@ -174,10 +174,10 @@ export default function MyFirearmsPage() {
 
             {/* Firearms List */}
             {filteredFirearms.length === 0 ? (
-                <div className="text-center py-16 bg-[#1A2035] border border-white/10 rounded-lg">
-                    <ShieldCheckIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">No Firearms Found</h3>
-                    <p className="text-gray-400 mb-6">
+                <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
+                    <ShieldCheckIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-[#1A2035] mb-2">No Firearms Found</h3>
+                    <p className="text-gray-500 mb-6">
                         {searchTerm
                             ? "No firearms match your search"
                             : "You haven't registered any firearms yet"
@@ -186,7 +186,7 @@ export default function MyFirearmsPage() {
                     {!searchTerm && (
                         <button
                             onClick={() => navigate('/complete-applications')}
-                            className="px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F]"
+                            className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] shadow-lg shadow-gray-200"
                         >
                             Apply for Permit
                         </button>
@@ -200,7 +200,7 @@ export default function MyFirearmsPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-[#1A2035] border border-white/10 rounded-lg p-6 hover:border-[#D4AF37]/30 transition-all group"
+                            className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#1A2035]/30 hover:shadow-md transition-all group"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex gap-4 flex-1">
@@ -210,7 +210,7 @@ export default function MyFirearmsPage() {
 
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors">
+                                            <h3 className="text-xl font-bold text-[#1A2035] group-hover:text-blue-700 transition-colors">
                                                 {firearm.make} {firearm.model}
                                             </h3>
                                             <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(firearm.status)}`}>
@@ -221,19 +221,19 @@ export default function MyFirearmsPage() {
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                             <div>
                                                 <span className="text-gray-500">Serial Number:</span>
-                                                <p className="text-white font-mono">{firearm.serialNumber}</p>
+                                                <p className="text-[#1A2035] font-mono">{firearm.serialNumber}</p>
                                             </div>
                                             <div>
                                                 <span className="text-gray-500">Type:</span>
-                                                <p className="text-white">{firearm.type}</p>
+                                                <p className="text-[#1A2035]">{firearm.type}</p>
                                             </div>
                                             <div>
                                                 <span className="text-gray-500">Caliber:</span>
-                                                <p className="text-white">{firearm.caliber}</p>
+                                                <p className="text-[#1A2035]">{firearm.caliber}</p>
                                             </div>
                                             <div>
                                                 <span className="text-gray-500">Registered:</span>
-                                                <p className="text-white">
+                                                <p className="text-[#1A2035]">
                                                     {new Date(firearm.registeredAt).toLocaleDateString('en-GB')}
                                                 </p>
                                             </div>
@@ -242,17 +242,17 @@ export default function MyFirearmsPage() {
                                         {firearm.licenseExpiresAt && (
                                             <div className="mt-3 flex items-center gap-2">
                                                 {isExpiringSoon(firearm.licenseExpiresAt) && (
-                                                    <ExclamationTriangleIcon className="w-4 h-4 text-[#D4AF37]" />
+                                                    <ExclamationTriangleIcon className="w-4 h-4 text-[#1A2035]" />
                                                 )}
                                                 <span className="text-sm text-gray-500">License Expires:</span>
-                                                <span className={`text-sm font-medium ${isExpiringSoon(firearm.licenseExpiresAt) ? 'text-[#D4AF37]' : 'text-white'
+                                                <span className={`text-sm font-medium ${isExpiringSoon(firearm.licenseExpiresAt) ? 'text-red-600' : 'text-[#1A2035]'
                                                     }`}>
                                                     {new Date(firearm.licenseExpiresAt).toLocaleDateString('en-GB')}
                                                 </span>
                                                 {isExpiringSoon(firearm.licenseExpiresAt) && (
                                                     <button
                                                         onClick={() => navigate('/renewal')}
-                                                        className="ml-auto flex items-center gap-2 px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] rounded hover:bg-[#D4AF37]/30 text-sm"
+                                                        className="ml-auto flex items-center gap-2 px-3 py-1 bg-[#1A2035]/10 text-[#1A2035] rounded-lg hover:bg-[#1A2035]/20 text-sm"
                                                     >
                                                         <ArrowPathIcon className="w-4 h-4" />
                                                         Renew Now
@@ -265,7 +265,7 @@ export default function MyFirearmsPage() {
 
                                 <button
                                     onClick={() => navigate(`/firearms/${firearm.id}`)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white/5 text-[#D4AF37] rounded hover:bg-white/10 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-[#1A2035] rounded-lg hover:bg-gray-100 transition-colors"
                                 >
                                     <EyeIcon className="w-4 h-4" />
                                     View Details

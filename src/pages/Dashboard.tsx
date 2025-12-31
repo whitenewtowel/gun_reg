@@ -100,7 +100,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-200px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4AF37]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A2035]"></div>
       </div>
     );
   }
@@ -110,18 +110,18 @@ export default function Dashboard() {
       {/* Welcome Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">My Dashboard</h1>
-          <p className="text-gray-400 flex items-center gap-2">
+          <h1 className="text-4xl font-extrabold text-[#1A2035] tracking-tight mb-2">My Dashboard</h1>
+          <p className="text-gray-500 font-medium flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
             System Operational • {new Date().toLocaleDateString('en-GH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/60">
+          <Button variant="outline" className="border-gray-200 text-[#1A2035] hover:bg-gray-50 hover:border-gray-300 font-semibold shadow-sm rounded-xl">
             <Clock className="mr-2 h-4 w-4" /> History
           </Button>
           <Button
-            className="bg-[#D4AF37] hover:bg-[#B4941F] text-black font-bold shadow-lg shadow-[#D4AF37]/20"
+            className="bg-[#1A2035] hover:bg-[#2c3554] text-white font-bold shadow-lg shadow-[#1A2035]/20 rounded-xl"
             onClick={() => navigate('/applications/new')}
           >
             <Plus className="mr-2 h-4 w-4" /> New Application
@@ -138,9 +138,9 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card className="bg-[#1A2035] border-[#D4AF37]/10 hover:border-[#D4AF37]/40 transition-all duration-300 group">
+            <Card className="bg-white border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 group rounded-xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400 group-hover:text-[#D4AF37] transition-colors">
+                <CardTitle className="text-sm font-semibold text-gray-500 group-hover:text-[#1A2035] transition-colors tracking-wide uppercase">
                   {stat.label}
                 </CardTitle>
                 <div className={`p-2 rounded-lg ${stat.bg} group-hover:bg-opacity-20 transition-all`}>
@@ -148,7 +148,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                <div className="text-3xl font-bold text-[#1A2035] mb-1 tracking-tight">{stat.value}</div>
                 <p className="text-xs text-gray-500">{stat.change}</p>
               </CardContent>
             </Card>
@@ -162,28 +162,28 @@ export default function Dashboard() {
         {/* Left Column: Recent Activity */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Clock className="h-5 w-5 text-[#D4AF37]" />
+            <h2 className="text-xl font-bold text-[#1A2035] flex items-center gap-2 tracking-tight">
+              <Clock className="h-5 w-5 text-[#1A2035]" />
               Recent Activity
             </h2>
-            <Button variant="link" className="text-[#D4AF37] hover:text-[#B4941F] p-0">View All</Button>
+            <Button variant="link" className="text-[#1A2035] hover:text-[#2c3554] p-0 font-semibold">View All</Button>
           </div>
 
           <div className="space-y-4">
             {recentActivity.map((item) => (
-              <Card key={item.id} className="bg-[#1A2035] border-[#D4AF37]/10 hover:bg-[#1E2540] hover:border-[#D4AF37]/30 transition-all cursor-pointer group">
+              <Card key={item.id} className="bg-white border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group rounded-xl">
                 <div className="p-4 flex items-center gap-4">
-                  <div className={`mt-1 p-2 rounded-full bg-black/30 ${item.statusColor} border border-white/5 group-hover:border-[#D4AF37]/20`}>
+                  <div className={`mt-1 p-2 rounded-full bg-gray-100 ${item.statusColor} border border-gray-200`}>
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-white font-medium group-hover:text-[#D4AF37] transition-colors">{item.title}</h3>
+                    <h3 className="text-[#1A2035] font-bold text-base group-hover:text-[#2c3554] transition-colors">{item.title}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-xs ${item.statusColor} font-medium px-2 py-0.5 rounded bg-white/5`}>{item.status}</span>
+                      <span className={`text-xs ${item.statusColor} font-medium px-2 py-0.5 rounded bg-gray-50`}>{item.status}</span>
                       <span className="text-xs text-gray-500">• {item.date}</span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="text-gray-400 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all">
+                  <Button variant="ghost" size="icon" className="text-gray-400 group-hover:text-[#1A2035] group-hover:translate-x-1 transition-all">
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -195,24 +195,26 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-2 gap-4 mt-8">
             <div
               onClick={() => navigate('/applications/new')}
-              className="bg-gradient-to-br from-[#1A2035] to-[#0B1021] border border-[#D4AF37]/10 rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-[#D4AF37]/50 hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all"
+              className="bg-white border border-gray-200 rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-[#1A2035]/50 hover:shadow-lg transition-all"
             >
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
-                <FileText className="h-32 w-32 text-[#D4AF37]" />
+                <FileText className="h-32 w-32 text-[#1A2035]" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2 relative z-10 group-hover:text-[#D4AF37] transition-colors">Start New Application</h3>
-              <p className="text-sm text-gray-400 mb-4 relative z-10">Apply for a shotgun, handgun, or rifle license securely online.</p>
-              <span className="text-[#D4AF37] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+              <h3 className="text-lg font-bold text-[#1A2035] mb-2 relative z-10 group-hover:text-[#2c3554] transition-colors">Start New Application</h3>
+              <p className="text-sm text-gray-500 mb-4 relative z-10">Apply for a shotgun, handgun, or rifle license securely online.</p>
+              <span className="text-[#1A2035] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
                 Begin Now <ArrowRight className="h-4 w-4" />
               </span>
             </div>
 
-            <div className="bg-gradient-to-br from-[#1A2035] to-[#0B1021] border border-red-900/20 rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-red-500/50 hover:shadow-[0_0_20px_rgba(239,68,68,0.1)] transition-all">
+            <div
+              className="bg-white border border-red-200 rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-red-400 hover:shadow-lg transition-all"
+            >
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
                 <AlertTriangle className="h-32 w-32 text-red-500" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2 relative z-10 group-hover:text-red-400 transition-colors">Report Lost/Stolen</h3>
-              <p className="text-sm text-gray-400 mb-4 relative z-10">Immediately report missing firearms to valid authorities.</p>
+              <h3 className="text-lg font-bold text-[#1A2035] mb-2 relative z-10 group-hover:text-red-600 transition-colors">Report Lost/Stolen</h3>
+              <p className="text-sm text-gray-500 mb-4 relative z-10">Immediately report missing firearms to valid authorities.</p>
               <span className="text-red-500 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
                 Report Issue <ArrowRight className="h-4 w-4" />
               </span>
@@ -222,10 +224,10 @@ export default function Dashboard() {
 
         {/* Right Column: Registered Firearms Mini-List */}
         <div className="lg:col-span-1">
-          <Card className="bg-[#1A2035] border-[#D4AF37]/10 h-full hover:border-[#D4AF37]/30 transition-colors">
-            <CardHeader className="border-b border-white/5">
-              <CardTitle className="text-white text-lg flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-[#D4AF37]" />
+          <Card className="bg-white border-gray-200 h-full shadow-sm">
+            <CardHeader className="border-b border-gray-50 pb-4">
+              <CardTitle className="text-[#1A2035] text-xl font-bold flex items-center gap-2 tracking-tight">
+                <ShieldCheck className="h-5 w-5 text-[#1A2035]" />
                 Your Firearms
               </CardTitle>
             </CardHeader>
@@ -233,23 +235,23 @@ export default function Dashboard() {
               {data?.firearms?.length ? (
                 <div className="space-y-4">
                   {data.firearms.map((firearm) => (
-                    <div key={firearm.id} className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 hover:border-[#D4AF37]/30 transition-all">
-                      <ShieldCheck className="h-8 w-8 text-gray-600" />
+                    <div key={firearm.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
+                      <ShieldCheck className="h-8 w-8 text-gray-400" />
                       <div>
-                        <p className="text-sm font-bold text-white">{firearm.make} {firearm.model}</p>
-                        <p className="text-xs text-green-500">{firearm.status} • SN: {firearm.serialNumber}</p>
+                        <p className="text-sm font-bold text-[#1A2035]">{firearm.make} {firearm.model}</p>
+                        <p className="text-xs text-green-600">{firearm.status} • SN: {firearm.serialNumber}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-[#0B1021] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#D4AF37]/20 shadow-[0_0_15px_rgba(0,0,0,0.3)]">
-                    <ShieldCheck className="h-8 w-8 text-gray-600" />
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200">
+                    <ShieldCheck className="h-8 w-8 text-gray-400" />
                   </div>
-                  <h3 className="text-white font-medium mb-1">No Firearms Registered</h3>
+                  <h3 className="text-[#1A2035] font-medium mb-1">No Firearms Registered</h3>
                   <p className="text-sm text-gray-500 mb-6">You haven't registered any firearms yet.</p>
-                  <Button variant="outline" className="w-full border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black">
+                  <Button variant="outline" className="w-full border-[#1A2035] text-[#1A2035] hover:bg-[#1A2035] hover:text-white">
                     Register Firearm
                   </Button>
                 </div>

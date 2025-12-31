@@ -98,15 +98,15 @@ export default function HistoryPage() {
     const getActivityColor = (type: string) => {
         switch (type) {
             case 'APPLICATION':
-                return 'text-blue-400 bg-blue-500/10 border-blue-500/30';
+                return 'text-blue-600 bg-blue-50 border-blue-200';
             case 'FIREARM':
-                return 'text-green-400 bg-green-500/10 border-green-500/30';
+                return 'text-green-600 bg-green-50 border-green-200';
             case 'PAYMENT':
-                return 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/30';
+                return 'text-[#1A2035] bg-gray-100 border-gray-200';
             case 'PROFILE':
-                return 'text-purple-400 bg-purple-500/10 border-purple-500/30';
+                return 'text-purple-600 bg-purple-50 border-purple-200';
             default:
-                return 'text-gray-400 bg-gray-500/10 border-gray-500/30';
+                return 'text-gray-500 bg-gray-50 border-gray-200';
         }
     };
 
@@ -148,21 +148,21 @@ export default function HistoryPage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Activity History</h1>
-                <p className="text-gray-400">Track all your account activities and transactions</p>
+                <h1 className="text-3xl font-bold text-[#1A2035] mb-2">Activity History</h1>
+                <p className="text-gray-500">Track all your account activities and transactions</p>
             </div>
 
             {/* Filters */}
-            <div className="flex items-center gap-4 p-4 bg-[#1A2035] border border-white/10 rounded-lg overflow-x-auto">
-                <CalendarIcon className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+            <div className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl overflow-x-auto shadow-sm">
+                <CalendarIcon className="w-5 h-5 text-[#1A2035] flex-shrink-0" />
                 <div className="flex gap-2 flex-wrap">
                     {['ALL', 'APPLICATION', 'FIREARM', 'PAYMENT', 'PROFILE'].map((type) => (
                         <button
                             key={type}
                             onClick={() => setFilter(type)}
                             className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${filter === type
-                                    ? 'bg-[#D4AF37] text-black'
-                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                ? 'bg-[#1A2035] text-white'
+                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                                 }`}
                         >
                             {type}
@@ -173,10 +173,10 @@ export default function HistoryPage() {
 
             {/* Activity Timeline */}
             {Object.keys(groupedActivities).length === 0 ? (
-                <div className="text-center py-16 bg-[#1A2035] border border-white/10 rounded-lg">
-                    <ClockIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">No Activity Found</h3>
-                    <p className="text-gray-400">
+                <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
+                    <ClockIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-[#1A2035] mb-2">No Activity Found</h3>
+                    <p className="text-gray-500">
                         {filter === 'ALL'
                             ? "No activity to display"
                             : `No ${filter.toLowerCase()} activities`
@@ -189,17 +189,17 @@ export default function HistoryPage() {
                         <div key={date}>
                             {/* Date Header */}
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-px flex-1 bg-white/10" />
-                                <span className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider">
+                                <div className="h-px flex-1 bg-gray-200" />
+                                <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">
                                     {date}
                                 </span>
-                                <div className="h-px flex-1 bg-white/10" />
+                                <div className="h-px flex-1 bg-gray-200" />
                             </div>
 
                             {/* Activities for this date */}
                             <div className="relative pl-8 space-y-4">
                                 {/* Timeline line */}
-                                <div className="absolute left-[15px] top-0 bottom-0 w-0.5 bg-white/10" />
+                                <div className="absolute left-[15px] top-0 bottom-0 w-0.5 bg-gray-200" />
 
                                 {items.map((activity, index) => (
                                     <motion.div
@@ -215,16 +215,16 @@ export default function HistoryPage() {
                                         </div>
 
                                         {/* Activity Card */}
-                                        <div className="bg-[#1A2035] border border-white/10 rounded-lg p-4 hover:border-[#D4AF37]/30 transition-all ml-4">
+                                        <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-[#1A2035]/30 hover:shadow-md transition-all ml-4">
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <h3 className="font-bold text-white">{activity.title}</h3>
-                                                        <span className={`px-2 py-1 rounded text-xs font-bold ${getActivityColor(activity.type)}`}>
+                                                        <h3 className="font-bold text-[#1A2035]">{activity.title}</h3>
+                                                        <span className={`px-2 py-1 rounded-lg text-xs font-bold ${getActivityColor(activity.type)}`}>
                                                             {activity.type}
                                                         </span>
                                                     </div>
-                                                    <p className="text-sm text-gray-400 mb-2">
+                                                    <p className="text-sm text-gray-500 mb-2">
                                                         {activity.description}
                                                     </p>
 
@@ -233,14 +233,14 @@ export default function HistoryPage() {
                                                             {Object.entries(activity.metadata).map(([key, value]) => (
                                                                 <div key={key} className="text-gray-500">
                                                                     <span className="capitalize">{key.replace('_', ' ')}:</span>
-                                                                    <span className="text-white ml-1">{String(value)}</span>
+                                                                    <span className="text-[#1A2035] font-medium ml-1">{String(value)}</span>
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     )}
                                                 </div>
 
-                                                <span className="text-xs text-gray-500 whitespace-nowrap">
+                                                <span className="text-xs text-gray-400 whitespace-nowrap">
                                                     {new Date(activity.timestamp).toLocaleTimeString('en-GB', {
                                                         hour: '2-digit',
                                                         minute: '2-digit'

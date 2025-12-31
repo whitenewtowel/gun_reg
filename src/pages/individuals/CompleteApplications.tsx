@@ -346,24 +346,24 @@ export default function CompleteApplications() {
 
     if (fetchingUser) {
         return (
-            <div className="min-h-screen bg-[#0B1021] flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
-                    <svg className="animate-spin h-12 w-12 text-[#D4AF37] mx-auto mb-4" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-12 w-12 text-[#1A2035] mx-auto mb-4" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    <p className="text-gray-400">Loading your information...</p>
+                    <p className="text-gray-500">Loading your information...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#0B1021] text-white font-technical relative overflow-hidden">
-            {/* Background Effects */}
+        <div className="min-h-screen bg-gray-50 text-[#1A2035] font-technical relative overflow-hidden">
+            {/* Background Effects - Simplified for light theme */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#D4AF37]/5 blur-[120px] rounded-full" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[100px] rounded-full" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#1A2035]/5 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[100px] rounded-full" />
             </div>
 
             <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
@@ -374,18 +374,18 @@ export default function CompleteApplications() {
                     className="text-center mb-12"
                 >
                     <div className="inline-flex items-center justify-center mb-4">
-                        <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
-                        <span className="px-4 text-[#D4AF37] text-xs font-bold tracking-[0.3em] uppercase">
+                        <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#1A2035]" />
+                        <span className="px-4 text-[#1A2035] text-xs font-bold tracking-[0.3em] uppercase">
                             Permit Application
                         </span>
-                        <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#D4AF37]" />
+                        <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#1A2035]" />
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-stencil uppercase tracking-wider mb-4">
+                    <h1 className="text-4xl md:text-5xl font-stencil uppercase tracking-wider mb-4 text-[#1A2035]">
                         Apply for Firearm Permit
                     </h1>
 
-                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                    <p className="text-gray-500 max-w-2xl mx-auto text-lg">
                         Complete your application to purchase a firearm
                     </p>
 
@@ -394,13 +394,13 @@ export default function CompleteApplications() {
                         {[1, 2, 3, 4].map((step) => (
                             <div key={step} className="flex items-center">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${currentStep >= step
-                                    ? 'bg-[#D4AF37] text-black'
-                                    : 'bg-white/10 text-gray-500'
+                                    ? 'bg-[#1A2035] text-white'
+                                    : 'bg-gray-200 text-gray-400'
                                     }`}>
                                     {step}
                                 </div>
                                 {step < 4 && (
-                                    <div className={`w-16 h-1 ${currentStep > step ? 'bg-[#D4AF37]' : 'bg-white/10'
+                                    <div className={`w-16 h-1 ${currentStep > step ? 'bg-[#1A2035]' : 'bg-gray-200'
                                         }`} />
                                 )}
                             </div>
@@ -414,18 +414,18 @@ export default function CompleteApplications() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="bg-[#0B1021]/50 backdrop-blur-sm border border-white/10 rounded-lg p-8 max-w-4xl mx-auto"
+                    className="bg-white border border-gray-200 rounded-2xl p-8 max-w-4xl mx-auto shadow-lg"
                 >
                     {/* Step 1: Contact Information */}
                     {currentStep === 1 && (
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-stencil text-[#D4AF37] mb-6">Contact Information</h2>
+                            <h2 className="text-2xl font-stencil text-[#1A2035] mb-6">Contact Information</h2>
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <PhoneIcon className="w-4 h-4 inline mr-2" />
-                                        Phone Number <span className="text-red-400">*</span>
+                                        Phone Number <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="tel"
@@ -433,14 +433,14 @@ export default function CompleteApplications() {
                                         value={formData.phone}
                                         onChange={handleInputChange}
                                         placeholder="0244123456"
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <EnvelopeIcon className="w-4 h-4 inline mr-2" />
-                                        Email Address <span className="text-red-400">*</span>
+                                        Email Address <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="email"
@@ -448,12 +448,12 @@ export default function CompleteApplications() {
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         placeholder="your@email.com"
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <MapPinIcon className="w-4 h-4 inline mr-2" />
                                         City
                                     </label>
@@ -462,12 +462,12 @@ export default function CompleteApplications() {
                                         name="city"
                                         value={formData.city}
                                         onChange={handleInputChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <UserCircleIcon className="w-4 h-4 inline mr-2" />
                                         Full Name
                                     </label>
@@ -476,7 +476,7 @@ export default function CompleteApplications() {
                                         name="fullName"
                                         value={formData.fullName}
                                         onChange={handleInputChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                     />
                                 </div>
                             </div>
@@ -487,19 +487,19 @@ export default function CompleteApplications() {
                     {currentStep === 2 && (
                         <div className="space-y-8">
                             <div>
-                                <h2 className="text-2xl font-stencil text-[#D4AF37] mb-6">Permit Details</h2>
+                                <h2 className="text-2xl font-stencil text-[#1A2035] mb-6">Permit Details</h2>
 
                                 <div className="space-y-6">
                                     <div>
-                                        <label className="block text-sm text-gray-400 mb-2">
+                                        <label className="block text-sm text-gray-600 mb-2">
                                             <ShieldCheckIcon className="w-4 h-4 inline mr-2" />
-                                            Purpose <span className="text-red-400">*</span>
+                                            Purpose <span className="text-red-500">*</span>
                                         </label>
                                         <select
                                             name="purpose"
                                             value={permitData.purpose}
                                             onChange={handlePermitDataChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                         >
                                             <option value="PERSONAL_SECURITY">Personal Security</option>
                                             <option value="HUNTING">Hunting</option>
@@ -508,9 +508,9 @@ export default function CompleteApplications() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm text-gray-400 mb-2">
+                                        <label className="block text-sm text-gray-600 mb-2">
                                             <HomeIcon className="w-4 h-4 inline mr-2" />
-                                            Storage Description <span className="text-red-400">*</span>
+                                            Storage Description <span className="text-red-500">*</span>
                                         </label>
                                         <textarea
                                             name="storage_description"
@@ -518,7 +518,7 @@ export default function CompleteApplications() {
                                             onChange={handlePermitDataChange}
                                             placeholder="Describe where and how you will store the firearm (e.g., Wall-mounted gun safe in bedroom)"
                                             rows={3}
-                                            className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                         />
                                     </div>
                                 </div>
@@ -527,10 +527,10 @@ export default function CompleteApplications() {
                             {/* References */}
                             <div>
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xl font-bold text-white">References (Minimum 2)</h3>
+                                    <h3 className="text-xl font-bold text-[#1A2035]">References (Minimum 2)</h3>
                                     <button
                                         onClick={addReference}
-                                        className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37]/20 text-[#D4AF37] rounded hover:bg-[#D4AF37]/30"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[#1A2035]/10 text-[#1A2035] rounded-lg hover:bg-[#1A2035]/20"
                                     >
                                         <PlusIcon className="w-4 h-4" />
                                         Add Reference
@@ -538,13 +538,13 @@ export default function CompleteApplications() {
                                 </div>
 
                                 {references.map((ref, index) => (
-                                    <div key={index} className="mb-6 p-6 bg-white/5 border border-white/10 rounded-lg">
+                                    <div key={index} className="mb-6 p-6 bg-gray-50 border border-gray-200 rounded-xl">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h4 className="font-bold text-white">Reference {index + 1}</h4>
+                                            <h4 className="font-bold text-[#1A2035]">Reference {index + 1}</h4>
                                             {references.length > 2 && (
                                                 <button
                                                     onClick={() => removeReference(index)}
-                                                    className="text-red-400 hover:text-red-300"
+                                                    className="text-red-500 hover:text-red-600"
                                                 >
                                                     <TrashIcon className="w-5 h-5" />
                                                 </button>
@@ -557,42 +557,42 @@ export default function CompleteApplications() {
                                                 placeholder="Full Name *"
                                                 value={ref.full_name}
                                                 onChange={(e) => handleReferenceChange(index, 'full_name', e.target.value)}
-                                                className="bg-white/5 border border-white/10 rounded px-4 py-2 text-white"
+                                                className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                             <input
                                                 type="email"
                                                 placeholder="Email *"
                                                 value={ref.email}
                                                 onChange={(e) => handleReferenceChange(index, 'email', e.target.value)}
-                                                className="bg-white/5 border border-white/10 rounded px-4 py-2 text-white"
+                                                className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                             <input
                                                 type="tel"
                                                 placeholder="Phone *"
                                                 value={ref.phone}
                                                 onChange={(e) => handleReferenceChange(index, 'phone', e.target.value)}
-                                                className="bg-white/5 border border-white/10 rounded px-4 py-2 text-white"
+                                                className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Profession *"
                                                 value={ref.profession}
                                                 onChange={(e) => handleReferenceChange(index, 'profession', e.target.value)}
-                                                className="bg-white/5 border border-white/10 rounded px-4 py-2 text-white"
+                                                className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Address"
                                                 value={ref.address}
                                                 onChange={(e) => handleReferenceChange(index, 'address', e.target.value)}
-                                                className="bg-white/5 border border-white/10 rounded px-4 py-2 text-white"
+                                                className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Digital Address (e.g., GA-123-4567)"
                                                 value={ref.digital_address}
                                                 onChange={(e) => handleReferenceChange(index, 'digital_address', e.target.value)}
-                                                className="bg-white/5 border border-white/10 rounded px-4 py-2 text-white"
+                                                className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                         </div>
                                     </div>
@@ -604,81 +604,81 @@ export default function CompleteApplications() {
                     {/* Step 3: Document Uploads */}
                     {currentStep === 3 && (
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-stencil text-[#D4AF37] mb-6">Required Documents</h2>
+                            <h2 className="text-2xl font-stencil text-[#1A2035] mb-6">Required Documents</h2>
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 {/* Passport Photos */}
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <PhotoIcon className="w-4 h-4 inline mr-2" />
-                                        Passport Photos <span className="text-red-400">*</span>
+                                        Passport Photos <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="file"
                                         accept="image/*"
                                         multiple
                                         onChange={(e) => handleFileChange(e, 'passport_photos')}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#D4AF37] file:text-black"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#1A2035] file:text-white hover:file:bg-[#2c3554]"
                                     />
                                     {files.passport_photos.length > 0 && (
-                                        <p className="text-xs text-green-400 mt-1">{files.passport_photos.length} file(s) selected</p>
+                                        <p className="text-xs text-green-600 mt-1">{files.passport_photos.length} file(s) selected</p>
                                     )}
                                 </div>
 
                                 {/* Medical Certificate */}
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <DocumentTextIcon className="w-4 h-4 inline mr-2" />
-                                        Medical Certificate <span className="text-red-400">*</span>
+                                        Medical Certificate <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="file"
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange(e, 'medical_certificate')}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#D4AF37] file:text-black"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#1A2035] file:text-white hover:file:bg-[#2c3554]"
                                     />
                                     {files.medical_certificate && (
-                                        <p className="text-xs text-green-400 mt-1">{files.medical_certificate.name}</p>
+                                        <p className="text-xs text-green-600 mt-1">{files.medical_certificate.name}</p>
                                     )}
                                 </div>
 
                                 {/* Police Clearance */}
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <ShieldCheckIcon className="w-4 h-4 inline mr-2" />
-                                        Police Clearance <span className="text-red-400">*</span>
+                                        Police Clearance <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="file"
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange(e, 'police_clearance')}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#D4AF37] file:text-black"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#1A2035] file:text-white hover:file:bg-[#2c3554]"
                                     />
                                     {files.police_clearance && (
-                                        <p className="text-xs text-green-400 mt-1">{files.police_clearance.name}</p>
+                                        <p className="text-xs text-green-600 mt-1">{files.police_clearance.name}</p>
                                     )}
                                 </div>
 
                                 {/* Proof of Residence */}
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <HomeIcon className="w-4 h-4 inline mr-2" />
-                                        Proof of Residence <span className="text-red-400">*</span>
+                                        Proof of Residence <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="file"
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange(e, 'proof_of_residence')}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#D4AF37] file:text-black"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#1A2035] file:text-white hover:file:bg-[#2c3554]"
                                     />
                                     {files.proof_of_residence && (
-                                        <p className="text-xs text-green-400 mt-1">{files.proof_of_residence.name}</p>
+                                        <p className="text-xs text-green-600 mt-1">{files.proof_of_residence.name}</p>
                                     )}
                                 </div>
 
                                 {/* Letter of Intent */}
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <DocumentTextIcon className="w-4 h-4 inline mr-2" />
                                         Letter of Intent (Optional)
                                     </label>
@@ -686,16 +686,16 @@ export default function CompleteApplications() {
                                         type="file"
                                         accept=".pdf,.doc,.docx"
                                         onChange={(e) => handleFileChange(e, 'letter_of_intent')}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#D4AF37] file:text-black"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#1A2035] file:text-white hover:file:bg-[#2c3554]"
                                     />
                                     {files.letter_of_intent && (
-                                        <p className="text-xs text-green-400 mt-1">{files.letter_of_intent.name}</p>
+                                        <p className="text-xs text-green-600 mt-1">{files.letter_of_intent.name}</p>
                                     )}
                                 </div>
 
                                 {/* Storage Photos */}
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-2">
+                                    <label className="block text-sm text-gray-600 mb-2">
                                         <PhotoIcon className="w-4 h-4 inline mr-2" />
                                         Storage Photos (Optional)
                                     </label>
@@ -704,10 +704,10 @@ export default function CompleteApplications() {
                                         accept="image/*"
                                         multiple
                                         onChange={(e) => handleFileChange(e, 'storage_photos')}
-                                        className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#D4AF37] file:text-black"
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#1A2035] file:text-white hover:file:bg-[#2c3554]"
                                     />
                                     {files.storage_photos.length > 0 && (
-                                        <p className="text-xs text-green-400 mt-1">{files.storage_photos.length} file(s) selected</p>
+                                        <p className="text-xs text-green-600 mt-1">{files.storage_photos.length} file(s) selected</p>
                                     )}
                                 </div>
                             </div>
@@ -717,29 +717,29 @@ export default function CompleteApplications() {
                     {/* Step 4: Review & Submit */}
                     {currentStep === 4 && (
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-stencil text-[#D4AF37] mb-6">Review & Submit</h2>
+                            <h2 className="text-2xl font-stencil text-[#1A2035] mb-6">Review & Submit</h2>
 
-                            <div className="space-y-4 bg-white/5 p-6 rounded-lg">
+                            <div className="space-y-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
                                 <div>
-                                    <h3 className="font-bold text-white mb-2">Contact Information</h3>
-                                    <p className="text-gray-400">Email: {formData.email}</p>
-                                    <p className="text-gray-400">Phone: {formData.phone}</p>
+                                    <h3 className="font-bold text-[#1A2035] mb-2">Contact Information</h3>
+                                    <p className="text-gray-600">Email: {formData.email}</p>
+                                    <p className="text-gray-600">Phone: {formData.phone}</p>
                                 </div>
 
                                 <div>
-                                    <h3 className="font-bold text-white mb-2">Permit Details</h3>
-                                    <p className="text-gray-400">Purpose: {permitData.purpose.replace('_', ' ')}</p>
-                                    <p className="text-gray-400">Storage: {permitData.storage_description}</p>
+                                    <h3 className="font-bold text-[#1A2035] mb-2">Permit Details</h3>
+                                    <p className="text-gray-600">Purpose: {permitData.purpose.replace('_', ' ')}</p>
+                                    <p className="text-gray-600">Storage: {permitData.storage_description}</p>
                                 </div>
 
                                 <div>
-                                    <h3 className="font-bold text-white mb-2">References</h3>
-                                    <p className="text-gray-400">{references.length} reference(s) provided</p>
+                                    <h3 className="font-bold text-[#1A2035] mb-2">References</h3>
+                                    <p className="text-gray-600">{references.length} reference(s) provided</p>
                                 </div>
 
                                 <div>
-                                    <h3 className="font-bold text-white mb-2">Documents</h3>
-                                    <ul className="text-gray-400 space-y-1">
+                                    <h3 className="font-bold text-[#1A2035] mb-2">Documents</h3>
+                                    <ul className="text-gray-600 space-y-1">
                                         <li>✓ Passport Photos: {files.passport_photos.length} file(s)</li>
                                         <li>✓ Medical Certificate: {files.medical_certificate ? 'Uploaded' : 'Missing'}</li>
                                         <li>✓ Police Clearance: {files.police_clearance ? 'Uploaded' : 'Missing'}</li>
@@ -751,15 +751,15 @@ export default function CompleteApplications() {
                             </div>
 
                             {/* Terms */}
-                            <div className="border-t border-white/10 pt-6">
+                            <div className="border-t border-gray-200 pt-6">
                                 <label className="flex items-start gap-3 cursor-pointer group">
                                     <input
                                         type="checkbox"
                                         checked={agreedToTerms}
                                         onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                        className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-[#D4AF37]"
+                                        className="mt-1 w-5 h-5 rounded border-gray-300 text-[#1A2035] focus:ring-[#1A2035]"
                                     />
-                                    <span className="text-sm text-gray-400">
+                                    <span className="text-sm text-gray-600">
                                         I confirm that all information provided is accurate and I agree to the terms and conditions
                                     </span>
                                 </label>
@@ -768,11 +768,11 @@ export default function CompleteApplications() {
                     )}
 
                     {/* Navigation Buttons */}
-                    <div className="flex gap-4 mt-8 pt-6 border-t border-white/10">
+                    <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
                         {currentStep > 1 && (
                             <button
                                 onClick={handleBack}
-                                className="flex-1 px-6 py-3 border border-white/20 rounded text-white hover:bg-white/5"
+                                className="flex-1 px-6 py-3 border border-gray-300 rounded-xl text-[#1A2035] hover:bg-gray-50"
                             >
                                 Back
                             </button>
@@ -781,7 +781,7 @@ export default function CompleteApplications() {
                         {currentStep < 4 ? (
                             <button
                                 onClick={handleNext}
-                                className="flex-1 px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F]"
+                                className="flex-1 px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] shadow-lg shadow-gray-200"
                             >
                                 Next
                             </button>
@@ -789,7 +789,7 @@ export default function CompleteApplications() {
                             <button
                                 onClick={handleSubmit}
                                 disabled={loading || !agreedToTerms}
-                                className="flex-1 px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex-1 px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-gray-200"
                             >
                                 {loading ? (
                                     <>

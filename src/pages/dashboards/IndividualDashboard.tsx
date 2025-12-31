@@ -1,24 +1,108 @@
 import { useEffect, useState } from 'react';
+// Refactored Dashboard Components
 import {
+    Plus,
+    FileCheck,
+    AlertCircle,
+    Search,
+    Filter,
     FileText,
     ShieldCheck,
-    AlertTriangle,
-    Clock,
-    CheckCircle2,
-    Plus,
-    ArrowRight
+    Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
+
 import { useNavigate } from 'react-router-dom';
 import { dashboardService } from '@/services/dashboardService';
 import type { DashboardData } from '@/types';
+import { cn } from '@/lib/utils';
+
+// --- Components for Folder Design ---
+
+const FolderCard = ({
+    label,
+    value,
+    icon: Icon,
+    color = "bg-white",
+    textColor = "text-[#1A2035]",
+    subtext,
+    trend
+}: any) => {
+    return (
+        <div className="relative group hover:-translate-y-1 transition-transform duration-300">
+            {/* Folder Tab */}
+            <div className={`absolute -top-8 left-0 h-10 w-28 rounded-l-lg z-0 ${color} shadow-sm group-hover:shadow-md transition-all`}
+                style={{ clipPath: 'polygon(0 0, 70% 0, 100% 100%, 0 100%)' }}>
+            </div>
+
+            {/* Folder Body */}
+            <div className={`relative z-10 w-full rounded-b-2xl rounded-tr-2xl p-6 shadow-sm group-hover:shadow-lg transition-all ${color} border-[1px] border-black/5`}>
+                <div className="flex justify-between items-start mb-4">
+                    <div className="p-2 bg-black/5 rounded-lg">
+                        <Icon className={`h-6 w-6 ${textColor}`} />
+                    </div>
+                    {trend && (
+                        <Badge variant="secondary" className="bg-gray-800/50 hover:bg-black/10 text-xs font-medium">
+                            {trend}
+                        </Badge>
+                    )}
+                </div>
+                <div>
+                    <h3 className={`text-4xl font-extrabold tracking-tight mb-1 ${textColor}`}>
+                        {value}
+                    </h3>
+                    <p className={`text-sm font-semibold opacity-70 ${textColor}`}>
+                        {label}
+                    </p>
+                    {subtext && (
+                        <p className={`text-xs mt-2 opacity-50 font-medium ${textColor}`}>
+                            {subtext}
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Slanted Tabs Component ---
+
+const SlantedTabs = ({ tabs, activeTab, onTabChange }: any) => {
+    return (
+        <div className="flex items-end  overflow-x-auto no-scrollbar">
+            {tabs.map((tab: string) => (
+                <button
+                    key={tab}
+                    onClick={() => onTabChange(tab)}
+                    className={cn(
+                        "relative px-8 rounded-sm py-3 bg-gray-100 text-gray-500 font-bold text-sm transition-all duration-200 hover:text-[#1A2035] -ml-4 first:ml-0 z-0",
+                        "hover:z-10 focus:outline-none",
+                        activeTab === tab && "z-20 text-[#1A2035] bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)]"
+                    )}
+                    style={{
+                        clipPath: 'polygon(0% 0, 90% 0, 100% 100%, 0% 100%)', // Slanted shape
+                        paddingLeft: '2.5rem',
+                        paddingRight: '2.5rem',
+                        marginRight: '0.5rem'
+                    }}
+                >
+                    {tab}
+                </button>
+            ))}
+        </div>
+    );
+};
 
 export default function IndividualDashboard() {
     const navigate = useNavigate();
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('Recent Work');
+
+    // Safety check for user object
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : {};
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -37,222 +121,253 @@ export default function IndividualDashboard() {
         loadDashboardData();
     }, []);
 
-    // Mock data for display if API returns nothing (or during development)
+    // Mock data
     const stats = [
+        {
+            label: 'Total Firearms',
+            value: data?.firearms?.length ?? 2,
+            icon: ShieldCheck,
+            color: 'bg-[#1A2035]',
+            textColor: 'text-white',
+            subtext: 'Registered & Active',
+            trend: '+1 this year'
+        },
         {
             label: 'Active Licenses',
             value: data?.summary?.activeLicences ?? 2,
-            icon: ShieldCheck,
-            color: 'text-green-500',
-            bg: 'bg-green-500/10',
-            change: '+1 Approved'
+            icon: FileCheck,
+            color: 'bg-blue-500',
+            textColor: 'text-white',
+            subtext: 'Valid Licenses',
+            trend: 'Compliant'
         },
         {
-            label: 'Pending Applications',
+            label: 'Pending',
             value: data?.summary?.pendingApplications ?? 1,
-            icon: FileText,
-            color: 'text-[#D4AF37]',
-            bg: 'bg-[#D4AF37]/10',
-            change: 'In Review'
+            icon: Clock,
+            color: 'bg-white',
+            textColor: 'text-orange-600',
+            subtext: 'In Processing',
+            trend: '5 days left'
         },
         {
-            label: 'Expiring Soon',
-            value: data?.summary?.expiringLicences ?? 0,
-            icon: AlertTriangle,
-            color: 'text-red-500',
-            bg: 'bg-red-500/10',
-            change: 'Action Needed'
-        },
+            label: 'Alerts',
+            value: data?.summary?.expiringLicences ? 'Action' : '0',
+            icon: AlertCircle,
+            color: 'bg-white',
+            textColor: data?.summary?.expiringLicences ? 'text-red-600' : 'text-green-600',
+            subtext: 'Requires Attention',
+            trend: 'Check Now'
+        }
     ];
 
     const recentActivity = data?.recentApplications?.length ? data.recentApplications.map(app => ({
         id: app.id,
-        type: 'Application',
         title: `${app.type.replace('_', ' ')} Application`,
+        course: "License Renewal", // Mock field for table match
+        updateTime: new Date(app.updatedAt).toLocaleDateString(),
         status: app.status,
-        date: new Date(app.updatedAt).toLocaleDateString(),
-        icon: FileText,
-        statusColor: app.status === 'APPROVED' ? 'text-green-500' : 'text-[#D4AF37]'
     })) : [
-        {
-            id: 1,
-            type: 'Application',
-            title: 'Shotgun License Application',
-            status: 'In Review',
-            date: '2 hours ago',
-            icon: Clock,
-            statusColor: 'text-[#D4AF37]'
-        },
-        {
-            id: 2,
-            type: 'License',
-            title: 'Handgun License Renewal',
-            status: 'Approved',
-            date: '2 days ago',
-            icon: CheckCircle2,
-            statusColor: 'text-green-500'
-        },
+        { id: 'APP-001', title: 'Shotgun License', course: 'New Application', updateTime: '2025.03.11 22:20', status: 'IN_REVIEW' },
+        { id: 'APP-002', title: 'Handgun Renewal', course: 'Renewal', updateTime: '2025.02.28 22:25', status: 'APPROVED' },
+        { id: 'APP-003', title: 'Ammunition Request', course: 'Purchase', updateTime: '2025.02.23 22:40', status: 'PENDING' },
+        { id: 'APP-004', title: 'Storage Inspection', course: 'Compliance', updateTime: '2025.02.10 10:25', status: 'REJECTED' },
     ];
+
+    const getStatusBadge = (status: string) => {
+        const styles = {
+            APPROVED: "bg-green-100 text-green-700 border-green-200",
+            IN_REVIEW: "bg-blue-100 text-blue-700 border-blue-200",
+            PENDING: "bg-orange-100 text-orange-700 border-orange-200",
+            REJECTED: "bg-red-100 text-red-700 border-red-200",
+        };
+        // @ts-ignore
+        return <Badge className={`${styles[status] || "bg-gray-100"} hover:bg-white`}>{status.replace('_', ' ')}</Badge>;
+    };
 
     if (loading) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-200px)]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4AF37]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A2035]"></div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto">
-            {/* Welcome Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-12 max-w-[87rem] mx-auto font-sans bg-white/0">
+
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">My Dashboard</h1>
-                    <p className="text-gray-400 flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
-                        System Operational • {new Date().toLocaleDateString('en-GH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    <h1 className="text-4xl font-black text-[#1A2035] tracking-tight">
+                        Dashboard
+                    </h1>
+                    <p className="text-gray-500 mt-2 font-medium">
+                        Welcome back, {user?.firstName}. Overview of your firearms status.
                     </p>
                 </div>
-                <div className="flex gap-3">
-                    <Button variant="outline" className="border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/60">
-                        <Clock className="mr-2 h-4 w-4" /> History
-                    </Button>
-                    <Button
-                        className="bg-[#D4AF37] hover:bg-[#B4941F] text-black font-bold shadow-lg shadow-[#D4AF37]/20"
-                        onClick={() => navigate('/applications/new')}
-                    >
-                        <Plus className="mr-2 h-4 w-4" /> New Application
-                    </Button>
-                </div>
+
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {stats.map((stat, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                    >
-                        <Card className="bg-[#1A2035] border-[#D4AF37]/10 hover:border-[#D4AF37]/40 transition-all duration-300 group">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-gray-400 group-hover:text-[#D4AF37] transition-colors">
-                                    {stat.label}
-                                </CardTitle>
-                                <div className={`p-2 rounded-lg ${stat.bg} group-hover:bg-opacity-20 transition-all`}>
-                                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                                <p className="text-xs text-gray-500">{stat.change}</p>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
+            {/* Folder Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6 pt-6">
+                {stats.map((stat, i) => (
+                    <FolderCard key={i} {...stat} />
                 ))}
             </div>
 
-            {/* Main Content Split */}
-            <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Content Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
 
-                {/* Left Column: Recent Activity */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                            <Clock className="h-5 w-5 text-[#D4AF37]" />
-                            Recent Activity
-                        </h2>
-                        <Button variant="link" className="text-[#D4AF37] hover:text-[#B4941F] p-0">View All</Button>
-                    </div>
+                {/* Slanted Table Section (Left 2/3) */}
+                <div className="lg:col-span-2 space-y-0">
+                    {/* Tab Navigation */}
+                    <SlantedTabs
+                        tabs={['Recent Work', 'Daily Practice', 'Public Courses', 'Cancel Work']}
+                        activeTab={activeTab}
+                        onTabChange={setActiveTab}
+                    />
 
-                    <div className="space-y-4">
-                        {recentActivity.map((item) => (
-                            <Card key={item.id} className="bg-[#1A2035] border-[#D4AF37]/10 hover:bg-[#1E2540] hover:border-[#D4AF37]/30 transition-all cursor-pointer group">
-                                <div className="p-4 flex items-center gap-4">
-                                    <div className={`mt-1 p-2 rounded-full bg-black/30 ${item.statusColor} border border-white/5 group-hover:border-[#D4AF37]/20`}>
-                                        <item.icon className="h-5 w-5" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-white font-medium group-hover:text-[#D4AF37] transition-colors">{item.title}</h3>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className={`text-xs ${item.statusColor} font-medium px-2 py-0.5 rounded bg-white/5`}>{item.status}</span>
-                                            <span className="text-xs text-gray-500">• {item.date}</span>
-                                        </div>
-                                    </div>
-                                    <Button variant="ghost" size="icon" className="text-gray-400 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all">
-                                        <ArrowRight className="h-4 w-4" />
-                                    </Button>
+                    {/* Content Container */}
+                    <div className="bg-white rounded-b-2xl rounded-tr-2xl shadow-sm border border-gray-100 p-6 min-h-[400px]">
+
+                        {/* Table Controls */}
+                        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                            <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search Work Name..."
+                                        className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
+                                    />
                                 </div>
-                            </Card>
-                        ))}
-                    </div>
-
-                    {/* Quick Actions (Large Cards) */}
-                    <div className="grid md:grid-cols-2 gap-4 mt-8">
-                        <div
-                            onClick={() => navigate('/applications/new')}
-                            className="bg-gradient-to-br from-[#1A2035] to-[#0B1021] border border-[#D4AF37]/10 rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-[#D4AF37]/50 hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all"
-                        >
-                            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
-                                <FileText className="h-32 w-32 text-[#D4AF37]" />
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-2 relative z-10 group-hover:text-[#D4AF37] transition-colors">Start New Application</h3>
-                            <p className="text-sm text-gray-400 mb-4 relative z-10">Apply for a shotgun, handgun, or rifle license securely online.</p>
-                            <span className="text-[#D4AF37] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                                Begin Now <ArrowRight className="h-4 w-4" />
-                            </span>
+                            <div className="flex gap-2">
+                                <Button variant="outline" className="rounded-xl border-gray-200">
+                                    <Filter className="h-4 w-4 mr-2" />
+                                    Filter
+                                </Button>
+                                <Button className="bg-[#1A2035] text-white rounded-xl shadow-lg shadow-[#1A2035]/20 hover:bg-[#2A3455]">
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Export
+                                </Button>
+                            </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-[#1A2035] to-[#0B1021] border border-red-900/20 rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-red-500/50 hover:shadow-[0_0_20px_rgba(239,68,68,0.1)] transition-all">
-                            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
-                                <AlertTriangle className="h-32 w-32 text-red-500" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white mb-2 relative z-10 group-hover:text-red-400 transition-colors">Report Lost/Stolen</h3>
-                            <p className="text-sm text-gray-400 mb-4 relative z-10">Immediately report missing firearms to valid authorities.</p>
-                            <span className="text-red-500 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                                Report Issue <ArrowRight className="h-4 w-4" />
-                            </span>
+                        {/* Styled Table */}
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b border-gray-100">
+                                        <th className="text-left py-4 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Work Name</th>
+                                        <th className="text-left py-4 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Category</th>
+                                        <th className="text-left py-4 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Update Time</th>
+                                        <th className="text-center py-4 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                        <th className="text-right py-4 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Operate</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {recentActivity.map((item, idx) => (
+                                        <tr key={idx} className="group hover:bg-gray-50/50 transition-colors">
+                                            <td className="py-4 px-4">
+                                                <div className="font-bold text-[#1A2035]">{item.title}</div>
+                                                <div className="text-xs text-gray-400">{item.id}</div>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <div className="font-semibold text-gray-600">{item.course}</div>
+                                            </td>
+                                            <td className="py-4 px-4 text-sm text-gray-500 font-mono">
+                                                {item.updateTime}
+                                            </td>
+                                            <td className="py-4 px-4 text-center">
+                                                {getStatusBadge(item.status)}
+                                            </td>
+                                            <td className="py-4 px-4 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button variant="ghost" size="sm" className="h-8 text-[#1A2035] hover:bg-white border border-transparent hover:border-gray-200">
+                                                        Details
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
+
+                        {/* Pagination Mock */}
+                        <div className="flex justify-center mt-8 gap-2">
+                            {[1, 2, 3].map(page => (
+                                <button key={page} className={`h-8 w-8 rounded-lg text-sm font-bold flex items-center justify-center transition-colors ${page === 1 ? 'bg-[#1A2035] text-white' : 'bg-white text-gray-500 border hover:bg-gray-50'}`}>
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+
                     </div>
                 </div>
 
-                {/* Right Column: Registered Firearms Mini-List */}
-                <div className="lg:col-span-1">
-                    <Card className="bg-[#1A2035] border-[#D4AF37]/10 h-full hover:border-[#D4AF37]/30 transition-colors">
-                        <CardHeader className="border-b border-white/5">
-                            <CardTitle className="text-white text-lg flex items-center gap-2">
-                                <ShieldCheck className="h-5 w-5 text-[#D4AF37]" />
-                                Your Firearms
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6">
-                            {data?.firearms?.length ? (
-                                <div className="space-y-4">
-                                    {data.firearms.map((firearm) => (
-                                        <div key={firearm.id} className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 hover:border-[#D4AF37]/30 transition-all">
-                                            <ShieldCheck className="h-8 w-8 text-gray-600" />
-                                            <div>
-                                                <p className="text-sm font-bold text-white">{firearm.make} {firearm.model}</p>
-                                                <p className="text-xs text-green-500">{firearm.status} • SN: {firearm.serialNumber}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8">
-                                    <div className="w-16 h-16 bg-[#0B1021] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#D4AF37]/20 shadow-[0_0_15px_rgba(0,0,0,0.3)]">
-                                        <ShieldCheck className="h-8 w-8 text-gray-600" />
+                {/* Right Sidebar */}
+                <div className="space-y-6">
+                    <div className="bg-[#1A2035] rounded-3xl p-6 text-white shadow-xl shadow-[#1A2035]/20 relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h3 className="text-2xl font-bold mb-2">New License</h3>
+                            <p className="opacity-70 text-sm mb-6">Apply for a new firearm license efficiently.</p>
+                            <Button
+                                className="w-full bg-white text-[#1A2035] hover:bg-gray-100 font-bold rounded-xl border-none"
+                                onClick={() => navigate('/applications/new')}
+                            >
+                                Start Application
+                            </Button>
+                        </div>
+                        <FileText className="absolute -bottom-4 -right-4 h-32 w-32 text-white/5 rotate-12" />
+                    </div>
+
+                    <div className="bg-[#1A2035] rounded-3xl p-6 text-white shadow-xl shadow-[#1A2035]/20 relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h3 className="text-2xl font-bold mb-2">Find Dealers</h3>
+                            <p className="opacity-70 text-sm mb-6">Locate verified firearm dealers near you.</p>
+                            <Button
+                                className="w-full bg-white text-[#1A2035] hover:bg-gray-100 font-bold rounded-xl border-none"
+                                onClick={() => navigate('/dealers')}
+                            >
+                                View Directory
+                            </Button>
+                        </div>
+                        <Search className="absolute -bottom-4 -right-4 h-32 w-32 text-white/5 rotate-12" />
+                    </div>
+
+                    <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold text-[#1A2035]">Your Firearms</h3>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-auto p-0 text-gray-400 hover:text-[#1A2035]"
+                                onClick={() => navigate('/firearms')}
+                            >
+                                View All
+                            </Button>
+                        </div>
+                        <div className="space-y-3">
+                            {data?.firearms?.length ? data.firearms.slice(0, 3).map((firearm, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-transparent hover:border-gray-200 transition-all">
+                                    <div className="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center">
+                                        <ShieldCheck className="h-5 w-5 text-[#1A2035]" />
                                     </div>
-                                    <h3 className="text-white font-medium mb-1">No Firearms Registered</h3>
-                                    <p className="text-sm text-gray-500 mb-6">You haven't registered any firearms yet.</p>
-                                    <Button variant="outline" className="w-full border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black">
-                                        Register Firearm
-                                    </Button>
+                                    <div className="overflow-hidden">
+                                        <p className="font-bold text-sm text-[#1A2035] truncate">{firearm.make}</p>
+                                        <p className="text-xs text-gray-400 truncate">{firearm.serialNumber}</p>
+                                    </div>
+                                </div>
+                            )) : (
+                                <div className="text-center py-4">
+                                    <p className="text-sm text-gray-500">No firearms found.</p>
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
 
             </div>

@@ -101,19 +101,19 @@ export default function SettingsPage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-                <p className="text-gray-400">Manage your account settings and preferences</p>
+                <h1 className="text-3xl font-bold text-[#1A2035] mb-2">Settings</h1>
+                <p className="text-gray-500">Manage your account settings and preferences</p>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 border-b border-white/10 overflow-x-auto">
+            <div className="flex gap-2 border-b border-gray-200 overflow-x-auto">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                            ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                            : 'text-gray-400 hover:text-white'
+                            ? 'text-[#1A2035] border-b-2 border-[#1A2035]'
+                            : 'text-gray-500 hover:text-[#1A2035]'
                             }`}
                     >
                         <tab.icon className="w-5 h-5" />
@@ -127,14 +127,14 @@ export default function SettingsPage() {
                 key={activeTab}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[#1A2035] border border-white/10 rounded-lg p-6"
+                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
             >
                 {/* Profile Tab */}
                 {activeTab === 'profile' && (
                     <div className="space-y-6">
                         {/* Ghana Card Display */}
                         <div className="mb-8">
-                            <h3 className="text-lg font-bold text-white mb-4">National Identification</h3>
+                            <h3 className="text-lg font-bold text-[#1A2035] mb-4">National Identification</h3>
                             <GhanaCard
                                 fullName={profileData.fullName}
                                 ghanaCardNumber={profileData.ghanaCardNumber}
@@ -150,11 +150,11 @@ export default function SettingsPage() {
                             />
                         </div>
 
-                        <h2 className="text-xl font-bold text-white mb-4">Personal Information (Editable)</h2>
+                        <h2 className="text-xl font-bold text-[#1A2035] mb-4">Personal Information (Editable)</h2>
 
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">
+                                <label className="block text-sm text-gray-600 mb-2">
                                     <UserCircleIcon className="w-4 h-4 inline mr-2" />
                                     Full Name
                                 </label>
@@ -162,12 +162,12 @@ export default function SettingsPage() {
                                     type="text"
                                     value={profileData.fullName}
                                     onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">
+                                <label className="block text-sm text-gray-600 mb-2">
                                     <EnvelopeIcon className="w-4 h-4 inline mr-2" />
                                     Email Address
                                 </label>
@@ -175,12 +175,12 @@ export default function SettingsPage() {
                                     type="email"
                                     value={profileData.email}
                                     onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">
+                                <label className="block text-sm text-gray-600 mb-2">
                                     <PhoneIcon className="w-4 h-4 inline mr-2" />
                                     Phone Number
                                 </label>
@@ -188,31 +188,31 @@ export default function SettingsPage() {
                                     type="tel"
                                     value={profileData.phone}
                                     onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">
+                                <label className="block text-sm text-gray-600 mb-2">
                                     City
                                 </label>
                                 <input
                                     type="text"
                                     value={profileData.city}
                                     onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">
+                                <label className="block text-sm text-gray-600 mb-2">
                                     Region
                                 </label>
                                 <input
                                     type="text"
                                     value={profileData.region}
                                     onChange={(e) => setProfileData({ ...profileData, region: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 cursor-not-allowed"
                                     disabled
                                 />
                             </div>
@@ -221,7 +221,7 @@ export default function SettingsPage() {
                         <button
                             onClick={handleProfileUpdate}
                             disabled={loading}
-                            className="px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F] disabled:opacity-50"
+                            className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] disabled:opacity-50 shadow-lg shadow-gray-200"
                         >
                             {loading ? 'Updating...' : 'Update Profile'}
                         </button>
@@ -231,15 +231,15 @@ export default function SettingsPage() {
                 {/* Notifications Tab */}
                 {activeTab === 'notifications' && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-bold text-white mb-4">Notification Preferences</h2>
+                        <h2 className="text-xl font-bold text-[#1A2035] mb-4">Notification Preferences</h2>
 
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <EnvelopeIcon className="w-5 h-5 text-[#D4AF37]" />
+                                    <EnvelopeIcon className="w-5 h-5 text-[#1A2035]" />
                                     <div>
-                                        <p className="font-medium text-white">Email Notifications</p>
-                                        <p className="text-sm text-gray-400">Receive updates via email</p>
+                                        <p className="font-medium text-[#1A2035]">Email Notifications</p>
+                                        <p className="text-sm text-gray-500">Receive updates via email</p>
                                     </div>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -249,16 +249,16 @@ export default function SettingsPage() {
                                         onChange={(e) => setNotifications({ ...notifications, emailNotifications: e.target.checked })}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1A2035]"></div>
                                 </label>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <DevicePhoneMobileIcon className="w-5 h-5 text-[#D4AF37]" />
+                                    <DevicePhoneMobileIcon className="w-5 h-5 text-[#1A2035]" />
                                     <div>
-                                        <p className="font-medium text-white">SMS Notifications</p>
-                                        <p className="text-sm text-gray-400">Receive updates via SMS</p>
+                                        <p className="font-medium text-[#1A2035]">SMS Notifications</p>
+                                        <p className="text-sm text-gray-500">Receive updates via SMS</p>
                                     </div>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -268,12 +268,12 @@ export default function SettingsPage() {
                                         onChange={(e) => setNotifications({ ...notifications, smsNotifications: e.target.checked })}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1A2035]"></div>
                                 </label>
                             </div>
 
-                            <div className="border-t border-white/10 pt-4 mt-4">
-                                <h3 className="font-bold text-white mb-3">Notification Types</h3>
+                            <div className="border-t border-gray-200 pt-4 mt-4">
+                                <h3 className="font-bold text-[#1A2035] mb-3">Notification Types</h3>
 
                                 {[
                                     { key: 'applicationUpdates', label: 'Application Updates', desc: 'Status changes on your applications' },
@@ -281,10 +281,10 @@ export default function SettingsPage() {
                                     { key: 'paymentReceipts', label: 'Payment Receipts', desc: 'Confirmation of payments' },
                                     { key: 'securityAlerts', label: 'Security Alerts', desc: 'Important security notifications' }
                                 ].map((item) => (
-                                    <div key={item.key} className="flex items-center justify-between p-3 hover:bg-white/5 rounded-lg">
+                                    <div key={item.key} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
                                         <div>
-                                            <p className="font-medium text-white">{item.label}</p>
-                                            <p className="text-sm text-gray-400">{item.desc}</p>
+                                            <p className="font-medium text-[#1A2035]">{item.label}</p>
+                                            <p className="text-sm text-gray-500">{item.desc}</p>
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input
@@ -293,7 +293,7 @@ export default function SettingsPage() {
                                                 onChange={(e) => setNotifications({ ...notifications, [item.key]: e.target.checked })}
                                                 className="sr-only peer"
                                             />
-                                            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1A2035]"></div>
                                         </label>
                                     </div>
                                 ))}
@@ -303,7 +303,7 @@ export default function SettingsPage() {
                         <button
                             onClick={handleNotificationUpdate}
                             disabled={loading}
-                            className="px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F] disabled:opacity-50"
+                            className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] disabled:opacity-50 shadow-lg shadow-gray-200"
                         >
                             {loading ? 'Saving...' : 'Save Preferences'}
                         </button>
@@ -313,15 +313,15 @@ export default function SettingsPage() {
                 {/* Security Tab */}
                 {activeTab === 'security' && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-bold text-white mb-4">Security Settings</h2>
+                        <h2 className="text-xl font-bold text-[#1A2035] mb-4">Security Settings</h2>
 
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <ShieldCheckIcon className="w-5 h-5 text-[#D4AF37]" />
+                                    <ShieldCheckIcon className="w-5 h-5 text-[#1A2035]" />
                                     <div>
-                                        <p className="font-medium text-white">Two-Factor Authentication</p>
-                                        <p className="text-sm text-gray-400">Add an extra layer of security</p>
+                                        <p className="font-medium text-[#1A2035]">Two-Factor Authentication</p>
+                                        <p className="text-sm text-gray-500">Add an extra layer of security</p>
                                     </div>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -331,16 +331,16 @@ export default function SettingsPage() {
                                         onChange={(e) => setSecuritySettings({ ...security, twoFactorAuth: e.target.checked })}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1A2035]"></div>
                                 </label>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <BellIcon className="w-5 h-5 text-[#D4AF37]" />
+                                    <BellIcon className="w-5 h-5 text-[#1A2035]" />
                                     <div>
-                                        <p className="font-medium text-white">Login Alerts</p>
-                                        <p className="text-sm text-gray-400">Get notified of new login attempts</p>
+                                        <p className="font-medium text-[#1A2035]">Login Alerts</p>
+                                        <p className="text-sm text-gray-500">Get notified of new login attempts</p>
                                     </div>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -350,13 +350,13 @@ export default function SettingsPage() {
                                         onChange={(e) => setSecuritySettings({ ...security, loginAlerts: e.target.checked })}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1A2035]"></div>
                                 </label>
                             </div>
 
-                            <div className="border-t border-white/10 pt-4 mt-4">
-                                <h3 className="font-bold text-white mb-3">Password</h3>
-                                <button className="flex items-center gap-2 px-4 py-2 bg-white/5 text-[#D4AF37] rounded hover:bg-white/10">
+                            <div className="border-t border-gray-200 pt-4 mt-4">
+                                <h3 className="font-bold text-[#1A2035] mb-3">Password</h3>
+                                <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 text-[#1A2035] rounded-xl hover:bg-gray-100">
                                     <KeyIcon className="w-4 h-4" />
                                     Change Password
                                 </button>
@@ -366,7 +366,7 @@ export default function SettingsPage() {
                         <button
                             onClick={handleSecurityUpdate}
                             disabled={loading}
-                            className="px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F] disabled:opacity-50"
+                            className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] disabled:opacity-50 shadow-lg shadow-gray-200"
                         >
                             {loading ? 'Saving...' : 'Save Settings'}
                         </button>
@@ -376,12 +376,12 @@ export default function SettingsPage() {
                 {/* Preferences Tab */}
                 {activeTab === 'preferences' && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-bold text-white mb-4">General Preferences</h2>
+                        <h2 className="text-xl font-bold text-[#1A2035] mb-4">General Preferences</h2>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">Language</label>
-                                <select className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white">
+                                <label className="block text-sm text-gray-600 mb-2">Language</label>
+                                <select className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]">
                                     <option value="en">English</option>
                                     <option value="tw">Twi</option>
                                     <option value="ga">Ga</option>
@@ -389,15 +389,15 @@ export default function SettingsPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">Timezone</label>
-                                <select className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white">
+                                <label className="block text-sm text-gray-600 mb-2">Timezone</label>
+                                <select className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]">
                                     <option value="GMT">GMT (Ghana)</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-2">Date Format</label>
-                                <select className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white">
+                                <label className="block text-sm text-gray-600 mb-2">Date Format</label>
+                                <select className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]">
                                     <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                                     <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                                     <option value="YYYY-MM-DD">YYYY-MM-DD</option>
@@ -407,7 +407,7 @@ export default function SettingsPage() {
 
                         <button
                             disabled={loading}
-                            className="px-6 py-3 bg-[#D4AF37] text-black font-bold rounded hover:bg-[#B8941F] disabled:opacity-50"
+                            className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] disabled:opacity-50 shadow-lg shadow-gray-200"
                         >
                             Save Preferences
                         </button>
