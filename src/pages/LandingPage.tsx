@@ -783,58 +783,6 @@ export default function LandingPage() {
                     </div>
                 </section >
 
-                {/* About Section with Image */}
-                <section id="about" className="py-24 bg-[#0B1021]">
-                    <div className="container mx-auto px-4">
-                        <div className="grid lg:grid-cols-2 gap-16 items-center">
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-[#D4AF37] transform rotate-3 opacity-10"></div>
-                                <div className="relative bg-[#1A2035] p-2 border border-white/5 overflow-hidden">
-                                    <div className="aspect-[4/3] bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-cover bg-center opacity-80 hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${aboutImg})` }}></div>
-                                        <div className="absolute inset-0 bg-black/20"></div>
-                                        <div className="absolute bottom-12 right-12 bg-black/90 px-8 py-4 border-l-4 border-[#D4AF37] shadow-xl backdrop-blur-sm z-10">
-                                            <p className="text-[#D4AF37] text-3xl font-bold">21 Days</p>
-                                            <p className="text-white text-sm uppercase tracking-wider">Avg. Processing</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h2 className="text-3xl font-stencil text-white mb-6 uppercase tracking-wider">About NFLTMS</h2>
-                                <p className="text-gray-300 mb-6 leading-relaxed">
-                                    The <span className="text-[#D4AF37] font-semibold">National Firearm Licensing & Tracking Management System</span> is a government-owned digital platform operated by the Ghana Police Service in partnership with the Ministry of Interior.
-                                </p>
-                                <p className="text-gray-300 mb-8 leading-relaxed">
-                                    Launched in 2025, our mission is to modernize Ghana&apos;s firearm regulation through secure digital infrastructure while maintaining the highest standards of public safety and regulatory compliance.
-                                </p>
-                                <ul className="space-y-6">
-                                    {[
-                                        { title: 'Centralized Registry', desc: 'Single source of truth for all firearms in Ghana' },
-                                        { title: 'Ghana Card Integration', desc: '100% biometric verification for every license' },
-                                        { title: 'Real-time Tracking', desc: 'Complete audit trail from import to ownership' },
-                                        { title: 'Mobile Access', desc: 'Digital licenses accessible anywhere, anytime' },
-                                    ].map((item, i) => (
-                                        <li key={i} className="flex gap-4">
-                                            <CheckCircleIcon className="h-6 w-6 text-[#D4AF37] flex-shrink-0 mt-1" />
-                                            <div>
-                                                <h4 className="text-white font-bold text-lg mb-1">{item.title}</h4>
-                                                <p className="text-gray-400 text-sm">{item.desc}</p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <Link to="/about">
-                                    <Button variant="outline" className="mt-10 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black clip-chamfer rounded-none">
-                                        Learn More About Us
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
                 {/* Newsletter with Diagonal Background */}
                 <section id="contact" className="relative py-16 overflow-hidden">

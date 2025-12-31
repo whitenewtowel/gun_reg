@@ -31,18 +31,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('access_token')
+      const onboardingContext = localStorage.getItem('onboarding_context')
+
       if (token) {
+        // Don't verify token here - let the API interceptor handle refresh if needed
+        // Just set a basic user object from stored data
         try {
+          // Try to get user data from API
           const { valid, user: userData } = await authService.verifyToken()
           if (valid && userData) {
             setUser(userData)
           } else {
-            // Token invalid
-            logout()
+            // Token might be expired, but don't logout yet
+            // The API interceptor will try to refresh it
+            // Set a minimal user object to keep them logged in
+            if (onboardingContext) {
+              const context = JSON.parse(onboardingContext)
+              setUser({
+                id: '',
+                email: '',
+                role: 'INDIVIDUAL' as any,
+                onboarding_context: context
+              } as any)
+            }
           }
         } catch (error) {
-          console.error('Auth initialization failed', error)
-          logout()
+          // If verification fails, don't logout immediately
+          // The token might just be expired and will be refreshed on next API call
+          console.log('Token verification failed, will retry on next API call')
+          if (onboardingContext) {
+            const context = JSON.parse(onboardingContext)
+            setUser({
+              id: '',
+              email: '',
+              role: 'INDIVIDUAL' as any,
+              onboarding_context: context
+            } as any)
+          }
         }
       }
       setLoading(false)
@@ -69,34 +94,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('refresh_token', refresh_token)
 
       // Map backend user data to frontend User interface
-      // Backend returns user_id, frontend expects id
+      // Backend returns: { user_id, email, roles: [], onboarding_context: { type, status } }
       const userData = {
-        ...data,
-        id: data.user_id || data.id,
-      }
+        id: data.user_id,
+        email: data.email,
+        role: data.roles?.[0] || null, // Take first role from roles array
+        firstName: '', // Will be populated from /users/me endpoint
+        lastName: '',
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as User
 
       setUser(userData)
 
-      // Redirect based on role
-      switch (userData.role) {
-        case 'RENEWAL_USER':
-          navigate('/renewal')
-          break
-        case 'GUN_DEALER':
-          navigate('/dealer-registration')
-          break
-        case 'ADMIN':
-        case 'POLICE':
-          navigate('/dashboard')
-          break
-        default:
-          // If no specific role matched or empty, go to safe default
-          if (!userData.role) {
-            navigate('/onboarding/select-user-type')
-          } else {
-            navigate('/dashboard')
-          }
+      // Store onboarding context for routing decisions
+      if (data.onboarding_context) {
+        localStorage.setItem('onboarding_context', JSON.stringify(data.onboarding_context))
       }
+
+      // Route based on onboarding_context.type
+      // If type is "NONE", user hasn't selected their user type yet
+      if (data.onboarding_context?.type === 'NONE') {
+        navigate('/onboarding/select-user-type')
+      } else {
+        // User has completed onboarding, route to dashboard
+        navigate('/dashboard')
+      }
+
       return true
     } catch (error) {
       console.error('Login failed:', error)

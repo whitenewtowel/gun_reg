@@ -15,6 +15,16 @@ import KYCStartPage from './pages/kyc/KYCStartPage'
 import KYCVerifyPage from './pages/kyc/KYCVerifyPage'
 import KYCCompletePage from './pages/kyc/KYCCompletePage'
 import SelectUserTypePage from './pages/onboarding/SelectUserTypePage'
+import CompleteApplications from './pages/individuals/CompleteApplications'
+import ApplicationsPage from './pages/individuals/ApplicationsPage'
+import ApplicationDetailPage from './pages/individuals/ApplicationDetailPage'
+import DealersPage from './pages/individuals/DealersPage'
+import DealerDetailPage from './pages/individuals/DealerDetailPage'
+import FirearmPurchaseFlow from './pages/individuals/FirearmPayment'
+import MyFirearmsPage from './pages/individuals/MyFirearmsPage'
+import PaymentsPage from './pages/individuals/PaymentsPage'
+import HistoryPage from './pages/individuals/HistoryPage'
+import SettingsPage from './pages/individuals/SettingsPage'
 import DashboardRedirectHandler from './components/auth/DashboardRedirectHandler'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -42,10 +52,21 @@ function App() {
           {/* Main App Routes - Protected by Auth only (Roles handled internally) */}
           <Route element={<ProtectedRoute />}>
             <Route path="/onboarding/select-user-type" element={<SelectUserTypePage />} />
+            <Route path="/onboarding/complete-account" element={<CompleteApplications />} />
+            <Route path="/complete-applications" element={<CompleteApplications />} />
 
             {/* Dashboard & Management */}
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardRedirectHandler />} />
+              <Route path="/applications" element={<ApplicationsPage />} />
+              <Route path="/applications/:id" element={<ApplicationDetailPage />} />
+              <Route path="/dealers" element={<DealersPage />} />
+              <Route path="/dealers/:id" element={<DealerDetailPage />} />
+              <Route path="/dealers/:dealerId/purchase/:itemId" element={<FirearmPurchaseFlow />} />
+              <Route path="/firearms" element={<MyFirearmsPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/history" element={<HistoryPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/licenses" element={<LicenseManagement />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/profile" element={<ProfilePage />} />
@@ -54,6 +75,7 @@ function App() {
 
             {/* Specific Functional Routes */}
             <Route path="/renewal" element={<Renewal />} />
+
             <Route path="/dealer-registration" element={<DealerRegistration />} />
           </Route>
 

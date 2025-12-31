@@ -92,7 +92,7 @@ export default function ProfilePage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-[50vh]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#1A2035]" />
             </div>
         );
     }
@@ -101,13 +101,13 @@ export default function ProfilePage() {
         <div className="max-w-4xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">My Profile</h1>
-                    <p className="text-gray-400">Manage your personal information and account settings.</p>
+                    <h1 className="text-3xl font-bold text-[#1A2035] mb-2">My Profile</h1>
+                    <p className="text-gray-500">Manage your personal information and account settings.</p>
                 </div>
                 {!isEditing && (
                     <Button
                         onClick={() => setIsEditing(true)}
-                        className="bg-[#D4AF37] text-black hover:bg-[#B4941F]"
+                        className="bg-[#1A2035] text-white hover:bg-[#2c3554] shadow-lg shadow-[#1A2035]/20"
                     >
                         <Edit2 className="mr-2 h-4 w-4" /> Edit Profile
                     </Button>
@@ -117,65 +117,65 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid gap-6">
                     {/* Personal Information Card */}
-                    <Card className="bg-[#1A2035] border-[#D4AF37]/10">
-                        <CardHeader className="border-b border-white/5 pb-4">
+                    <Card className="bg-white border-gray-200 shadow-sm">
+                        <CardHeader className="border-b border-gray-100 pb-4">
                             <div className="flex items-center gap-2">
-                                <UserIcon className="h-5 w-5 text-[#D4AF37]" />
-                                <CardTitle className="text-white">Personal Information</CardTitle>
+                                <UserIcon className="h-5 w-5 text-[#1A2035]" />
+                                <CardTitle className="text-[#1A2035]">Personal Information</CardTitle>
                             </div>
                             <CardDescription>Your primary identification details.</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-6 grid md:grid-cols-2 gap-6">
 
                             <div className="space-y-2">
-                                <Label htmlFor="firstName" className="text-gray-300">First Name</Label>
+                                <Label htmlFor="firstName" className="text-gray-600">First Name</Label>
                                 {isEditing ? (
                                     <>
                                         <Input
                                             id="firstName"
                                             {...register('firstName')}
-                                            className="bg-black/20 border-white/10 text-white focus:border-[#D4AF37]/50"
+                                            className="bg-white border-gray-200 text-[#1A2035] focus:border-[#1A2035] focus:ring-[#1A2035]/20"
                                         />
                                         {errors.firstName && <span className="text-red-500 text-xs">{errors.firstName.message}</span>}
                                     </>
                                 ) : (
-                                    <div className="p-2.5 rounded-md bg-black/20 text-gray-200 border border-transparent">
+                                    <div className="p-2.5 rounded-md bg-gray-50 text-[#1A2035] border border-gray-100 font-medium">
                                         {user?.firstName}
                                     </div>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="lastName" className="text-gray-300">Last Name</Label>
+                                <Label htmlFor="lastName" className="text-gray-600">Last Name</Label>
                                 {isEditing ? (
                                     <>
                                         <Input
                                             id="lastName"
                                             {...register('lastName')}
-                                            className="bg-black/20 border-white/10 text-white focus:border-[#D4AF37]/50"
+                                            className="bg-white border-gray-200 text-[#1A2035] focus:border-[#1A2035] focus:ring-[#1A2035]/20"
                                         />
                                         {errors.lastName && <span className="text-red-500 text-xs">{errors.lastName.message}</span>}
                                     </>
                                 ) : (
-                                    <div className="p-2.5 rounded-md bg-black/20 text-gray-200 border border-transparent">
+                                    <div className="p-2.5 rounded-md bg-gray-50 text-[#1A2035] border border-gray-100 font-medium">
                                         {user?.lastName}
                                     </div>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-gray-300 flex items-center gap-2">
+                                <Label className="text-gray-600 flex items-center gap-2">
                                     <Mail className="h-3.5 w-3.5" /> Email Address
                                 </Label>
-                                <div className="p-2.5 rounded-md bg-black/20 text-gray-400 border border-transparent flex justify-between items-center">
+                                <div className="p-2.5 rounded-md bg-gray-50 text-gray-500 border border-gray-100 flex justify-between items-center">
                                     {user?.email}
-                                    <span className="text-[10px] bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded border border-green-500/20">VERIFIED</span>
+                                    <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded border border-green-200">VERIFIED</span>
                                 </div>
                                 <p className="text-[10px] text-gray-500">Email cannot be changed directly.</p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="phone" className="text-gray-300 flex items-center gap-2">
+                                <Label htmlFor="phone" className="text-gray-600 flex items-center gap-2">
                                     <Phone className="h-3.5 w-3.5" /> Phone Number
                                 </Label>
                                 {isEditing ? (
@@ -183,13 +183,13 @@ export default function ProfilePage() {
                                         <Input
                                             id="phone"
                                             {...register('phone')}
-                                            className="bg-black/20 border-white/10 text-white focus:border-[#D4AF37]/50"
+                                            className="bg-white border-gray-200 text-[#1A2035] focus:border-[#1A2035] focus:ring-[#1A2035]/20"
                                             placeholder="+233..."
                                         />
                                         {errors.phone && <span className="text-red-500 text-xs">{errors.phone.message}</span>}
                                     </>
                                 ) : (
-                                    <div className="p-2.5 rounded-md bg-black/20 text-gray-200 border border-transparent">
+                                    <div className="p-2.5 rounded-md bg-gray-50 text-[#1A2035] border border-gray-100 font-medium">
                                         {user?.phone || <span className="text-gray-500 italic">Not set</span>}
                                     </div>
                                 )}
@@ -199,16 +199,16 @@ export default function ProfilePage() {
                     </Card>
 
                     {/* Identity & Security */}
-                    <Card className="bg-[#1A2035] border-[#D4AF37]/10">
-                        <CardHeader className="border-b border-white/5 pb-4">
+                    <Card className="bg-white border-gray-200 shadow-sm">
+                        <CardHeader className="border-b border-gray-100 pb-4">
                             <div className="flex items-center gap-2">
-                                <Shield className="h-5 w-5 text-[#D4AF37]" />
-                                <CardTitle className="text-white">Identity & Verification</CardTitle>
+                                <Shield className="h-5 w-5 text-[#1A2035]" />
+                                <CardTitle className="text-[#1A2035]">Identity & Verification</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="pt-6 grid md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label htmlFor="ghanaCardNumber" className="text-gray-300 flex items-center gap-2">
+                                <Label htmlFor="ghanaCardNumber" className="text-gray-600 flex items-center gap-2">
                                     <CreditCard className="h-3.5 w-3.5" /> Ghana Card Number
                                 </Label>
                                 {isEditing ? (
@@ -216,20 +216,20 @@ export default function ProfilePage() {
                                         <Input
                                             id="ghanaCardNumber"
                                             {...register('ghanaCardNumber')}
-                                            className="bg-black/20 border-white/10 text-white focus:border-[#D4AF37]/50"
+                                            className="bg-white border-gray-200 text-[#1A2035] focus:border-[#1A2035] focus:ring-[#1A2035]/20"
                                             placeholder="GHA-..."
                                         />
                                     </>
                                 ) : (
-                                    <div className="p-2.5 rounded-md bg-black/20 text-gray-200 border border-transparent font-mono">
+                                    <div className="p-2.5 rounded-md bg-gray-50 text-[#1A2035] border border-gray-100 font-mono font-medium">
                                         {user?.ghanaCardNumber || <span className="text-gray-500 italic">Not verified</span>}
                                     </div>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-gray-300">Account Role</Label>
-                                <div className="p-2.5 rounded-md bg-[#D4AF37]/5 text-[#D4AF37] border border-[#D4AF37]/20 font-bold text-sm inline-block">
+                                <Label className="text-gray-600">Account Role</Label>
+                                <div className="p-2.5 rounded-md bg-[#1A2035]/10 text-[#1A2035] border border-[#1A2035]/20 font-bold text-sm inline-block">
                                     {user?.role?.replace('_', ' ')}
                                 </div>
                             </div>
@@ -247,14 +247,14 @@ export default function ProfilePage() {
                                 setIsEditing(false);
                                 reset(); // Revert changes
                             }}
-                            className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500/50"
+                            className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                             disabled={isSaving}
                         >
                             <X className="mr-2 h-4 w-4" /> Cancel
                         </Button>
                         <Button
                             type="submit"
-                            className="bg-[#D4AF37] text-black hover:bg-[#B4941F]"
+                            className="bg-[#1A2035] text-white hover:bg-[#2c3554] shadow-md"
                             disabled={isSaving}
                         >
                             {isSaving ? (

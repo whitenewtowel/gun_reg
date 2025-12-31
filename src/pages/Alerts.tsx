@@ -55,9 +55,9 @@ export default function Alerts() {
       <div className="rounded-xl bg-white p-4 sm:p-6 lg:p-8 shadow-sm min-h-[80vh]">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">Alerts & Reporting</h1>
+          <h1 className="text-xl font-bold text-[#1A2035]">Alerts & Reporting</h1>
           <div className="flex items-center gap-4">
-            <button className="text-sm font-medium text-[#9D7000] hover:text-[#8A6200]">Mark all as read</button>
+            <button className="text-sm font-medium text-[#1A2035] hover:text-[#2c3554]">Mark all as read</button>
             <button className="text-gray-400 hover:text-gray-600">
               <X size={20} />
             </button>
@@ -69,11 +69,10 @@ export default function Alerts() {
           {['All', 'Alerts', 'Reporting'].map((tab) => (
             <button
               key={tab}
-              className={`mr-8 border-b-2 pb-4 text-sm font-medium transition-colors ${
-                activeTab === tab
-                  ? 'border-gray-900 text-gray-900'
+              className={`mr-8 border-b-2 pb-4 text-sm font-medium transition-colors ${activeTab === tab
+                  ? 'border-[#1A2035] text-[#1A2035]'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
@@ -85,16 +84,15 @@ export default function Alerts() {
         {/* List */}
         <div className="">
           {alerts.map((alert) => (
-            <div 
-              key={alert.id} 
-              className={`flex items-start gap-4 border-b border-gray-100 p-6 transition-colors ${
-                alert.status === 'pending' ? 'bg-[#FFFDF6]' : 'bg-white'
-              }`}
+            <div
+              key={alert.id}
+              className={`flex items-start gap-4 border-b border-gray-100 p-6 transition-colors ${alert.status === 'pending' ? 'bg-gray-50' : 'bg-white'
+                }`}
             >
               {/* Unread Indicator */}
               <div className="pt-2">
                 {alert.status === 'pending' && (
-                  <div className="h-2 w-2 rounded-full bg-[#D97706]" />
+                  <div className="h-2 w-2 rounded-full bg-[#1A2035]" />
                 )}
               </div>
 
@@ -106,15 +104,15 @@ export default function Alerts() {
               <div className="flex-1">
                 <div className="flex items-start justify-between">
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-900">
-                      <span className="font-bold">{alert.subject}</span> has been {alert.action} by {alert.user}.
+                    <p className="text-sm text-gray-600">
+                      <span className="font-bold text-[#1A2035]">{alert.subject}</span> has been {alert.action} by {alert.user}.
                     </p>
-                    
+
                     {/* Actions */}
                     <div className="flex flex-wrap items-center gap-3">
                       {alert.status === 'pending' ? (
                         <>
-                          <button className="rounded-md bg-[#9D7000] px-6 py-1.5 text-sm font-medium text-white hover:bg-[#8A6200]">
+                          <button className="rounded-xl bg-[#1A2035] px-6 py-1.5 text-sm font-medium text-white hover:bg-[#2c3554]">
                             Accept
                           </button>
                           <button className="rounded-md border border-gray-200 bg-white px-6 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
@@ -145,17 +143,17 @@ export default function Alerts() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col items-end gap-2">
                     <span className="text-xs text-gray-400">{alert.time}</span>
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="text-gray-900 hover:text-gray-600 outline-none">
+                      <DropdownMenuTrigger className="text-gray-400 hover:text-[#1A2035] outline-none">
                         <MoreVertical size={20} />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem className="flex items-center justify-between">
+                      <DropdownMenuContent align="end" className="w-48 bg-white border-gray-200">
+                        <DropdownMenuItem className="flex items-center justify-between text-gray-700 hover:bg-gray-50 focus:bg-gray-50">
                           Mark as read
-                          <Check size={14} className="text-[#9D7000]" />
+                          <Check size={14} className="text-[#1A2035]" />
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           Archive
