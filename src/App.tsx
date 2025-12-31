@@ -20,7 +20,7 @@ import ApplicationsPage from './pages/individuals/ApplicationsPage'
 import ApplicationDetailPage from './pages/individuals/ApplicationDetailPage'
 import DealersPage from './pages/individuals/DealersPage'
 import DealerDetailPage from './pages/individuals/DealerDetailPage'
-import PurchaseWizard from './pages/individuals/purchasing/PurchaseWizard'
+import FirearmPurchaseFlow from './pages/individuals/FirearmPayment'
 import MyFirearmsPage from './pages/individuals/MyFirearmsPage'
 import PaymentsPage from './pages/individuals/PaymentsPage'
 import HistoryPage from './pages/individuals/HistoryPage'
@@ -62,7 +62,7 @@ function App() {
               <Route path="/applications/:id" element={<ApplicationDetailPage />} />
               <Route path="/dealers" element={<DealersPage />} />
               <Route path="/dealers/:id" element={<DealerDetailPage />} />
-              <Route path="/dealers/:dealerId/purchase/:itemId" element={<PurchaseWizard />} />
+              <Route path="/dealers/:dealerId/purchase/:itemId" element={<FirearmPurchaseFlow />} />
               <Route path="/firearms" element={<MyFirearmsPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/history" element={<HistoryPage />} />

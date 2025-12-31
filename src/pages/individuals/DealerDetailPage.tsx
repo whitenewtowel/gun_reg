@@ -23,7 +23,6 @@ import remingtonImg from '@/assets/products/remington-870.png';
 import sigImg from '@/assets/products/sig-p320.png';
 import winchesterImg from '@/assets/products/winchester-70.png';
 import berettaImg from '@/assets/products/beretta-92fs.png';
-import FirearmPurchaseFlow from './FirearmPayment';
 
 interface InventoryItem {
     id: string;
@@ -127,8 +126,6 @@ const INVENTORY: InventoryItem[] = [
 export default function DealerDetailPage() {
     const navigate = useNavigate();
     const { id } = useParams();
-    const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-    const [showPurchaseModal, setShowPurchaseModal] = useState(false);
     const [activeTab, setActiveTab] = useState<'inventory' | 'about'>('inventory');
 
     const dealer = DEALER_DETAIL;
@@ -139,21 +136,13 @@ export default function DealerDetailPage() {
             toast.error('This item is currently out of stock');
             return;
         }
-        setSelectedItem(item);
-        setShowPurchaseModal(true);
-    };
 
-    const confirmPurchase = () => {
-        if (!selectedItem) return;
-
-        // Navigate to purchase confirmation page with item details
-        navigate(`/dealers/${dealer.id}/purchase/${selectedItem.id}`, {
+        navigate(`/dealers/${dealer.id}/purchase/${item.id}`, {
             state: {
                 dealer: dealer,
-                item: selectedItem
+                item: item
             }
         });
-        setShowPurchaseModal(false);
     };
 
     const getStockBadge = (stock: string) => {
@@ -405,11 +394,6 @@ export default function DealerDetailPage() {
                 </div>
             </div>
 
-            {/* Purchase Modal */}
-            {showPurchaseModal && selectedItem && (
-                <FirearmPurchaseFlow/>
-    )
-}
         </div >
     );
 }

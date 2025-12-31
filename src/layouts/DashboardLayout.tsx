@@ -145,7 +145,7 @@ export default function DashboardLayout() {
                                 {user?.firstName?.charAt(0) || 'U'}
                             </div>
                             <div className="overflow-hidden">
-                                <p className="text-sm font-bold text-white truncate">{`${user?.firstName || 'User'} ${user?.lastName || ''}`}</p>
+                                <p className="text-sm font-bold text-white truncate">{`${user?.email || 'User'}`}</p>
                                 <p className="text-xs text-gray-500 truncate capitalize">{user?.role?.replace('_', ' ').toLowerCase() || 'Guest'}</p>
                             </div>
                         </div>

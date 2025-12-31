@@ -117,7 +117,7 @@ export default function FirearmPurchaseFlow() {
 
     return (
         <div className="min-h-screen bg-slate-50 py-8">
-            <div className="max-w-6xl mx-auto px-6">
+            <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <div className="mb-6">
                     <button
