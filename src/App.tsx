@@ -15,6 +15,7 @@ import KYCStartPage from './pages/kyc/KYCStartPage'
 import KYCVerifyPage from './pages/kyc/KYCVerifyPage'
 import KYCCompletePage from './pages/kyc/KYCCompletePage'
 import SelectUserTypePage from './pages/onboarding/SelectUserTypePage'
+import CompleteApplications from './pages/individuals/CompleteApplications'
 import DashboardRedirectHandler from './components/auth/DashboardRedirectHandler'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -42,6 +43,8 @@ function App() {
           {/* Main App Routes - Protected by Auth only (Roles handled internally) */}
           <Route element={<ProtectedRoute />}>
             <Route path="/onboarding/select-user-type" element={<SelectUserTypePage />} />
+            <Route path="/onboarding/complete-account" element={<CompleteApplications />} />
+            <Route path="/complete-applications" element={<CompleteApplications />} />
 
             {/* Dashboard & Management */}
             <Route element={<DashboardLayout />}>
@@ -54,6 +57,7 @@ function App() {
 
             {/* Specific Functional Routes */}
             <Route path="/renewal" element={<Renewal />} />
+
             <Route path="/dealer-registration" element={<DealerRegistration />} />
           </Route>
 

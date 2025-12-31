@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import logo from '@/assets/images/logo2.png'
+import heroGun from '@/assets/pistol-license.png'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -174,7 +175,7 @@ export default function Login() {
 
         {/* We can use the generated hero gun image here as well for consistency, or the holster image */}
         <img
-          src="/CiGN/assets/images/hero-gun.png"
+          src={heroGun}
           alt="Secure Facility"
           className="h-full w-full object-cover opacity-60 mix-blend-overlay"
         />

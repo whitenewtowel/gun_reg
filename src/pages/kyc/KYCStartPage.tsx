@@ -482,7 +482,7 @@ export default function KYCStartPage() {
 
                 <div className="mt-8 text-center">
                     <p className="text-gray-500 text-sm">
-                        Existing Application? <a href="/CiGN/login" className="text-[#D4AF37] hover:underline font-bold">Login Here</a>
+                        Existing Application? <a href="/login" className="text-[#D4AF37] hover:underline font-bold">Login Here</a>
                     </p>
                 </div>
             </div>

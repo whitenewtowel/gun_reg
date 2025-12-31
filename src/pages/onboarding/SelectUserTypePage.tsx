@@ -129,7 +129,7 @@ export default function SelectUserTypePage() {
             icon: UserIcon,
             title: 'New Firearm License Application',
             description: 'Apply for a personal firearm license for self-defense, hunting, or sport shooting. Includes comprehensive background checks.',
-            route: '/renewal',
+            route: '/complete-applications',
             popular: true,
         },
         {
@@ -182,9 +182,9 @@ export default function SelectUserTypePage() {
                     className="text-center mb-16"
                 >
                     <div className="inline-flex items-center justify-center mb-4">
-                        <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
+                        <div className="h-px w-12" />
                         <span className="px-4 text-[#D4AF37] text-xs font-bold tracking-[0.3em] uppercase">System Access</span>
-                        <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#D4AF37]" />
+                        <div className="h-px w-12" />
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-stencil uppercase tracking-wider mb-4 text-white">
