@@ -12,7 +12,6 @@ import {
     Bell,
     Search,
     User as UserIcon,
-    ShieldCheck,
     Package,
     TrendingUp,
     FileCheck,
@@ -109,7 +108,7 @@ export default function DashboardLayout() {
                     <div className="h-16 flex items-center px-6 border-b border-gray-200 bg-[#1A2035] text-white">
                         <div className="flex items-center gap-3">
                             <div className="h-8 w-8 rounded-lg flex items-center justify-center ">
-                              <img src={logo} alt="Logo" />
+                                <img src={logo} alt="Logo" />
                             </div>
                             <div>
                                 <h1 className="text-lg font-bold text-white leading-none tracking-tight">NFLTMS</h1>
@@ -146,7 +145,7 @@ export default function DashboardLayout() {
                                 {user?.firstName?.charAt(0) || 'U'}
                             </div>
                             <div className="overflow-hidden">
-                                <p className="text-sm font-bold text-white truncate">{`${user?.firstName|| 'User'} ${user?.lastName|| ''}`}</p>
+                                <p className="text-sm font-bold text-white truncate">{`${user?.firstName || 'User'} ${user?.lastName || ''}`}</p>
                                 <p className="text-xs text-gray-500 truncate capitalize">{user?.role?.replace('_', ' ').toLowerCase() || 'Guest'}</p>
                             </div>
                         </div>

@@ -1,21 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-    MapPin,
-    Search,
-    Phone,
-    Star,
-    ShieldCheck,
-    Navigation,
-    Filter
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+    MagnifyingGlassIcon,
+    MapPinIcon,
+    PhoneIcon,
+    BuildingStorefrontIcon,
+    CheckBadgeIcon,
+    ViewColumnsIcon,
+    ListBulletIcon
+} from '@heroicons/react/24/outline';
+import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import apiClient from '@/lib/apiClient';
 
-// Premium Mock Dealer Data
-const MOCK_DEALERS = [
+import safearmsImg from '@/assets/dealers/safearms-interior.png';
+import kumasiImg from '@/assets/dealers/kumasi-hunting.png';
+import blackstarImg from '@/assets/dealers/blackstar-exterior.png';
+
+interface Dealer {
+    id: string;
+    name: string;
+    region: string;
+    district: string;
+    rating: number;
+    reviews: number;
+    specialties: string[];
+    address: string;
+    phone: string;
+    email: string;
+    status: 'OPEN' | 'CLOSED';
+    image: string;
+    licenseNumber: string;
+    verified: boolean;
+}
+
+const MOCK_DEALERS: Dealer[] = [
     {
         id: '1',
         name: 'SafeArms Ghana Ltd',
@@ -26,8 +45,11 @@ const MOCK_DEALERS = [
         specialties: ['Glock Authorized', 'Tactical Gear', 'Safety Training'],
         address: '123 Liberation Road, Osu, Accra',
         phone: '030 277 3906',
+        email: 'info@safearms.com.gh',
         status: 'OPEN',
-        image: 'https://images.unsplash.com/photo-1583096114844-06ce6a5af5e0?q=80&w=2000&auto=format&fit=crop'
+        image: safearmsImg,
+        licenseNumber: 'DLR-2025-001',
+        verified: true
     },
     {
         id: '2',
@@ -35,12 +57,15 @@ const MOCK_DEALERS = [
         region: 'Ashanti',
         district: 'Kumasi Metropolitan',
         rating: 4.6,
-        reviews: 89,
+        reviews: 189,
         specialties: ['Hunting Rifles', 'Optical Systems', 'Maintenance'],
         address: 'Plot 45, Harper Road, Adum, Kumasi',
         phone: '032 202 4589',
+        email: 'contact@kumasihunting.gh',
         status: 'OPEN',
-        image: 'https://images.unsplash.com/photo-1620003013233-875c742c33ba?q=80&w=2000&auto=format&fit=crop'
+        image: kumasiImg,
+        licenseNumber: 'DLR-2025-002',
+        verified: true
     },
     {
         id: '3',
@@ -49,11 +74,14 @@ const MOCK_DEALERS = [
         district: 'Tema Metropolitan',
         rating: 4.9,
         reviews: 215,
-        specialties: ['Security Personnel Equipment', 'Advanced Optics', 'Handguns'],
+        specialties: ['Security Equipment', 'Advanced Optics', 'Handguns'],
         address: 'Community 1, Near Meridian Hotel, Tema',
         phone: '030 330 1254',
-        status: 'CLOSED',
-        image: 'https://images.unsplash.com/photo-1595590424283-b8f17842773f?q=80&w=2000&auto=format&fit=crop'
+        email: 'sales@blackstardefense.gh',
+        status: 'OPEN',
+        image: blackstarImg,
+        licenseNumber: 'DLR-2025-003',
+        verified: true
     },
     {
         id: '4',
@@ -61,170 +89,377 @@ const MOCK_DEALERS = [
         region: 'Northern',
         district: 'Tamale Metropolitan',
         rating: 4.5,
-        reviews: 56,
-        specialties: ['Rifles', 'Ammunition Bulk', 'Repairs'],
+        reviews: 96,
+        specialties: ['Rifles', 'Ammunition', 'Repairs'],
         address: 'Bolgatanga Road, Tamale',
         phone: '037 202 3698',
+        email: 'info@northernarmory.gh',
+        status: 'CLOSED',
+        image: 'https://images.unsplash.com/photo-1612810806563-4cb8265db55f?w=400&h=300&fit=crop',
+        licenseNumber: 'DLR-2025-004',
+        verified: true
+    },
+    {
+        id: '5',
+        name: 'Coastal Security Supplies',
+        region: 'Central',
+        district: 'Cape Coast Metropolitan',
+        rating: 4.7,
+        reviews: 142,
+        specialties: ['Shotguns', 'Marine Equipment', 'Training'],
+        address: 'Victoria Road, Cape Coast',
+        phone: '033 213 2456',
+        email: 'info@coastalsecurity.gh',
         status: 'OPEN',
-        image: 'https://images.unsplash.com/photo-1584027786482-a7d0e49520b2?q=80&w=2148&auto=format&fit=crop'
+        image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&h=300&fit=crop',
+        licenseNumber: 'DLR-2025-005',
+        verified: true
     }
 ];
 
 export default function DealersPage() {
     const navigate = useNavigate();
+    const [dealers, setDealers] = useState<Dealer[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRegion, setSelectedRegion] = useState('ALL');
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
+    const [sortBy, setSortBy] = useState<'rating' | 'name' | 'reviews'>('rating');
 
-    const filteredDealers = MOCK_DEALERS.filter(dealer => {
-        const matchesSearch = dealer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            dealer.address.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesRegion = selectedRegion === 'ALL' || dealer.region === selectedRegion;
-        return matchesSearch && matchesRegion;
-    });
+    useEffect(() => {
+        fetchDealers();
+    }, []);
+
+    const fetchDealers = async () => {
+        try {
+            const response = await apiClient.get('/dealers');
+            setDealers(response.data.dealers || MOCK_DEALERS);
+        } catch (error) {
+            console.error('Error fetching dealers:', error);
+            setDealers(MOCK_DEALERS);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filteredDealers = dealers
+        .filter(dealer => {
+            const matchesSearch =
+                dealer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                dealer.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                dealer.district.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesRegion = selectedRegion === 'ALL' || dealer.region === selectedRegion;
+            return matchesSearch && matchesRegion;
+        })
+        .sort((a, b) => {
+            if (sortBy === 'rating') return b.rating - a.rating;
+            if (sortBy === 'reviews') return b.reviews - a.reviews;
+            return a.name.localeCompare(b.name);
+        });
 
     const regions = ['ALL', ...Array.from(new Set(MOCK_DEALERS.map(d => d.region)))];
 
-    return (
-        <div className="min-h-screen bg-gray-50/50 font-sans pb-20">
-            {/* Header / Hero */}
-            <div className="bg-[#1A2035] text-white pt-12 pb-24 px-6 md:px-12 rounded-b-[3rem] relative overflow-hidden shadow-2xl">
-                <div className="relative z-10 max-w-7xl mx-auto text-center md:text-left">
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4">
-                        Authorized Dealer Network
-                    </h1>
-                    <p className="text-white/70 font-medium text-lg md:text-xl max-w-2xl">
-                        Access Ghana's most trusted network of verified firearm dealers. Purchase, train, and service your equipment with certified professionals.
-                    </p>
-                </div>
-                {/* Abstract Background Decoration */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4AF37]"></div>
             </div>
+        );
+    }
 
-            <div className="max-w-[87rem] mx-auto px-6 -mt-16 relative z-20">
-                {/* Search & Filter Bar */}
-                <div className="bg-white p-2 rounded-2xl shadow-xl shadow-gray-200/50 mb-12 flex flex-col md:flex-row gap-2">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                            placeholder="Find dealers by name, city, or specialty..."
-                            className="pl-12 h-14 text-base rounded-xl border-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#1A2035]/10 transition-all font-medium"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+    return (
+        <div className="min-h-screen bg-slate-50 ">
+            <div className="max-w-[90rem] mx-auto space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Licensed Dealers</h1>
+                        <p className="text-slate-600">Browse verified firearm dealers across Ghana</p>
                     </div>
-                    <div className="flex gap-2 p-1 overflow-x-auto">
-                        {regions.slice(0, 3).map((region) => (
-                            <Button
-                                key={region}
-                                variant="ghost"
-                                onClick={() => setSelectedRegion(region)}
-                                className={`rounded-xl h-12 px-6 whitespace-nowrap font-bold transition-all ${selectedRegion === region
-                                        ? 'bg-[#1A2035] text-white hover:bg-[#2A3455]'
-                                        : 'text-gray-500 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {region === 'ALL' ? 'All Locations' : region}
-                            </Button>
-                        ))}
-                        <Button variant="outline" className="h-12 w-12 rounded-xl border-gray-200 shrink-0">
-                            <Filter className="h-5 w-5 text-gray-600" />
-                        </Button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setViewMode('table')}
+                            className={`p-2 rounded-lg transition-colors ${viewMode === 'table'
+                                ? 'bg-[#1A2035] text-white'
+                                : 'bg-white text-slate-600 hover:bg-slate-100'
+                                }`}
+                        >
+                            <ListBulletIcon className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={`p-2 rounded-lg transition-colors ${viewMode === 'grid'
+                                ? 'bg-[#1A2035] text-white'
+                                : 'bg-white text-slate-600 hover:bg-slate-100'
+                                }`}
+                        >
+                            <ViewColumnsIcon className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
 
-                {/* Dealers Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredDealers.map((dealer, index) => (
-                        <motion.div
-                            key={dealer.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="group h-full"
+                {/* Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <p className="text-sm text-slate-600 mb-1">Total Dealers</p>
+                        <p className="text-2xl font-bold text-slate-900">{filteredDealers.length}</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <p className="text-sm text-slate-600 mb-1">Open Now</p>
+                        <p className="text-2xl font-bold text-emerald-600">
+                            {filteredDealers.filter(d => d.status === 'OPEN').length}
+                        </p>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <p className="text-sm text-slate-600 mb-1">Avg Rating</p>
+                        <p className="text-2xl font-bold text-amber-600">
+                            {(filteredDealers.reduce((sum, d) => sum + d.rating, 0) / filteredDealers.length).toFixed(1)}
+                        </p>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <p className="text-sm text-slate-600 mb-1">Regions Covered</p>
+                        <p className="text-2xl font-bold text-slate-900">
+                            {new Set(dealers.map(d => d.region)).size}
+                        </p>
+                    </div>
+                </div>
+
+                <br />
+                {/* Filters Bar */}
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {/* Search */}
+                        <div className="flex-1 relative">
+                            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Search dealers by name, location..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37]"
+                            />
+                        </div>
+
+                        {/* Region Filter */}
+                        <select
+                            value={selectedRegion}
+                            onChange={(e) => setSelectedRegion(e.target.value)}
+                            className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] bg-white"
                         >
-                            <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 flex flex-col h-full">
-                                {/* Image Header */}
-                                <div className="relative h-64 overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
+                            {regions.map(region => (
+                                <option key={region} value={region}>
+                                    {region === 'ALL' ? 'All Regions' : region}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* Sort */}
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as any)}
+                            className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] bg-white"
+                        >
+                            <option value="rating">Highest Rated</option>
+                            <option value="reviews">Most Reviews</option>
+                            <option value="name">Name (A-Z)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <br />
+                {/* Table View */}
+                {viewMode === 'table' && (
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Dealer</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Location</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Contact</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Rating</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-200">
+                                    {filteredDealers.map((dealer, index) => (
+                                        <motion.tr
+                                            key={dealer.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            className="hover:bg-slate-50 transition-colors cursor-pointer"
+                                            onClick={() => navigate(`/dealers/${dealer.id}`)}
+                                        >
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <img
+                                                        src={dealer.image}
+                                                        alt={dealer.name}
+                                                        className="w-12 h-12 rounded-lg object-cover"
+                                                    />
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="font-semibold text-slate-900">{dealer.name}</p>
+                                                            {dealer.verified && (
+                                                                <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 font-mono">{dealer.licenseNumber}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-start gap-2">
+                                                    <MapPinIcon className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                                                    <div className="text-sm">
+                                                        <p className="text-slate-900">{dealer.district}</p>
+                                                        <p className="text-slate-500">{dealer.region}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-2 text-sm text-slate-600">
+                                                    <PhoneIcon className="w-4 h-4 text-slate-400" />
+                                                    {dealer.phone}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-1">
+                                                    <StarSolid className="w-4 h-4 text-amber-400" />
+                                                    <span className="font-semibold text-slate-900">{dealer.rating}</span>
+                                                    <span className="text-slate-500 text-sm">({dealer.reviews})</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${dealer.status === 'OPEN'
+                                                    ? 'bg-emerald-50 text-emerald-700'
+                                                    : 'bg-slate-100 text-slate-600'
+                                                    }`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${dealer.status === 'OPEN' ? 'bg-emerald-500' : 'bg-slate-400'
+                                                        }`}></span>
+                                                    {dealer.status === 'OPEN' ? 'Open' : 'Closed'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/dealers/${dealer.id}`);
+                                                    }}
+                                                    className="px-4 py-2 bg-[#1A2035] text-white rounded-lg text-sm font-medium hover:bg-[#2A3550] transition-colors"
+                                                >
+                                                    View Details
+                                                </button>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Grid View */}
+                {viewMode === 'grid' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredDealers.map((dealer, index) => (
+                            <motion.div
+                                key={dealer.id}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.05 }}
+                                onClick={() => navigate(`/dealers/${dealer.id}`)}
+                                className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
+                            >
+                                <div className="relative h-48">
                                     <img
                                         src={dealer.image}
                                         alt={dealer.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
-                                    <div className="absolute top-4 right-4 z-20">
-                                        <Badge className={`backdrop-blur-md border-white/20 px-3 py-1 ${dealer.status === 'OPEN'
-                                                ? 'bg-emerald-500/90 text-white'
-                                                : 'bg-rose-500/90 text-white'
+                                    <div className="absolute top-3 right-3">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${dealer.status === 'OPEN'
+                                            ? 'bg-emerald-500/90 text-white'
+                                            : 'bg-slate-700/90 text-white'
                                             }`}>
                                             {dealer.status === 'OPEN' ? 'Open Now' : 'Closed'}
-                                        </Badge>
-                                    </div>
-                                    <div className="absolute bottom-4 left-4 z-20 text-white">
-                                        <div className="flex items-center gap-1.5 mb-2">
-                                            <div className="flex bg-yellow-400 text-[#1A2035] px-1.5 py-0.5 rounded text-xs font-black items-center">
-                                                <Star className="h-3 w-3 mr-0.5 fill-[#1A2035]" />
-                                                {dealer.rating}
-                                            </div>
-                                            <span className="text-xs text-white/80 font-medium">{dealer.reviews} verified reviews</span>
-                                        </div>
-                                        <h3 className="text-2xl font-bold leading-tight shadow-black drop-shadow-lg">
-                                            {dealer.name}
-                                        </h3>
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div className="p-6 flex flex-col flex-grow">
-                                    <div className="flex items-start justify-between mb-6">
-                                        <div className="text-sm text-gray-600 font-medium flex items-center">
-                                            <MapPin className="h-4 w-4 mr-1.5 text-gray-400" />
-                                            {dealer.district}, {dealer.region}
+                                <div className="p-5">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="font-bold text-slate-900 group-hover:text-[#D4AF37] transition-colors">
+                                                    {dealer.name}
+                                                </h3>
+                                                {dealer.verified && (
+                                                    <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-slate-500 font-mono">{dealer.licenseNumber}</p>
                                         </div>
-                                        <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50 text-[10px] uppercase font-bold tracking-wider">
-                                            Verified
-                                        </Badge>
                                     </div>
 
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {dealer.specialties.slice(0, 3).map((tag) => (
-                                            <span key={tag} className="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-                                                {tag}
+                                    <div className="flex items-center gap-1 mb-3">
+                                        <StarSolid className="w-4 h-4 text-amber-400" />
+                                        <span className="font-semibold text-slate-900">{dealer.rating}</span>
+                                        <span className="text-slate-500 text-sm">({dealer.reviews} reviews)</span>
+                                    </div>
+
+                                    <div className="space-y-2 mb-4">
+                                        <div className="flex items-start gap-2 text-sm text-slate-600">
+                                            <MapPinIcon className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                                            <span>{dealer.district}, {dealer.region}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                                            <PhoneIcon className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                                            <span>{dealer.phone}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-1.5 mb-4">
+                                        {dealer.specialties.slice(0, 2).map(specialty => (
+                                            <span key={specialty} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">
+                                                {specialty}
                                             </span>
                                         ))}
+                                        {dealer.specialties.length > 2 && (
+                                            <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">
+                                                +{dealer.specialties.length - 2}
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <div className="mt-auto space-y-3 pt-4 border-t border-gray-50">
-                                        <div className="flex items-center text-sm text-gray-500">
-                                            <Phone className="h-4 w-4 mr-2.5 text-gray-400" />
-                                            {dealer.phone}
-                                        </div>
-                                        <div className="flex gap-3">
-                                            <Button
-                                                className="flex-1 bg-[#1A2035] hover:bg-[#2A3455] text-white rounded-xl h-12 font-bold shadow-lg shadow-[#1A2035]/10"
-                                                onClick={() => navigate(`/dealers/${dealer.id}`)}
-                                            >
-                                                Visit Store
-                                            </Button>
-                                            <Button variant="outline" className="flex-none rounded-xl h-12 w-12 p-0 border-gray-200 hover:bg-gray-50">
-                                                <Navigation className="h-5 w-5 text-gray-600" />
-                                            </Button>
-                                        </div>
-                                    </div>
+                                    <button className="w-full py-2 bg-[#1A2035] text-white rounded-lg text-sm font-medium hover:bg-[#2A3550] transition-colors">
+                                        View Inventory
+                                    </button>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
 
+                {/* Empty State */}
                 {filteredDealers.length === 0 && (
-                    <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-gray-200 shadow-sm">
-                        <div className="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Search className="h-8 w-8 text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-bold text-[#1A2035]">No dealers found</h3>
-                        <p className="text-gray-500 max-w-sm mx-auto mt-2">
-                            We couldn't find any dealers matching "{searchQuery}". Try adjusting your filters or search terms.
+                    <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+                        <BuildingStorefrontIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Dealers Found</h3>
+                        <p className="text-slate-600 mb-4">
+                            Try adjusting your search criteria or filters
                         </p>
+                        <button
+                            onClick={() => {
+                                setSearchQuery('');
+                                setSelectedRegion('ALL');
+                            }}
+                            className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                        >
+                            Clear Filters
+                        </button>
                     </div>
                 )}
             </div>

@@ -1,26 +1,48 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-    MapPin,
-    Phone,
-    Mail,
-    Clock,
-    Star,
-    ArrowLeft,
-    Share2,
-    Navigation,
-    Globe,
-    CheckCircle
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+    ArrowLeftIcon,
+    MapPinIcon,
+    PhoneIcon,
+    EnvelopeIcon,
+    ClockIcon,
+    CheckBadgeIcon,
+    GlobeAltIcon,
+    ShoppingCartIcon,
+    CheckCircleIcon,
+    XMarkIcon
+} from '@heroicons/react/24/outline';
+import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import toast from 'react-hot-toast';
+import PurchaseConfirmationModal from './FirearmPayment';
 
-// Premium Mock Data
-// Using updated high-quality images
-const DEALER_DETAILS = {
+import safearmsImg from '@/assets/dealers/safearms-interior.png';
+import glockImg from '@/assets/products/glock-19.png';
+import remingtonImg from '@/assets/products/remington-870.png';
+import sigImg from '@/assets/products/sig-p320.png';
+import winchesterImg from '@/assets/products/winchester-70.png';
+import berettaImg from '@/assets/products/beretta-92fs.png';
+import FirearmPurchaseFlow from './FirearmPayment';
+
+interface InventoryItem {
+    id: string;
+    name: string;
+    type: 'PISTOL' | 'RIFLE' | 'SHOTGUN';
+    make: string;
+    model: string;
+    caliber: string;
+    price: number;
+    stock: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+    image: string;
+    serialNumber?: string;
+}
+
+const DEALER_DETAIL = {
     id: '1',
     name: 'SafeArms Ghana Ltd',
-    description: "Premier provider of firearms and tactical equipment in the Greater Accra region. As a licensed importer and trusted partner of the Ghana Police Service, we offer a secure environment for certified training and acquisitions. Experience our state-of-the-art indoor range and consult with our expert armorers.",
+    licenseNumber: 'DLR-2025-001',
+    description: 'Premier licensed firearm dealer in Greater Accra. Authorized importer and distributor of quality firearms and accessories. Ghana Police Service verified.',
     region: 'Greater Accra',
     district: 'Accra Metropolis',
     address: '123 Liberation Road, Osu, Accra',
@@ -28,253 +50,366 @@ const DEALER_DETAILS = {
     email: 'info@safearms.com.gh',
     website: 'www.safearms.com.gh',
     rating: 4.8,
-    reviews: 124,
-    licenseNumber: 'DLR-2025-00123',
-    status: 'OPEN',
-    hours: 'Mon-Fri: 8:00 AM - 5:00 PM',
-    image: 'https://images.unsplash.com/photo-1583096114844-06ce6a5af5e0?q=80&w=2000&auto=format&fit=crop',
+    reviews: 324,
+    status: 'OPEN' as const,
+    verified: true,
+    hours: {
+        weekday: '8:00 AM - 5:00 PM',
+        saturday: '9:00 AM - 2:00 PM',
+        sunday: 'Closed'
+    },
     specialties: ['Glock Authorized', 'Tactical Gear', 'Safety Training', 'Gunsmithing'],
-    inventory: [
-        {
-            id: 1,
-            name: 'Glock 19 Gen 5',
-            type: 'Pistol',
-            price: 'GHS 25,000',
-            stock: 'In Stock',
-            image: 'https://images.unsplash.com/photo-1585589266782-966902229115?auto=format&fit=crop&q=80&w=800'
-        },
-        {
-            id: 2,
-            name: 'Remington 870 Express',
-            type: 'Shotgun',
-            price: 'GHS 18,000',
-            stock: 'Low Stock',
-            image: 'https://images.unsplash.com/photo-1595590424283-b8f17842773f?auto=format&fit=crop&q=80&w=800'
-        },
-        {
-            id: 3,
-            name: 'Sig Sauer P320',
-            type: 'Pistol',
-            price: 'GHS 28,000',
-            stock: 'In Stock',
-            image: 'https://images.unsplash.com/photo-1619360815063-44d320b9c375?auto=format&fit=crop&q=80&w=800'
-        },
-        {
-            id: 4,
-            name: 'Mossberg 500 Tactical',
-            type: 'Shotgun',
-            price: 'GHS 22,000',
-            stock: 'In Stock',
-            image: 'https://images.unsplash.com/photo-1584027786482-a7d0e49520b2?auto=format&fit=crop&q=80&w=800'
-        }
-    ]
+    image: safearmsImg
 };
+
+const INVENTORY: InventoryItem[] = [
+    {
+        id: '1',
+        name: 'Glock 19 Gen 5',
+        type: 'PISTOL',
+        make: 'Glock',
+        model: '19 Gen 5',
+        caliber: '9mm',
+        price: 25000,
+        stock: 'IN_STOCK',
+        image: glockImg,
+        serialNumber: 'GLK-2025-001'
+    },
+    {
+        id: '2',
+        name: 'Remington 870 Express',
+        type: 'SHOTGUN',
+        make: 'Remington',
+        model: '870 Express',
+        caliber: '12 Gauge',
+        price: 18000,
+        stock: 'LOW_STOCK',
+        image: remingtonImg,
+        serialNumber: 'REM-2025-045'
+    },
+    {
+        id: '3',
+        name: 'Sig Sauer P320',
+        type: 'PISTOL',
+        make: 'Sig Sauer',
+        model: 'P320',
+        caliber: '9mm',
+        price: 28000,
+        stock: 'IN_STOCK',
+        image: sigImg,
+        serialNumber: 'SIG-2025-023'
+    },
+    {
+        id: '4',
+        name: 'Winchester Model 70',
+        type: 'RIFLE',
+        make: 'Winchester',
+        model: 'Model 70',
+        caliber: '.308',
+        price: 32000,
+        stock: 'IN_STOCK',
+        image: winchesterImg,
+        serialNumber: 'WIN-2025-012'
+    },
+    {
+        id: '5',
+        name: 'Beretta 92FS',
+        type: 'PISTOL',
+        make: 'Beretta',
+        model: '92FS',
+        caliber: '9mm',
+        price: 26500,
+        stock: 'OUT_OF_STOCK',
+        image: berettaImg
+    }
+];
 
 export default function DealerDetailPage() {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+    const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+    const [activeTab, setActiveTab] = useState<'inventory' | 'about'>('inventory');
 
-    // In a real app, fetch dealer by ID here
-    const dealer = DEALER_DETAILS;
+    const dealer = DEALER_DETAIL;
+    const inventory = INVENTORY;
+
+    const handlePurchase = (item: InventoryItem) => {
+        if (item.stock === 'OUT_OF_STOCK') {
+            toast.error('This item is currently out of stock');
+            return;
+        }
+        setSelectedItem(item);
+        setShowPurchaseModal(true);
+    };
+
+    const confirmPurchase = () => {
+        if (!selectedItem) return;
+
+        // Navigate to purchase confirmation page with item details
+        navigate(`/dealers/${dealer.id}/purchase/${selectedItem.id}`, {
+            state: {
+                dealer: dealer,
+                item: selectedItem
+            }
+        });
+        setShowPurchaseModal(false);
+    };
+
+    const getStockBadge = (stock: string) => {
+        switch (stock) {
+            case 'IN_STOCK':
+                return <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium">In Stock</span>;
+            case 'LOW_STOCK':
+                return <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-medium">Low Stock</span>;
+            case 'OUT_OF_STOCK':
+                return <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">Out of Stock</span>;
+            default:
+                return null;
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 font-sans pb-20">
-            {/* Immersive Header */}
-            <div className="relative h-[80vh] md:h-[60vh] w-full lg:rounded-b-[3rem] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A2035] via-transparent to-transparent z-10 opacity-90" />
-                <div className="absolute inset-0 bg-black/20 z-10" />
+        <div className="min-h-screen bg-slate-50 pb-20">
+            {/* Header with Hero Image */}
+            <div className="relative h-64 bg-slate-900">
                 <img
                     src={dealer.image}
                     alt={dealer.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover opacity-60"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
 
-                {/* Navbar area trigger */}
-                <div className="absolute top-0 left-0 right-0 p-6 z-20">
-                    <Button
-                        variant="ghost"
-                        className="text-white hover:bg-white/10 hover:text-white rounded-full bg-black/20"
+                <div className="absolute top-6 left-6">
+                    <button
                         onClick={() => navigate('/dealers')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-lg hover:bg-white/20 transition-colors"
                     >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        All Dealers
-                    </Button>
+                        <ArrowLeftIcon className="w-4 h-4" />
+                        Back to Dealers
+                    </button>
                 </div>
 
-                {/* Hero Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 z-20 pb-24 md:pb-12">
-                    <div className="max-w-[87rem] mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
-                        <div className="space-y-4">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white border-none px-3 py-1 text-sm">
-                                    <CheckCircle className="h-3.5 w-3.5 mr-1" /> Verified Dealer
-                                </Badge>
-                                <span className="flex items-center text-sm font-bold bg-white/10 text-white px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
-                                    <Star className="h-3.5 w-3.5 mr-1.5 text-yellow-400 fill-yellow-400" />
-                                    {dealer.rating} · {dealer.reviews} Reviews
-                                </span>
+                <div className="absolute bottom-6 left-6 right-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    {dealer.verified && (
+                                        <CheckBadgeIcon className="w-6 h-6 text-blue-400" />
+                                    )}
+                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${dealer.status === 'OPEN'
+                                        ? 'bg-emerald-500 text-white'
+                                        : 'bg-slate-600 text-white'
+                                        }`}>
+                                        {dealer.status === 'OPEN' ? 'Open Now' : 'Closed'}
+                                    </span>
+                                </div>
+                                <h1 className="text-4xl font-bold text-white mb-2">{dealer.name}</h1>
+                                <div className="flex items-center gap-4 text-white/80">
+                                    <div className="flex items-center gap-1">
+                                        <StarSolid className="w-5 h-5 text-amber-400" />
+                                        <span className="font-semibold">{dealer.rating}</span>
+                                        <span className="text-sm">({dealer.reviews} reviews)</span>
+                                    </div>
+                                    <span>•</span>
+                                    <span className="text-sm font-mono">{dealer.licenseNumber}</span>
+                                </div>
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-lg">
-                                {dealer.name}
-                            </h1>
-                            <div className="flex items-center text-white/90 font-medium text-lg">
-                                <MapPin className="h-5 w-5 mr-2 opacity-80" />
-                                {dealer.address}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <Button className="bg-white text-[#1A2035] hover:bg-gray-100 rounded-xl font-bold h-12 px-6 shadow-xl">
-                                <Navigation className="mr-2 h-4 w-4" />
-                                Get Directions
-                            </Button>
-                            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20 rounded-xl h-12 w-12 p-0 backdrop-blur-md">
-                                <Share2 className="h-5 w-5" />
-                            </Button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div className="max-w-[87rem] mx-auto px-6 -mt-8 relative z-30">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <br />
+            <div className="max-w-[88rem] mx-auto px-6 py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-10">
-                        {/* Sections Wrapper */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100/50">
-                            {/* Bio */}
-                            <section className="mb-10">
-                                <h2 className="text-2xl font-bold text-[#1A2035] mb-4">About the Dealer</h2>
-                                <p className="text-gray-600 leading-relaxed text-lg">
-                                    {dealer.description}
-                                </p>
-                            </section>
-
-                            {/* Specialties */}
-                            <section>
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Specialties & Services</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {dealer.specialties.map(tag => (
-                                        <Badge key={tag} variant="secondary" className="px-4 py-2 text-sm bg-gray-50 text-gray-700 border border-gray-100 hover:bg-gray-100 transition-colors">
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </section>
-                        </div>
-
-                        {/* Inventory Section */}
-                        <section>
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-3xl font-black text-[#1A2035]">Available Inventory</h2>
-                                <Button variant="ghost" className="text-[#1A2035] font-bold hover:bg-white">View All</Button>
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Tabs */}
+                        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                            <div className="flex border-b border-slate-200">
+                                <button
+                                    onClick={() => setActiveTab('inventory')}
+                                    className={`flex-1 px-6 py-4 font-semibold transition-colors ${activeTab === 'inventory'
+                                        ? 'bg-[#1A2035] text-white'
+                                        : 'text-slate-600 hover:bg-slate-50'
+                                        }`}
+                                >
+                                    Inventory ({inventory.filter(i => i.stock !== 'OUT_OF_STOCK').length} available)
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('about')}
+                                    className={`flex-1 px-6 py-4 font-semibold transition-colors ${activeTab === 'about'
+                                        ? 'bg-[#1A2035] text-white'
+                                        : 'text-slate-600 hover:bg-slate-50'
+                                        }`}
+                                >
+                                    About
+                                </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {dealer.inventory.map((item) => (
-                                    <div key={item.id} className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                                        <div className="h-48 rounded-2xl bg-gray-50 mb-4 overflow-hidden relative">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 mix-blend-multiply"
-                                            />
-                                            <div className="absolute top-3 right-3">
-                                                <Badge className={`backdrop-blur-md bg-white/90 text-[#1A2035] border-none shadow-sm font-bold`}>
-                                                    {item.type}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                        <div className="px-2 pb-2">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h4 className="font-bold text-lg text-[#1A2035] leading-tight max-w-[70%]">{item.name}</h4>
-                                                <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${item.stock === 'In Stock' ? 'border-emerald-200 text-emerald-700 bg-emerald-50' : 'border-orange-200 text-orange-700 bg-orange-50'}`}>
-                                                    {item.stock}
+                            {/* Inventory Tab */}
+                            {activeTab === 'inventory' && (
+                                <div className="p-6">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead className="border-b border-slate-200">
+                                                <tr>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Firearm</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Type</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Caliber</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Price</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Stock</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {inventory.map((item, index) => (
+                                                    <motion.tr
+                                                        key={item.id}
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: index * 0.05 }}
+                                                        className="hover:bg-slate-50 transition-colors"
+                                                    >
+                                                        <td className="py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <img
+                                                                    src={item.image}
+                                                                    alt={item.name}
+                                                                    className="w-16 h-12 rounded object-cover"
+                                                                />
+                                                                <div>
+                                                                    <p className="font-semibold text-slate-900">{item.name}</p>
+                                                                    <p className="text-xs text-slate-500">{item.make} {item.model}</p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
+                                                                {item.type}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-4 text-slate-900">{item.caliber}</td>
+                                                        <td className="py-4">
+                                                            <span className="font-bold text-slate-900">GHS {item.price.toLocaleString()}</span>
+                                                        </td>
+                                                        <td className="py-4">{getStockBadge(item.stock)}</td>
+                                                        <td className="py-4">
+                                                            <button
+                                                                onClick={() => handlePurchase(item)}
+                                                                disabled={item.stock === 'OUT_OF_STOCK'}
+                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${item.stock === 'OUT_OF_STOCK'
+                                                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                                    : 'bg-[#D4AF37] text-white hover:bg-[#B4941F]'
+                                                                    }`}
+                                                            >
+                                                                {item.stock === 'OUT_OF_STOCK' ? 'Unavailable' : 'Purchase'}
+                                                            </button>
+                                                        </td>
+                                                    </motion.tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* About Tab */}
+                            {activeTab === 'about' && (
+                                <div className="p-6 space-y-6">
+                                    <div>
+                                        <h3 className="font-semibold text-slate-900 mb-2">About</h3>
+                                        <p className="text-slate-600 leading-relaxed">{dealer.description}</p>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="font-semibold text-slate-900 mb-3">Specialties</h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {dealer.specialties.map(specialty => (
+                                                <span key={specialty} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm">
+                                                    {specialty}
                                                 </span>
-                                            </div>
-                                            <div className="flex items-center justify-between mt-4">
-                                                <div className="text-xl font-black text-[#1A2035]">{item.price}</div>
-                                                <Button
-                                                    className="bg-[#1A2035] text-white hover:bg-[#2A3455] rounded-xl px-6 font-bold shadow-lg shadow-[#1A2035]/10"
-                                                    onClick={() => navigate(`/dealers/${dealer.id}/purchase/${item.id}`)}
-                                                    disabled={item.stock !== 'In Stock'}
-                                                >
-                                                    Purchase
-                                                </Button>
-                                            </div>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </section>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Sidebar Info */}
+                    {/* Sidebar */}
                     <div className="space-y-6">
-                        <Card className="rounded-3xl border-none shadow-xl shadow-gray-200/50 bg-white">
-                            <CardContent className="p-8 space-y-8">
-                                <div>
-                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center text-lg">
-                                        <Clock className="h-5 w-5 mr-2.5 text-gray-400" />
-                                        Opening Hours
-                                    </h3>
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center p-3 rounded-2xl bg-gray-50">
-                                            <span className="text-gray-600 font-medium text-sm">Mon - Fri</span>
-                                            <span className="font-bold text-[#1A2035] text-sm">8:00 AM - 5:00 PM</span>
-                                        </div>
-                                        <div className="flex justify-between items-center p-3 rounded-2xl bg-gray-50">
-                                            <span className="text-gray-600 font-medium text-sm">Saturday</span>
-                                            <span className="font-bold text-[#1A2035] text-sm">9:00 AM - 2:00 PM</span>
-                                        </div>
-                                        <div className="flex justify-between items-center p-3 rounded-2xl bg-white border border-gray-100">
-                                            <span className="text-gray-400 font-medium text-sm">Sunday</span>
-                                            <span className="font-bold text-red-500 text-sm">Closed</span>
-                                        </div>
+                        {/* Contact Info */}
+                        <div className="bg-white rounded-xl border border-slate-200 p-6">
+                            <h3 className="font-bold text-slate-900 mb-4">Contact Information</h3>
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <MapPinIcon className="w-5 h-5 text-slate-400 mt-0.5" />
+                                    <div className="text-sm">
+                                        <p className="font-medium text-slate-900">{dealer.address}</p>
+                                        <p className="text-slate-600">{dealer.district}, {dealer.region}</p>
                                     </div>
                                 </div>
-
-                                <div className="w-full h-px bg-gray-100" />
-
-                                <div>
-                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center text-lg">
-                                        <Phone className="h-5 w-5 mr-2.5 text-gray-400" />
-                                        Contact
-                                    </h3>
-                                    <div className="space-y-3">
-                                        <Button variant="outline" className="w-full justify-start h-12 border-gray-200 rounded-xl hover:bg-gray-50 hover:text-[#1A2035] font-medium text-gray-600">
-                                            <Phone className="mr-3 h-4 w-4" />
-                                            {dealer.phone}
-                                        </Button>
-                                        <Button variant="outline" className="w-full justify-start h-12 border-gray-200 rounded-xl hover:bg-gray-50 hover:text-[#1A2035] font-medium text-gray-600">
-                                            <Mail className="mr-3 h-4 w-4" />
-                                            Email Dealer
-                                        </Button>
-                                        <Button variant="outline" className="w-full justify-start h-12 border-gray-200 rounded-xl hover:bg-gray-50 hover:text-[#1A2035] font-medium text-gray-600">
-                                            <Globe className="mr-3 h-4 w-4" />
-                                            Visit Website
-                                        </Button>
-                                    </div>
+                                <div className="flex items-center gap-3">
+                                    <PhoneIcon className="w-5 h-5 text-slate-400" />
+                                    <a href={`tel:${dealer.phone}`} className="text-sm text-slate-900 hover:text-[#D4AF37]">
+                                        {dealer.phone}
+                                    </a>
                                 </div>
-                            </CardContent>
-                        </Card>
-
-                        <div className="bg-[#1A2035] text-white p-8 rounded-3xl relative overflow-hidden shadow-2xl shadow-[#1A2035]/30">
-                            <div className="relative z-10">
-                                <h3 className="font-bold text-xl mb-3">Ready to Visit?</h3>
-                                <p className="text-white/70 text-sm mb-6 leading-relaxed">
-                                    Ensure you have your digital Permit to Purchase (QR Code) and a valid ID before visiting the physical store.
-                                </p>
-                                <Button className="w-full bg-white text-[#1A2035] hover:bg-gray-100 font-bold border-none h-12 rounded-xl">
-                                    View My Permit
-                                </Button>
+                                <div className="flex items-center gap-3">
+                                    <EnvelopeIcon className="w-5 h-5 text-slate-400" />
+                                    <a href={`mailto:${dealer.email}`} className="text-sm text-slate-900 hover:text-[#D4AF37]">
+                                        {dealer.email}
+                                    </a>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <GlobeAltIcon className="w-5 h-5 text-slate-400" />
+                                    <a href={`https://${dealer.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-900 hover:text-[#D4AF37]">
+                                        {dealer.website}
+                                    </a>
+                                </div>
                             </div>
-                            {/* Decorative Elements */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-10 -translate-y-10"></div>
-                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/20 rounded-full blur-xl -translate-x-5 translate-y-5"></div>
+                        </div>
+
+                        {/* Hours */}
+                        <div className="bg-white rounded-xl border border-slate-200 p-6">
+                            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                <ClockIcon className="w-5 h-5 text-slate-400" />
+                                Business Hours
+                            </h3>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-slate-600">Mon - Fri</span>
+                                    <span className="font-medium text-slate-900">{dealer.hours.weekday}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-slate-600">Saturday</span>
+                                    <span className="font-medium text-slate-900">{dealer.hours.saturday}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-slate-600">Sunday</span>
+                                    <span className="font-medium text-red-600">{dealer.hours.sunday}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Important Notice */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                            <h3 className="font-bold text-amber-900 mb-2">Before Visiting</h3>
+                            <p className="text-sm text-amber-800 leading-relaxed">
+                                Ensure you have a valid firearm license and Permit to Purchase before visiting the dealer.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Purchase Modal */}
+            {showPurchaseModal && selectedItem && (
+                <FirearmPurchaseFlow/>
+    )
+}
+        </div >
     );
 }
