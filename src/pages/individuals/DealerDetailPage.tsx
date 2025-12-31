@@ -8,14 +8,9 @@ import {
     EnvelopeIcon,
     ClockIcon,
     CheckBadgeIcon,
-    GlobeAltIcon,
-    ShoppingCartIcon,
-    CheckCircleIcon,
-    XMarkIcon
-} from '@heroicons/react/24/outline';
+    GlobeAltIcon} from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
-import PurchaseConfirmationModal from './FirearmPayment';
 
 import safearmsImg from '@/assets/dealers/safearms-interior.png';
 import glockImg from '@/assets/products/glock-19.png';
@@ -125,7 +120,7 @@ const INVENTORY: InventoryItem[] = [
 
 export default function DealerDetailPage() {
     const navigate = useNavigate();
-    const { id } = useParams();
+    useParams();
     const [activeTab, setActiveTab] = useState<'inventory' | 'about'>('inventory');
 
     const dealer = DEALER_DETAIL;

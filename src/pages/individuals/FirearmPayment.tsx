@@ -8,35 +8,14 @@ import {
     DocumentTextIcon,
     CreditCardIcon,
     ExclamationTriangleIcon,
-    ClockIcon,
     IdentificationIcon,
     BuildingStorefrontIcon,
-    BanknotesIcon,
     DevicePhoneMobileIcon,
-    XMarkIcon,
     CheckIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
-interface PurchaseItem {
-    id: string;
-    name: string;
-    type: 'PISTOL' | 'RIFLE' | 'SHOTGUN';
-    make: string;
-    model: string;
-    caliber: string;
-    price: number;
-    image: string;
-    serialNumber?: string;
-}
 
-interface Dealer {
-    id: string;
-    name: string;
-    address: string;
-    phone: string;
-    licenseNumber: string;
-}
 
 const PROCESSING_FEE = 50;
 
@@ -143,10 +122,10 @@ export default function FirearmPurchaseFlow() {
                             <div key={step.id} className="flex items-center">
                                 <div className="flex flex-col items-center">
                                     <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${currentStep > step.id
-                                            ? 'bg-emerald-500 border-emerald-500'
-                                            : currentStep === step.id
-                                                ? 'bg-[#1A2035] border-[#1A2035]'
-                                                : 'bg-white border-slate-300'
+                                        ? 'bg-emerald-500 border-emerald-500'
+                                        : currentStep === step.id
+                                            ? 'bg-[#1A2035] border-[#1A2035]'
+                                            : 'bg-white border-slate-300'
                                         }`}>
                                         {currentStep > step.id ? (
                                             <CheckIcon className="w-6 h-6 text-white" />
@@ -300,8 +279,8 @@ export default function FirearmPurchaseFlow() {
                                                 <button
                                                     onClick={() => setPaymentMethod('MOBILE_MONEY')}
                                                     className={`w-full p-6 border-2 rounded-lg text-left transition-all ${paymentMethod === 'MOBILE_MONEY'
-                                                            ? 'border-[#1A2035] bg-slate-50'
-                                                            : 'border-slate-200 hover:border-slate-300'
+                                                        ? 'border-[#1A2035] bg-slate-50'
+                                                        : 'border-slate-200 hover:border-slate-300'
                                                         }`}
                                                 >
                                                     <div className="flex items-center justify-between">
@@ -337,8 +316,8 @@ export default function FirearmPurchaseFlow() {
                                                                         key={provider}
                                                                         onClick={() => setMobileProvider(provider)}
                                                                         className={`py-2 px-4 rounded-lg border-2 font-medium transition-all ${mobileProvider === provider
-                                                                                ? 'border-[#1A2035] bg-[#1A2035] text-white'
-                                                                                : 'border-slate-200 text-slate-700 hover:border-slate-300'
+                                                                            ? 'border-[#1A2035] bg-[#1A2035] text-white'
+                                                                            : 'border-slate-200 text-slate-700 hover:border-slate-300'
                                                                             }`}
                                                                     >
                                                                         {provider}
@@ -369,8 +348,8 @@ export default function FirearmPurchaseFlow() {
                                                 <button
                                                     onClick={() => setPaymentMethod('CARD')}
                                                     className={`w-full p-6 border-2 rounded-lg text-left transition-all ${paymentMethod === 'CARD'
-                                                            ? 'border-[#1A2035] bg-slate-50'
-                                                            : 'border-slate-200 hover:border-slate-300'
+                                                        ? 'border-[#1A2035] bg-slate-50'
+                                                        : 'border-slate-200 hover:border-slate-300'
                                                         }`}
                                                 >
                                                     <div className="flex items-center justify-between">
