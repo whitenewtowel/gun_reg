@@ -11,6 +11,7 @@ import {
     PhoneIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import GhanaCard from '@/components/GhanaCard';
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('profile');
@@ -22,10 +23,18 @@ export default function SettingsPage() {
         email: 'bernard@example.com',
         phone: '+233541185762',
         city: 'Accra',
-        region: 'Greater Accra'
+        region: 'Greater Accra',
+        // Ghana Card Details (Read-only)
+        ghanaCardNumber: 'GHA-123456789-0',
+        dateOfBirth: '1990-05-15',
+        sex: 'M',
+        district: 'Accra Metropolis',
+        issueDate: '2020-01-15',
+        expiryDate: '2030-01-15',
+        address: 'Hse No 24, Block B, Madina',
+        photoUrl: '/assets/ghanaian-hunter.png' // Utilizing existing asset as placeholder
     });
 
-    // Notification settings
     const [notifications, setNotifications] = useState({
         emailNotifications: true,
         smsNotifications: true,
@@ -35,7 +44,8 @@ export default function SettingsPage() {
         securityAlerts: true
     });
 
-    // Security settings
+    // ... (rest of state remain same)
+
     const [security, setSecuritySettings] = useState({
         twoFactorAuth: false,
         loginAlerts: true
@@ -53,6 +63,8 @@ export default function SettingsPage() {
             setLoading(false);
         }
     };
+
+    // ... (other handlers)
 
     const handleNotificationUpdate = async () => {
         setLoading(true);
@@ -100,8 +112,8 @@ export default function SettingsPage() {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                                ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                                : 'text-gray-400 hover:text-white'
+                            ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                            : 'text-gray-400 hover:text-white'
                             }`}
                     >
                         <tab.icon className="w-5 h-5" />
@@ -120,7 +132,25 @@ export default function SettingsPage() {
                 {/* Profile Tab */}
                 {activeTab === 'profile' && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-bold text-white mb-4">Profile Information</h2>
+                        {/* Ghana Card Display */}
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold text-white mb-4">National Identification</h3>
+                            <GhanaCard
+                                fullName={profileData.fullName}
+                                ghanaCardNumber={profileData.ghanaCardNumber}
+                                dateOfBirth={profileData.dateOfBirth}
+                                sex={profileData.sex}
+                                nationality="Ghanaian"
+                                region={profileData.region}
+                                district={profileData.district}
+                                address={profileData.address}
+                                issueDate={profileData.issueDate}
+                                expiryDate={profileData.expiryDate}
+                                photoUrl={profileData.photoUrl} // Use local mock data or context
+                            />
+                        </div>
+
+                        <h2 className="text-xl font-bold text-white mb-4">Personal Information (Editable)</h2>
 
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>

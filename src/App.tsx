@@ -17,6 +17,7 @@ import KYCCompletePage from './pages/kyc/KYCCompletePage'
 import SelectUserTypePage from './pages/onboarding/SelectUserTypePage'
 import CompleteApplications from './pages/individuals/CompleteApplications'
 import ApplicationsPage from './pages/individuals/ApplicationsPage'
+import ApplicationDetailPage from './pages/individuals/ApplicationDetailPage'
 import MyFirearmsPage from './pages/individuals/MyFirearmsPage'
 import PaymentsPage from './pages/individuals/PaymentsPage'
 import HistoryPage from './pages/individuals/HistoryPage'
@@ -55,6 +56,7 @@ function App() {
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardRedirectHandler />} />
               <Route path="/applications" element={<ApplicationsPage />} />
+              <Route path="/applications/:id" element={<ApplicationDetailPage />} />
               <Route path="/firearms" element={<MyFirearmsPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/history" element={<HistoryPage />} />

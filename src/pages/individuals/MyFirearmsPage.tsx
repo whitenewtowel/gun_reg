@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import apiClient from '@/lib/apiClient';
 
 interface Firearm {
     id: string;
@@ -35,44 +36,36 @@ export default function MyFirearmsPage() {
 
     const fetchFirearms = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/dashboard/firearms`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setFirearms(data.firearms || []);
-            } else {
-                // Fallback to mock data
-                setFirearms([
-                    {
-                        id: '1',
-                        make: 'Glock',
-                        model: '19 Gen5',
-                        serialNumber: 'GLK-2024-001234',
-                        type: 'HANDGUN',
-                        caliber: '9mm',
-                        status: 'ACTIVE',
-                        registeredAt: '2024-01-15T10:00:00Z',
-                        licenseExpiresAt: '2026-01-15T10:00:00Z'
-                    },
-                    {
-                        id: '2',
-                        make: 'Remington',
-                        model: '870 Express',
-                        serialNumber: 'REM-2023-005678',
-                        type: 'SHOTGUN',
-                        caliber: '12 Gauge',
-                        status: 'ACTIVE',
-                        registeredAt: '2023-06-20T14:30:00Z',
-                        licenseExpiresAt: '2025-06-20T14:30:00Z'
-                    }
-                ]);
-            }
+            const response = await apiClient.get('/dashboard/firearms');
+            const data = response.data;
+            setFirearms(data.firearms || []);
         } catch (error) {
             console.error('Error fetching firearms:', error);
+            // Fallback to mock data
+            setFirearms([
+                {
+                    id: '1',
+                    make: 'Glock',
+                    model: '19 Gen5',
+                    serialNumber: 'GLK-2024-001234',
+                    type: 'HANDGUN',
+                    caliber: '9mm',
+                    status: 'ACTIVE',
+                    registeredAt: '2024-01-15T10:00:00Z',
+                    licenseExpiresAt: '2026-01-15T10:00:00Z'
+                },
+                {
+                    id: '2',
+                    make: 'Remington',
+                    model: '870 Express',
+                    serialNumber: 'REM-2023-005678',
+                    type: 'SHOTGUN',
+                    caliber: '12 Gauge',
+                    status: 'ACTIVE',
+                    registeredAt: '2023-06-20T14:30:00Z',
+                    licenseExpiresAt: '2025-06-20T14:30:00Z'
+                }
+            ]);
             toast.error('Failed to load firearms');
         } finally {
             setLoading(false);

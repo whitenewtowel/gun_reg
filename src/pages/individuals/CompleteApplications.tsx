@@ -15,7 +15,8 @@ import {
     PlusIcon,
     TrashIcon
 } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
+import apiClient from '@/lib/apiClient';
 
 interface Reference {
     full_name: string;
@@ -319,19 +320,8 @@ export default function CompleteApplications() {
             });
 
             // Submit to API
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/permits/apply`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                },
-                body: formDataToSend
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to submit application');
-            }
-
-            const result = await response.json();
+            // Submit to API
+            await apiClient.post('/applications', formDataToSend);
 
             // Update onboarding context
             const onboardingContext = {
@@ -404,8 +394,8 @@ export default function CompleteApplications() {
                         {[1, 2, 3, 4].map((step) => (
                             <div key={step} className="flex items-center">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${currentStep >= step
-                                        ? 'bg-[#D4AF37] text-black'
-                                        : 'bg-white/10 text-gray-500'
+                                    ? 'bg-[#D4AF37] text-black'
+                                    : 'bg-white/10 text-gray-500'
                                     }`}>
                                     {step}
                                 </div>

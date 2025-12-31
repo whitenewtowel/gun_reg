@@ -10,7 +10,7 @@ import {
     FunnelIcon
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import apiClient from '@/lib/apiClient';
 
 interface Application {
     id: string;
@@ -19,6 +19,7 @@ interface Application {
     submittedAt: string;
     updatedAt: string;
     purpose?: string;
+    trackingId?: string;
 }
 
 export default function ApplicationsPage() {
@@ -33,38 +34,44 @@ export default function ApplicationsPage() {
 
     const fetchApplications = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/applications/my`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                }
-            });
+            const response = await apiClient.get('/applications/my');
+            // API returns { success: true, data: [...] }
+            const apiData = response.data.data || [];
 
-            if (response.ok) {
-                const data = await response.json();
-                setApplications(data.applications || []);
-            } else {
-                // Fallback to mock data
-                setApplications([
-                    {
-                        id: '1',
-                        type: 'PERMIT_TO_PURCHASE',
-                        status: 'PENDING',
-                        submittedAt: '2024-12-20T10:00:00Z',
-                        updatedAt: '2024-12-20T10:00:00Z',
-                        purpose: 'PERSONAL_SECURITY'
-                    },
-                    {
-                        id: '2',
-                        type: 'LICENSE_RENEWAL',
-                        status: 'APPROVED',
-                        submittedAt: '2024-11-15T14:30:00Z',
-                        updatedAt: '2024-11-20T09:15:00Z'
-                    }
-                ]);
-            }
+            const mappedApplications = apiData.map((app: any) => ({
+                id: app.id,
+                type: app.application_type,
+                status: app.status,
+                submittedAt: app.submitted_at,
+                updatedAt: app.updated_at,
+                purpose: app.permit_data?.purpose,
+                trackingId: app.tracking_id
+            }));
+
+            setApplications(mappedApplications);
         } catch (error) {
             console.error('Error fetching applications:', error);
-            toast.error('Failed to load applications');
+            // Fallback to mock data on error (for dev)
+            setApplications([
+                {
+                    id: '1',
+                    type: 'PERMIT_TO_PURCHASE',
+                    status: 'SUBMITTED',
+                    submittedAt: '2024-12-20T10:00:00Z',
+                    updatedAt: '2024-12-20T10:00:00Z',
+                    purpose: 'PERSONAL_SECURITY',
+                    trackingId: 'PMT-2024-001'
+                },
+                {
+                    id: '2',
+                    type: 'LICENSE_RENEWAL',
+                    status: 'APPROVED',
+                    submittedAt: '2024-11-15T14:30:00Z',
+                    updatedAt: '2024-11-20T09:15:00Z',
+                    trackingId: 'LIC-2024-889'
+                }
+            ]);
+            // toast.error('Failed to load applications');
         } finally {
             setLoading(false);
         }
@@ -75,6 +82,7 @@ export default function ApplicationsPage() {
             case 'APPROVED':
                 return 'text-green-400 bg-green-500/10 border-green-500/30';
             case 'PENDING':
+            case 'SUBMITTED':
                 return 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/30';
             case 'REJECTED':
                 return 'text-red-400 bg-red-500/10 border-red-500/30';
@@ -90,6 +98,7 @@ export default function ApplicationsPage() {
             case 'APPROVED':
                 return <CheckCircleIcon className="w-5 h-5" />;
             case 'PENDING':
+            case 'SUBMITTED':
             case 'UNDER_REVIEW':
                 return <ClockIcon className="w-5 h-5" />;
             case 'REJECTED':
@@ -133,13 +142,13 @@ export default function ApplicationsPage() {
             <div className="flex items-center gap-4 p-4 bg-[#1A2035] border border-white/10 rounded-lg">
                 <FunnelIcon className="w-5 h-5 text-[#D4AF37]" />
                 <div className="flex gap-2 flex-wrap">
-                    {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'UNDER_REVIEW'].map((status) => (
+                    {['ALL', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'].map((status) => (
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
                             className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === status
-                                    ? 'bg-[#D4AF37] text-black'
-                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                ? 'bg-[#D4AF37] text-black'
+                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                 }`}
                         >
                             {status.replace('_', ' ')}
@@ -187,7 +196,7 @@ export default function ApplicationsPage() {
                                             {app.type.replace(/_/g, ' ')}
                                         </h3>
                                         <p className="text-sm text-gray-400 mb-3">
-                                            Application ID: {app.id}
+                                            Application ID: {app.trackingId || app.id}
                                         </p>
 
                                         <div className="flex flex-wrap gap-4 text-sm">

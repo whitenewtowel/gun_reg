@@ -88,6 +88,7 @@ export default function DashboardLayout() {
             { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
             { icon: FileText, label: 'Applications', path: '/applications' },
             { icon: Shield, label: 'My Firearms', path: '/firearms' },
+            { icon: Shield, label: 'License Dealers', path: '/license/dealers' },
             { icon: CreditCard, label: 'Payments', path: '/payments' },
             { icon: Clock, label: 'History', path: '/history' },
             ...commonItems

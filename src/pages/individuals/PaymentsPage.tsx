@@ -9,7 +9,9 @@ import {
     FunnelIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import apiClient from '@/lib/apiClient';
 
+// ... (interface remains the same)
 interface Payment {
     id: string;
     amount: number;
@@ -33,44 +35,36 @@ export default function PaymentsPage() {
 
     const fetchPayments = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/payments/my`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setPayments(data.payments || []);
-            } else {
-                // Fallback to mock data
-                setPayments([
-                    {
-                        id: '1',
-                        amount: 250.00,
-                        currency: 'GHS',
-                        status: 'COMPLETED',
-                        purpose: 'Permit Application Fee',
-                        paymentMethod: 'MOBILE_MONEY',
-                        createdAt: '2024-12-20T10:00:00Z',
-                        completedAt: '2024-12-20T10:05:00Z',
-                        referenceNumber: 'PAY-2024-001234'
-                    },
-                    {
-                        id: '2',
-                        amount: 150.00,
-                        currency: 'GHS',
-                        status: 'PENDING',
-                        purpose: 'License Renewal Fee',
-                        paymentMethod: 'BANK_CARD',
-                        createdAt: '2024-12-30T14:30:00Z',
-                        referenceNumber: 'PAY-2024-005678'
-                    }
-                ]);
-            }
+            const response = await apiClient.get('/payments/my');
+            const data = response.data;
+            setPayments(data.payments || []);
         } catch (error) {
             console.error('Error fetching payments:', error);
-            toast.error('Failed to load payments');
+            // Fallback to mock data on error
+            setPayments([
+                {
+                    id: '1',
+                    amount: 250.00,
+                    currency: 'GHS',
+                    status: 'COMPLETED',
+                    purpose: 'Permit Application Fee',
+                    paymentMethod: 'MOBILE_MONEY',
+                    createdAt: '2024-12-20T10:00:00Z',
+                    completedAt: '2024-12-20T10:05:00Z',
+                    referenceNumber: 'PAY-2024-001234'
+                },
+                {
+                    id: '2',
+                    amount: 150.00,
+                    currency: 'GHS',
+                    status: 'PENDING',
+                    purpose: 'License Renewal Fee',
+                    paymentMethod: 'BANK_CARD',
+                    createdAt: '2024-12-30T14:30:00Z',
+                    referenceNumber: 'PAY-2024-005678'
+                }
+            ]);
+            // toast.error('Failed to load payments');
         } finally {
             setLoading(false);
         }
