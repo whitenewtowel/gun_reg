@@ -201,7 +201,7 @@ export default function LandingPage() {
                                     </Button>
                                 </Link>
                                 <Link to="/login">
-                                    <Button className="bg-red-600 hover:bg-[#B4941F] text-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)] border-none clip-chamfer rounded-none px-6">
+                                    <Button className="bg-[#D4AF37] hover:bg-[#B4941F] text-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)] border-none clip-chamfer rounded-none px-6">
                                         LOGIN
                                     </Button>
                                 </Link>
