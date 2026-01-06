@@ -98,7 +98,7 @@ export default function CompleteApplications() {
                 if (response.ok) {
                     const data = await response.json();
                     setFormData({
-                        fullName: data.user.full_name || 'Bernard Wiafe',
+                        fullName: data.user.full_name || '',
                         ghanaCardNumber: 'GHA-123456789-1',
                         dateOfBirth: '1997-06-06',
                         address: 'GA-123-4567, Accra, Greater Accra',
@@ -112,7 +112,7 @@ export default function CompleteApplications() {
                     setFormData({
                         fullName: authUser?.firstName && authUser?.lastName
                             ? `${authUser.firstName} ${authUser.lastName}`
-                            : 'Bernard Wiafe',
+                            : '',
                         ghanaCardNumber: authUser?.ghanaCardNumber || 'GHA-123456789-1',
                         dateOfBirth: '1997-06-06',
                         address: 'GA-123-4567, Accra, Greater Accra',

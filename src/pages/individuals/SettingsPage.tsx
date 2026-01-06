@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     UserCircleIcon,
@@ -12,27 +12,29 @@ import {
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import GhanaCard from '@/components/GhanaCard';
+import apiClient from '@/lib/apiClient';
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('profile');
     const [loading, setLoading] = useState(false);
+    const [fetchingProfile, setFetchingProfile] = useState(true);
 
     // Profile settings
     const [profileData, setProfileData] = useState({
-        fullName: 'Bernard Wiafe',
-        email: 'bernard@example.com',
-        phone: '+233541185762',
-        city: 'Accra',
-        region: 'Greater Accra',
-        // Ghana Card Details (Read-only)
-        ghanaCardNumber: 'GHA-123456789-0',
-        dateOfBirth: '1990-05-15',
-        sex: 'M',
-        district: 'Accra Metropolis',
-        issueDate: '2020-01-15',
-        expiryDate: '2030-01-15',
-        address: 'Hse No 24, Block B, Madina',
-        photoUrl: '/assets/ghanaian-hunter.png' // Utilizing existing asset as placeholder
+        fullName: '',
+        email: '',
+        phone: '',
+        city: '',
+        region: '',
+        address: '',
+        // Ghana Card Details (Read-only from KYC)
+        ghanaCardNumber: '',
+        dateOfBirth: '',
+        sex: '',
+        district: '',
+        issueDate: '',
+        expiryDate: '',
+        photoUrl: '/assets/ghanaian-hunter.png'
     });
 
     const [notifications, setNotifications] = useState({
@@ -44,21 +46,59 @@ export default function SettingsPage() {
         securityAlerts: true
     });
 
-    // ... (rest of state remain same)
-
     const [security, setSecuritySettings] = useState({
         twoFactorAuth: false,
         loginAlerts: true
     });
 
+    // Fetch user profile on mount
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            setFetchingProfile(true);
+            const response = await apiClient.get('/users/me');
+            const userData = response.data.user;
+
+            setProfileData({
+                fullName: userData.full_name || '',
+                email: userData.email || '',
+                phone: userData.phone || '',
+                city: userData.city || '',
+                region: userData.region || '',
+                address: userData.address || '',
+                ghanaCardNumber: userData.ghana_card_number || '',
+                dateOfBirth: userData.date_of_birth || '',
+                sex: userData.sex || '',
+                district: userData.district || '',
+                issueDate: userData.issue_date || '',
+                expiryDate: userData.expiry_date || '',
+                photoUrl: userData.photo_url || '/assets/ghanaian-hunter.png'
+            });
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            toast.error('Failed to load profile data');
+        } finally {
+            setFetchingProfile(false);
+        }
+    };
+
     const handleProfileUpdate = async () => {
         setLoading(true);
         try {
-            // API call to update profile
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await apiClient.patch('/users/me', {
+                full_name: profileData.fullName,
+                address: profileData.address,
+                region: profileData.region,
+            });
             toast.success('Profile updated successfully');
-        } catch (error) {
-            toast.error('Failed to update profile');
+            // Refresh profile data
+            await fetchUserProfile();
+        } catch (error: any) {
+            console.error('Error updating profile:', error);
+            toast.error(error.response?.data?.message || 'Failed to update profile');
         } finally {
             setLoading(false);
         }
@@ -96,6 +136,17 @@ export default function SettingsPage() {
         { id: 'security', name: 'Security', icon: ShieldCheckIcon },
         { id: 'preferences', name: 'Preferences', icon: GlobeAltIcon }
     ];
+
+    if (fetchingProfile) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-[#1A2035] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-gray-500 font-medium">Loading profile...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -146,7 +197,7 @@ export default function SettingsPage() {
                                 address={profileData.address}
                                 issueDate={profileData.issueDate}
                                 expiryDate={profileData.expiryDate}
-                                photoUrl={profileData.photoUrl} // Use local mock data or context
+                                photoUrl={profileData.photoUrl}
                             />
                         </div>
 
@@ -169,27 +220,29 @@ export default function SettingsPage() {
                             <div>
                                 <label className="block text-sm text-gray-600 mb-2">
                                     <EnvelopeIcon className="w-4 h-4 inline mr-2" />
-                                    Email Address
+                                    Email Address (Read-only)
                                 </label>
                                 <input
                                     type="email"
                                     value={profileData.email}
-                                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
+                                    disabled
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 cursor-not-allowed"
                                 />
+                                <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
                             </div>
 
                             <div>
                                 <label className="block text-sm text-gray-600 mb-2">
                                     <PhoneIcon className="w-4 h-4 inline mr-2" />
-                                    Phone Number
+                                    Phone Number (Read-only)
                                 </label>
                                 <input
                                     type="tel"
                                     value={profileData.phone}
-                                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
+                                    disabled
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 cursor-not-allowed"
                                 />
+                                <p className="text-xs text-gray-400 mt-1">Phone cannot be changed</p>
                             </div>
 
                             <div>
@@ -204,16 +257,15 @@ export default function SettingsPage() {
                                 />
                             </div>
 
-                            <div>
+                            <div className="md:col-span-2">
                                 <label className="block text-sm text-gray-600 mb-2">
-                                    Region
+                                    Address
                                 </label>
-                                <input
-                                    type="text"
-                                    value={profileData.region}
-                                    onChange={(e) => setProfileData({ ...profileData, region: e.target.value })}
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 cursor-not-allowed"
-                                    disabled
+                                <textarea
+                                    value={profileData.address}
+                                    onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
+                                    rows={3}
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#1A2035] focus:outline-none focus:ring-2 focus:ring-[#1A2035]/20 focus:border-[#1A2035]"
                                 />
                             </div>
                         </div>
