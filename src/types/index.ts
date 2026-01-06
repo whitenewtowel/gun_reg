@@ -192,21 +192,65 @@ export type PaymentStatus =
   | 'CANCELLED';
 
 // Dashboard Types
+// Dashboard Types matching API Response
 export interface DashboardData {
+  user: {
+    id: string;
+    email: string;
+    phone: string;
+    full_name: string | null;
+    status: string;
+    roles: string[];
+    created_at: string;
+  };
+  kyc: {
+    status: string;
+    passed: boolean;
+    provider: string;
+    verified_channels: {
+      sms: boolean;
+      email: boolean;
+    };
+    verified_at: string;
+    full_name: string | null;
+    dob: string | null;
+  };
   summary: DashboardSummary;
-  recentApplications: Application[];
-  firearms: Firearm[];
-  payments: Payment[];
-  alerts: Alert[];
+  recent_resources: {
+    firearms: DashboardFirearm[];
+    applications: DashboardApplication[];
+    payments: any[];
+  };
+  dealer_profile: any | null;
 }
 
 export interface DashboardSummary {
-  totalApplications: number;
-  pendingApplications: number;
-  approvedApplications: number;
-  totalFirearms: number;
-  activeLicences: number;
-  expiringLicences: number;
+  total_firearms: number;
+  total_applications: number;
+  approved_applications: number;
+  pending_applications: number;
+  total_payments_made: number;
+  total_amount_paid: string;
+  is_dealer: boolean;
+}
+
+export interface DashboardFirearm {
+  id: string;
+  serial_number: string;
+  type: string;
+  model: string;
+  calibre: string;
+  status: string;
+  created_at: string;
+}
+
+export interface DashboardApplication {
+  id: string;
+  tracking_id: string;
+  type: string;
+  status: string;
+  submitted_at: string | null;
+  decision_at: string | null;
 }
 
 export interface Alert {
