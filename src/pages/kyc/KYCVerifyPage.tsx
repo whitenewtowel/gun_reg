@@ -11,6 +11,7 @@ import { ShieldCheckIcon, ArrowRightIcon, ArrowPathIcon } from '@heroicons/react
 import { Button } from '@/components/ui/button';
 import OTPInput from '@/components/kyc/OTPInput';
 import kycService from '@/services/kycService';
+import { IMAGES } from '@/assets/images';
 
 interface LocationState {
     kyc_session_id: string;
@@ -133,9 +134,7 @@ export default function KYCVerifyPage() {
             <header className="border-b border-white/5 bg-[#0B1021]/95 backdrop-blur-md sticky top-0 z-40">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 bg-black rounded border border-[#D4AF37]/30 flex items-center justify-center">
-                            <ShieldCheckIcon className="h-6 w-6 text-[#D4AF37]" />
-                        </div>
+                        <img src={IMAGES.LOGIN2} alt="" className='w-12 ' />
                         <div>
                             <h1 className="text-lg font-bold tracking-tight text-white leading-none">NFLTMS</h1>
                             <p className="text-[0.6rem] text-[#D4AF37] tracking-widest uppercase">Secure Verification</p>

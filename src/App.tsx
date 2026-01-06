@@ -74,7 +74,7 @@ function App() {
             </Route>
 
             {/* Specific Functional Routes */}
-            <Route path="/renewal" element={<Renewal />} />
+            <Route path="/applications/renew/:id" element={<Renewal />} />
 
             <Route path="/dealer-registration" element={<DealerRegistration />} />
           </Route>

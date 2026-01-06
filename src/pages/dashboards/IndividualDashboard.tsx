@@ -136,7 +136,7 @@ export default function IndividualDashboard() {
             label: 'Active Licenses',
             value: data?.summary?.activeLicences ?? 2,
             icon: FileCheck,
-            color: 'bg-blue-500',
+            color: 'bg-blue-700',
             textColor: 'text-white',
             subtext: 'Valid Licenses',
             trend: 'Compliant'

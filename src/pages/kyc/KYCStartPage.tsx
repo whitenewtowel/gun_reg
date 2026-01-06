@@ -350,8 +350,10 @@ export default function KYCStartPage() {
                                                 </div>
 
                                                 <div
-                                                    onClick={() => setValue('delivery_channel', 'email')}
+                                                    // onClick={() => setValue('delivery_channel', 'email')}
+                                                    onClick={() => null}
                                                     className={`cursor-pointer p-4 border ${deliveryChannel === 'email' ? 'border-[#D4AF37] bg-[#D4AF37]/10' : 'border-white/10 bg-[#1A2035]'} transition-all`}
+                                                    
                                                 >
                                                     <div className="flex items-center gap-3 mb-2">
                                                         <div className={`h-4 w-4 rounded-full border flex items-center justify-center ${deliveryChannel === 'email' ? 'border-[#D4AF37]' : 'border-gray-500'}`}>
@@ -398,9 +400,8 @@ export default function KYCStartPage() {
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <h2 className="text-2xl font-stencil text-white mb-2 uppercase">Emergency Contact</h2>
-                                                <p className="text-gray-400 text-sm">Optional secondary contact</p>
+                                                <p className="text-gray-400 text-sm"> Secondary contact</p>
                                             </div>
-                                            <span className="text-[10px] bg-white/10 px-2 py-1 rounded text-gray-400 uppercase">Optional</span>
                                         </div>
                                     </div>
 
