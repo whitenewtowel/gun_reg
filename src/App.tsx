@@ -20,10 +20,11 @@ import ApplicationsPage from './pages/individuals/ApplicationsPage'
 import ApplicationDetailPage from './pages/individuals/ApplicationDetailPage'
 import DealersPage from './pages/individuals/DealersPage'
 import DealerDetailPage from './pages/individuals/DealerDetailPage'
-import FirearmPurchaseFlow from './pages/individuals/FirearmPayment'
+import PurchaseFirearmPage from './pages/individuals/PurchaseFirearmPage'
 import MyFirearmsPage from './pages/individuals/MyFirearmsPage'
 import FirearmDetailPage from './pages/individuals/FirearmDetailPage'
 import PaymentsPage from './pages/individuals/PaymentsPage'
+import PaymentCallbackPage from './pages/individuals/PaymentCallbackPage'
 import HistoryPage from './pages/individuals/HistoryPage'
 import SettingsPage from './pages/individuals/SettingsPage'
 import DashboardRedirectHandler from './components/auth/DashboardRedirectHandler'
@@ -63,10 +64,11 @@ function App() {
               <Route path="/applications/:id" element={<ApplicationDetailPage />} />
               <Route path="/dealers" element={<DealersPage />} />
               <Route path="/dealers/:id" element={<DealerDetailPage />} />
-              <Route path="/dealers/:dealerId/purchase/:itemId" element={<FirearmPurchaseFlow />} />
+              <Route path="/dealers/:dealerId/purchase/:firearmId" element={<PurchaseFirearmPage />} />
               <Route path="/firearms" element={<MyFirearmsPage />} />
               <Route path="/firearms/:id" element={<FirearmDetailPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/payments/callback" element={<PaymentCallbackPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/licenses" element={<LicenseManagement />} />

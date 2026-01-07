@@ -105,15 +105,15 @@ export default function MyFirearmsPage() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'ACTIVE':
-                return 'text-green-600 bg-green-50 border-green-200';
+                return 'text-emerald-800 bg-emerald-100 border-emerald-200 shadow-sm';
             case 'EXPIRED':
-                return 'text-red-600 bg-red-50 border-red-200';
+                return 'text-rose-800 bg-rose-100 border-rose-200 shadow-sm';
             case 'PENDING':
-                return 'text-[#1A2035] bg-gray-100 border-gray-200';
+                return 'text-amber-800 bg-amber-100 border-amber-200 shadow-sm';
             case 'SUSPENDED':
-                return 'text-orange-600 bg-orange-50 border-orange-200';
+                return 'text-orange-800 bg-orange-100 border-orange-200 shadow-sm';
             default:
-                return 'text-gray-500 bg-gray-100 border-gray-200';
+                return 'text-slate-600 bg-slate-100 border-slate-200 shadow-sm';
         }
     };
 

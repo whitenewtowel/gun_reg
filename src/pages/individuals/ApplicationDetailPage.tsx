@@ -90,12 +90,12 @@ export default function ApplicationDetailPage() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'APPROVED': return 'text-green-600 bg-green-50 border-green-200';
+            case 'APPROVED': return 'text-emerald-800 bg-emerald-100 border-emerald-200 shadow-sm';
             case 'PENDING':
-            case 'SUBMITTED': return 'text-[#1A2035] bg-gray-100 border-gray-200';
-            case 'REJECTED': return 'text-red-600 bg-red-50 border-red-200';
-            case 'UNDER_REVIEW': return 'text-blue-600 bg-blue-50 border-blue-200';
-            default: return 'text-gray-500 bg-gray-50 border-gray-200';
+            case 'SUBMITTED': return 'text-amber-800 bg-amber-100 border-amber-200 shadow-sm';
+            case 'REJECTED': return 'text-rose-800 bg-rose-100 border-rose-200 shadow-sm';
+            case 'UNDER_REVIEW': return 'text-blue-800 bg-blue-100 border-blue-200 shadow-sm';
+            default: return 'text-slate-600 bg-slate-100 border-slate-200 shadow-sm';
         }
     };
 
@@ -180,8 +180,8 @@ export default function ApplicationDetailPage() {
                             <div className="flex gap-4 mt-4">
                                 {application.permit_data?.medical_valid !== undefined && (
                                     <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border ${application.permit_data.medical_valid
-                                        ? 'bg-green-50 border-green-200 text-green-700'
-                                        : 'bg-red-50 border-red-200 text-red-700'
+                                        ? 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                                        : 'bg-rose-100 border-rose-200 text-rose-800'
                                         }`}>
                                         {application.permit_data.medical_valid ? (
                                             <CheckCircleIcon className="w-4 h-4" />
@@ -194,8 +194,8 @@ export default function ApplicationDetailPage() {
 
                                 {application.permit_data?.police_clearance_valid !== undefined && (
                                     <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border ${application.permit_data.police_clearance_valid
-                                        ? 'bg-green-50 border-green-200 text-green-700'
-                                        : 'bg-red-50 border-red-200 text-red-700'
+                                        ? 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                                        : 'bg-rose-100 border-rose-200 text-rose-800'
                                         }`}>
                                         {application.permit_data.police_clearance_valid ? (
                                             <CheckCircleIcon className="w-4 h-4" />

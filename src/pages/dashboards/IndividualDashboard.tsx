@@ -120,9 +120,7 @@ export default function IndividualDashboard() {
 
         loadDashboardData();
     }, []);
-
-    // Mock data
-    // Mock data mapped to Real API data
+ 
     const stats = [
         {
             label: 'Total Firearms',

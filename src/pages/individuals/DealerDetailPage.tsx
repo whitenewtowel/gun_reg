@@ -6,20 +6,16 @@ import {
     MapPinIcon,
     PhoneIcon,
     EnvelopeIcon,
+    GlobeAltIcon,
     ClockIcon,
     CheckBadgeIcon,
-    GlobeAltIcon
+    BuildingStorefrontIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 import apiClient from '@/lib/apiClient';
 
 import safearmsImg from '@/assets/dealers/safearms-interior.png';
-import glockImg from '@/assets/products/glock-19.png';
-import remingtonImg from '@/assets/products/remington-870.png';
-import sigImg from '@/assets/products/sig-p320.png';
-import winchesterImg from '@/assets/products/winchester-70.png';
-import berettaImg from '@/assets/products/beretta-92fs.png';
 
 // API Response type from GET /dealers/{id}
 interface ApiDealerDetail {
@@ -90,6 +86,7 @@ interface ApiDealerDetail {
 
 interface InventoryItem {
     id: string;
+    firearmId: string; // The actual firearm ID needed for acquisitions
     name: string;
     type: 'PISTOL' | 'RIFLE' | 'SHOTGUN';
     make: string;
@@ -124,68 +121,6 @@ const DEALER_DETAIL = {
     specialties: ['Glock Authorized', 'Tactical Gear', 'Safety Training', 'Gunsmithing'],
     image: safearmsImg
 };
-
-const INVENTORY: InventoryItem[] = [
-    {
-        id: '1',
-        name: 'Glock 19 Gen 5',
-        type: 'PISTOL',
-        make: 'Glock',
-        model: '19 Gen 5',
-        caliber: '9mm',
-        price: 25000,
-        stock: 'IN_STOCK',
-        image: glockImg,
-        serialNumber: 'GLK-2025-001'
-    },
-    {
-        id: '2',
-        name: 'Remington 870 Express',
-        type: 'SHOTGUN',
-        make: 'Remington',
-        model: '870 Express',
-        caliber: '12 Gauge',
-        price: 18000,
-        stock: 'LOW_STOCK',
-        image: remingtonImg,
-        serialNumber: 'REM-2025-045'
-    },
-    {
-        id: '3',
-        name: 'Sig Sauer P320',
-        type: 'PISTOL',
-        make: 'Sig Sauer',
-        model: 'P320',
-        caliber: '9mm',
-        price: 28000,
-        stock: 'IN_STOCK',
-        image: sigImg,
-        serialNumber: 'SIG-2025-023'
-    },
-    {
-        id: '4',
-        name: 'Winchester Model 70',
-        type: 'RIFLE',
-        make: 'Winchester',
-        model: 'Model 70',
-        caliber: '.308',
-        price: 32000,
-        stock: 'IN_STOCK',
-        image: winchesterImg,
-        serialNumber: 'WIN-2025-012'
-    },
-    {
-        id: '5',
-        name: 'Beretta 92FS',
-        type: 'PISTOL',
-        make: 'Beretta',
-        model: '92FS',
-        caliber: '9mm',
-        price: 26500,
-        stock: 'OUT_OF_STOCK',
-        image: berettaImg
-    }
-];
 
 export default function DealerDetailPage() {
     const navigate = useNavigate();
@@ -240,7 +175,8 @@ export default function DealerDetailPage() {
                     else if (item.stock_status === 'LOW_STOCK') stockStatus = 'LOW_STOCK';
 
                     return {
-                        id: item.id,
+                        id: item.id, // Inventory item ID
+                        firearmId: item.firearm_id, // Actual firearm ID for acquisitions
                         name: `${item.firearm.type} - ${item.firearm.model}`,
                         type: item.firearm.type as 'PISTOL' | 'RIFLE' | 'SHOTGUN',
                         make: item.firearm.type, // Using type as make since make isn't in API
@@ -279,12 +215,10 @@ export default function DealerDetailPage() {
             } else {
                 // Fallback to mock
                 setDealerData(DEALER_DETAIL);
-                setInventoryData(INVENTORY);
             }
         } catch (error) {
             console.error('Error fetching dealer details:', error);
             setDealerData(DEALER_DETAIL);
-            setInventoryData(INVENTORY);
             toast.error('Failed to load dealer details');
         } finally {
             setLoading(false);
@@ -292,7 +226,7 @@ export default function DealerDetailPage() {
     };
 
     const dealer = dealerData || DEALER_DETAIL;
-    const inventory = inventoryData.length > 0 ? inventoryData : INVENTORY;
+    const inventory = inventoryData; // No fallback - show empty state if no data
 
     if (loading) {
         return (
@@ -319,11 +253,11 @@ export default function DealerDetailPage() {
     const getStockBadge = (stock: string) => {
         switch (stock) {
             case 'IN_STOCK':
-                return <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium">In Stock</span>;
+                return <span className="px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full text-xs font-medium">In Stock</span>;
             case 'LOW_STOCK':
-                return <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-medium">Low Stock</span>;
+                return <span className="px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full text-xs font-medium">Low Stock</span>;
             case 'OUT_OF_STOCK':
-                return <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">Out of Stock</span>;
+                return <span className="px-3 py-1 bg-slate-100 text-slate-500 border border-slate-200 rounded-full text-xs font-medium">Out of Stock</span>;
             default:
                 return null;
         }
@@ -411,67 +345,80 @@ export default function DealerDetailPage() {
                             {/* Inventory Tab */}
                             {activeTab === 'inventory' && (
                                 <div className="p-6">
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full">
-                                            <thead className="border-b border-slate-200">
-                                                <tr>
-                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Firearm</th>
-                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Type</th>
-                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Caliber</th>
-                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Price</th>
-                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Stock</th>
-                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100">
-                                                {inventory.map((item, index) => (
-                                                    <motion.tr
-                                                        key={item.id}
-                                                        initial={{ opacity: 0, y: 10 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ delay: index * 0.05 }}
-                                                        className="hover:bg-slate-50 transition-colors"
-                                                    >
-                                                        <td className="py-4">
-                                                            <div className="flex items-center gap-3">
-                                                                <img
-                                                                    src={item.image}
-                                                                    alt={item.name}
-                                                                    className="w-16 h-12 rounded object-cover"
-                                                                />
-                                                                <div>
-                                                                    <p className="font-semibold text-slate-900">{item.name}</p>
-                                                                    <p className="text-xs text-slate-500">{item.make} {item.model}</p>
+                                    {inventory.length === 0 ? (
+                                        <div className="text-center py-16">
+                                            <BuildingStorefrontIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                                            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Inventory Available</h3>
+                                            <p className="text-slate-600 mb-4">
+                                                This dealer currently has no firearms in stock.
+                                            </p>
+                                            <p className="text-sm text-slate-500">
+                                                Please check back later or contact the dealer directly for more information.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full">
+                                                <thead className="border-b border-slate-200">
+                                                    <tr>
+                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Firearm</th>
+                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Type</th>
+                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Caliber</th>
+                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Price</th>
+                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Stock</th>
+                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {inventory.map((item, index) => (
+                                                        <motion.tr
+                                                            key={item.id}
+                                                            initial={{ opacity: 0, y: 10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            transition={{ delay: index * 0.05 }}
+                                                            className="hover:bg-slate-50 transition-colors"
+                                                        >
+                                                            <td className="py-4">
+                                                                <div className="flex items-center gap-3">
+                                                                    <img
+                                                                        src={item.image}
+                                                                        alt={item.name}
+                                                                        className="w-16 h-12 rounded object-cover"
+                                                                    />
+                                                                    <div>
+                                                                        <p className="font-semibold text-slate-900">{item.name}</p>
+                                                                        <p className="text-xs text-slate-500">{item.make} {item.model}</p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="py-4">
-                                                            <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
-                                                                {item.type}
-                                                            </span>
-                                                        </td>
-                                                        <td className="py-4 text-slate-900">{item.caliber}</td>
-                                                        <td className="py-4">
-                                                            <span className="font-bold text-slate-900">GHS {item.price.toLocaleString()}</span>
-                                                        </td>
-                                                        <td className="py-4">{getStockBadge(item.stock)}</td>
-                                                        <td className="py-4">
-                                                            <button
-                                                                onClick={() => handlePurchase(item)}
-                                                                disabled={item.stock === 'OUT_OF_STOCK'}
-                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${item.stock === 'OUT_OF_STOCK'
-                                                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                                    : 'bg-[#D4AF37] text-white hover:bg-[#B4941F]'
-                                                                    }`}
-                                                            >
-                                                                {item.stock === 'OUT_OF_STOCK' ? 'Unavailable' : 'Purchase'}
-                                                            </button>
-                                                        </td>
-                                                    </motion.tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                            </td>
+                                                            <td className="py-4">
+                                                                <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
+                                                                    {item.type}
+                                                                </span>
+                                                            </td>
+                                                            <td className="py-4 text-slate-900">{item.caliber}</td>
+                                                            <td className="py-4">
+                                                                <span className="font-bold text-slate-900">GHS {item.price.toLocaleString()}</span>
+                                                            </td>
+                                                            <td className="py-4">{getStockBadge(item.stock)}</td>
+                                                            <td className="py-4">
+                                                                <button
+                                                                    onClick={() => handlePurchase(item)}
+                                                                    disabled={item.stock === 'OUT_OF_STOCK'}
+                                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${item.stock === 'OUT_OF_STOCK'
+                                                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                                        : 'bg-[#D4AF37] text-white hover:bg-[#B4941F]'
+                                                                        }`}
+                                                                >
+                                                                    {item.stock === 'OUT_OF_STOCK' ? 'Unavailable' : 'Purchase'}
+                                                                </button>
+                                                            </td>
+                                                        </motion.tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -486,7 +433,7 @@ export default function DealerDetailPage() {
                                     <div>
                                         <h3 className="font-semibold text-slate-900 mb-3">Specialties</h3>
                                         <div className="flex flex-wrap gap-2">
-                                            {dealer.specialties.map(specialty => (
+                                            {dealer.specialties.map((specialty: string) => (
                                                 <span key={specialty} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm">
                                                     {specialty}
                                                 </span>

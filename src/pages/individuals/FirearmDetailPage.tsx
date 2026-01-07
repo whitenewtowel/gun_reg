@@ -27,7 +27,7 @@ export default function FirearmDetailPage() {
 
     const [firearm, setFirearm] = useState<ApiFirearm | null>(stateFirearm || null);
     const [licences, setLicences] = useState<ApiLicence[]>(
-        stateFirearm?.licences?.sort((a: ApiLicence, b: ApiLicence) => new Date(b.created_at || b.issued_date).getTime() - new Date(a.created_at || a.issued_date).getTime()) || []
+        stateFirearm?.licences?.sort((a: ApiLicence, b: ApiLicence) => new Date(b.issued_date || '1970-01-01').getTime() - new Date(a.issued_date || '1970-01-01').getTime()) || []
     );
     const [loading, setLoading] = useState(!stateFirearm);
     const [error, setError] = useState('');
@@ -86,7 +86,7 @@ export default function FirearmDetailPage() {
                     const data = licenceRes.data.data;
                     const list = Array.isArray(data) ? data : [data];
                     // Sort by newest
-                    list.sort((a, b) => new Date(b.created_at || b.issued_date).getTime() - new Date(a.created_at || a.issued_date).getTime());
+                    list.sort((a, b) => new Date(b.issued_date).getTime() - new Date(a.issued_date).getTime());
                     setLicences(list);
                 }
             } else {
@@ -108,12 +108,12 @@ export default function FirearmDetailPage() {
         fetchFirearm();
     }, [id]);
 
-    const getStatusVariant = (status: string) => {
+    const getStatusStyles = (status: string) => {
         switch (status) {
-            case 'ACTIVE': return 'default';
-            case 'EXPIRED': return 'destructive';
-            case 'PENDING': return 'secondary';
-            default: return 'outline';
+            case 'ACTIVE': return 'bg-emerald-100 text-emerald-800 border-emerald-200 shadow-sm hover:bg-emerald-100 border';
+            case 'EXPIRED': return 'bg-rose-100 text-rose-800 border-rose-200 shadow-sm hover:bg-rose-100 border';
+            case 'PENDING': return 'bg-amber-100 text-amber-800 border-amber-200 shadow-sm hover:bg-amber-100 border';
+            default: return 'bg-slate-100 text-slate-800 border-slate-200 shadow-sm hover:bg-slate-100 border';
         }
     };
 
@@ -150,7 +150,7 @@ export default function FirearmDetailPage() {
                         <h1 className="text-3xl font-bold text-[#1A2035]">{firearm.model}</h1>
                         <p className="text-gray-500 font-mono mt-1">Serial: {firearm.serial_number}</p>
                     </div>
-                    <Badge variant={getStatusVariant(firearm.status) as any} className="text-base px-4 py-1.5 w-fit">
+                    <Badge className={`text-base px-4 py-1.5 w-fit ${getStatusStyles(firearm.status)}`}>
                         {firearm.status}
                     </Badge>
                 </div>
@@ -254,7 +254,7 @@ export default function FirearmDetailPage() {
                                             <Badge variant="outline" className="font-normal">{lic.application_type.replace('_', ' ')}</Badge>
                                         </td>
                                         <td className="py-4">
-                                            <Badge variant={lic.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">
+                                            <Badge className={`text-xs ${getStatusStyles(lic.status)}`}>
                                                 {lic.status}
                                             </Badge>
                                         </td>

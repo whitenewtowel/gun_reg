@@ -98,15 +98,15 @@ export default function HistoryPage() {
     const getActivityColor = (type: string) => {
         switch (type) {
             case 'APPLICATION':
-                return 'text-blue-600 bg-blue-50 border-blue-200';
+                return 'text-blue-800 bg-blue-100 border-blue-200 shadow-sm';
             case 'FIREARM':
-                return 'text-green-600 bg-green-50 border-green-200';
+                return 'text-emerald-800 bg-emerald-100 border-emerald-200 shadow-sm';
             case 'PAYMENT':
-                return 'text-[#1A2035] bg-gray-100 border-gray-200';
+                return 'text-slate-800 bg-slate-100 border-slate-200 shadow-sm';
             case 'PROFILE':
-                return 'text-purple-600 bg-purple-50 border-purple-200';
+                return 'text-purple-800 bg-purple-100 border-purple-200 shadow-sm';
             default:
-                return 'text-gray-500 bg-gray-50 border-gray-200';
+                return 'text-slate-600 bg-slate-100 border-slate-200 shadow-sm';
         }
     };
 
