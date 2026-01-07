@@ -2,11 +2,9 @@ import { useState, useEffect } from 'react';
 import {
     Plus,
     FileCheck,
-    AlertCircle,
     Search,
     Filter,
     FileText,
-    ShieldCheck,
     Clock,
     XCircle
 } from 'lucide-react';
@@ -87,12 +85,7 @@ export default function ApplicationsPage() {
         } catch (error) {
             console.error('Error fetching applications:', error);
             // Fallback for dev/demo
-            setApplications([
-                { id: '1', type: 'PERMIT_TO_PURCHASE', status: 'SUBMITTED', submittedAt: '2024-12-20T10:00:00Z', updatedAt: '2024-12-20T10:00:00Z', purpose: 'PERSONAL_SECURITY', trackingId: 'PMT-2024-001' },
-                { id: '2', type: 'LICENSE_RENEWAL', status: 'APPROVED', submittedAt: '2024-11-15T14:30:00Z', updatedAt: '2024-11-20T09:15:00Z', trackingId: 'LIC-2024-889' },
-                { id: '3', type: 'FIREARM_REGISTRATION', status: 'REJECTED', submittedAt: '2024-10-05T09:00:00Z', updatedAt: '2024-10-10T16:45:00Z', trackingId: 'REG-2024-112' },
-                { id: '4', type: 'AMMUNITION_REQUEST', status: 'PENDING', submittedAt: '2025-01-02T11:20:00Z', updatedAt: '2025-01-02T11:20:00Z', trackingId: 'AMM-2025-044' }
-            ]);
+
             toast.error('Using offline data');
         } finally {
             setLoading(false);

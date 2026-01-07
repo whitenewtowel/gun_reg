@@ -122,57 +122,53 @@ export default function IndividualDashboard() {
     }, []);
 
     // Mock data
+    // Mock data mapped to Real API data
     const stats = [
         {
             label: 'Total Firearms',
-            value: data?.firearms?.length ?? 2,
+            value: data?.summary?.total_firearms ?? 0,
             icon: ShieldCheck,
             color: 'bg-[#1A2035]',
             textColor: 'text-white',
             subtext: 'Registered & Active',
-            trend: '+1 this year'
+            trend: ''
         },
         {
-            label: 'Active Licenses',
-            value: data?.summary?.activeLicences ?? 2,
+            label: 'Total Applications',
+            value: data?.summary?.total_applications ?? 0,
             icon: FileCheck,
-            color: 'bg-blue-500',
+            color: 'bg-blue-700',
             textColor: 'text-white',
-            subtext: 'Valid Licenses',
-            trend: 'Compliant'
+            subtext: 'Submitted',
+            trend: ''
         },
         {
             label: 'Pending',
-            value: data?.summary?.pendingApplications ?? 1,
+            value: data?.summary?.pending_applications ?? 0,
             icon: Clock,
             color: 'bg-white',
             textColor: 'text-orange-600',
             subtext: 'In Processing',
-            trend: '5 days left'
+            trend: ''
         },
         {
-            label: 'Alerts',
-            value: data?.summary?.expiringLicences ? 'Action' : '0',
-            icon: AlertCircle,
+            label: 'Approved',
+            value: data?.summary?.approved_applications ?? 0,
+            icon: FileCheck, // Reusing icon or AlertCircle if preferred
             color: 'bg-white',
-            textColor: data?.summary?.expiringLicences ? 'text-red-600' : 'text-green-600',
-            subtext: 'Requires Attention',
-            trend: 'Check Now'
+            textColor: 'text-green-600',
+            subtext: 'Applications',
+            trend: ''
         }
     ];
 
-    const recentActivity = data?.recentApplications?.length ? data.recentApplications.map(app => ({
-        id: app.id,
-        title: `${app.type.replace('_', ' ')} Application`,
-        course: "License Renewal", // Mock field for table match
-        updateTime: new Date(app.updatedAt).toLocaleDateString(),
+    const recentActivity = data?.recent_resources?.applications?.length ? data.recent_resources.applications.map(app => ({
+        id: app.tracking_id || app.id.substring(0, 8).toUpperCase(),
+        title: `${app.type.replace('_', ' ')}`,
+        course: "Application", // Generic category
+        updateTime: app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : 'Draft',
         status: app.status,
-    })) : [
-        { id: 'APP-001', title: 'Shotgun License', course: 'New Application', updateTime: '2025.03.11 22:20', status: 'IN_REVIEW' },
-        { id: 'APP-002', title: 'Handgun Renewal', course: 'Renewal', updateTime: '2025.02.28 22:25', status: 'APPROVED' },
-        { id: 'APP-003', title: 'Ammunition Request', course: 'Purchase', updateTime: '2025.02.23 22:40', status: 'PENDING' },
-        { id: 'APP-004', title: 'Storage Inspection', course: 'Compliance', updateTime: '2025.02.10 10:25', status: 'REJECTED' },
-    ];
+    })) : [];
 
     const getStatusBadge = (status: string) => {
         const styles = {
@@ -351,14 +347,14 @@ export default function IndividualDashboard() {
                             </Button>
                         </div>
                         <div className="space-y-3">
-                            {data?.firearms?.length ? data.firearms.slice(0, 3).map((firearm, i) => (
+                            {data?.recent_resources?.firearms?.length ? data.recent_resources.firearms.slice(0, 3).map((firearm, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-transparent hover:border-gray-200 transition-all">
                                     <div className="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center">
                                         <ShieldCheck className="h-5 w-5 text-[#1A2035]" />
                                     </div>
                                     <div className="overflow-hidden">
-                                        <p className="font-bold text-sm text-[#1A2035] truncate">{firearm.make}</p>
-                                        <p className="text-xs text-gray-400 truncate">{firearm.serialNumber}</p>
+                                        <p className="font-bold text-sm text-[#1A2035] truncate">{firearm.model} - {firearm.type}</p>
+                                        <p className="text-xs text-gray-400 truncate">{firearm.serial_number}</p>
                                     </div>
                                 </div>
                             )) : (

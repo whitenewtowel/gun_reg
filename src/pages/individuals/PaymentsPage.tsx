@@ -51,72 +51,21 @@ export default function PaymentsPage() {
 
     const fetchPayments = async () => {
         try {
-            const response = await apiClient.get('/payments/my');
+            const response = await apiClient.get('/dashboard/payments');
             const data = response.data;
-            setPayments(data.payments || mockPayments);
+            if (data.success && data.data) {
+                setPayments(data.data);
+            } else {
+                setPayments([]);
+            }
         } catch (error) {
             console.error('Error fetching payments:', error);
-            setPayments(mockPayments);
+            toast.error('Failed to load payment history');
+            setPayments([]);
         } finally {
             setLoading(false);
         }
     };
-
-    const mockPayments: Payment[] = [
-        {
-            id: '1',
-            amount: 450.00,
-            currency: 'GHS',
-            status: 'COMPLETED',
-            purpose: 'New Rifle License Application',
-            paymentMethod: 'MOBILE_MONEY',
-            createdAt: '2024-12-15T10:00:00Z',
-            completedAt: '2024-12-15T10:05:00Z',
-            referenceNumber: 'PAY-2024-001234'
-        },
-        {
-            id: '2',
-            amount: 200.00,
-            currency: 'GHS',
-            status: 'COMPLETED',
-            purpose: 'License Renewal Fee',
-            paymentMethod: 'BANK_CARD',
-            createdAt: '2024-11-20T14:30:00Z',
-            completedAt: '2024-11-20T14:35:00Z',
-            referenceNumber: 'PAY-2024-005678'
-        },
-        {
-            id: '3',
-            amount: 50.00,
-            currency: 'GHS',
-            status: 'COMPLETED',
-            purpose: 'Firearm Transfer Fee',
-            paymentMethod: 'MOBILE_MONEY',
-            createdAt: '2024-10-10T09:15:00Z',
-            completedAt: '2024-10-10T09:20:00Z',
-            referenceNumber: 'PAY-2024-003456'
-        },
-        {
-            id: '4',
-            amount: 150.00,
-            currency: 'GHS',
-            status: 'PENDING',
-            purpose: 'Document Processing Fee',
-            paymentMethod: 'MOBILE_MONEY',
-            createdAt: '2024-12-30T16:00:00Z',
-            referenceNumber: 'PAY-2024-007890'
-        },
-        {
-            id: '5',
-            amount: 400.00,
-            currency: 'GHS',
-            status: 'FAILED',
-            purpose: 'Pistol License Application',
-            paymentMethod: 'BANK_CARD',
-            createdAt: '2024-12-28T11:00:00Z',
-            referenceNumber: 'PAY-2024-006789'
-        }
-    ];
 
     const getStatusColor = (status: string) => {
         switch (status) {

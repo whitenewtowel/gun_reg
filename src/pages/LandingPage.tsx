@@ -42,8 +42,8 @@ export default function LandingPage() {
             image: pistolLicenseImg,
             description: 'Personal defense and sport shooting',
             count: '2,500+ active',
-        },
-        {
+        }, 
+        {   
             title: 'Rifle Licenses',
             image: rifleLicenseImg,
             description: 'Hunting and sport shooting',
@@ -162,7 +162,7 @@ export default function LandingPage() {
                             {/* Logo */}
                             <div className="flex items-center gap-2">
                                 <div className="relative group">
-                                      <img src={logo} alt="Logo" className='w-14 h-14 object-contain'/>
+                                    <img src={logo} alt="Logo" className='w-14 h-14 object-contain' />
                                 </div>
                                 <div>
                                     <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white leading-none">

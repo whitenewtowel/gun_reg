@@ -225,7 +225,7 @@ export default function SelectUserTypePage() {
                     className="mt-16 text-center"
                 >
                     <button
-                        onClick={() => navigate('/dashboard')}
+                        onClick={() => navigate('/')}
                         className="text-gray-500 hover:text-[#D4AF37] text-xs uppercase tracking-widest transition-colors border-b border-transparent hover:border-[#D4AF37]"
                     >
                         Skip Initialization &rarr;

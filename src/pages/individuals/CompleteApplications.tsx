@@ -98,7 +98,7 @@ export default function CompleteApplications() {
                 if (response.ok) {
                     const data = await response.json();
                     setFormData({
-                        fullName: data.user.full_name || 'Bernard Wiafe',
+                        fullName: data.user.full_name || '',
                         ghanaCardNumber: 'GHA-123456789-1',
                         dateOfBirth: '1997-06-06',
                         address: 'GA-123-4567, Accra, Greater Accra',
@@ -112,7 +112,7 @@ export default function CompleteApplications() {
                     setFormData({
                         fullName: authUser?.firstName && authUser?.lastName
                             ? `${authUser.firstName} ${authUser.lastName}`
-                            : 'Bernard Wiafe',
+                            : '',
                         ghanaCardNumber: authUser?.ghanaCardNumber || 'GHA-123456789-1',
                         dateOfBirth: '1997-06-06',
                         address: 'GA-123-4567, Accra, Greater Accra',
@@ -283,6 +283,17 @@ export default function CompleteApplications() {
             return;
         }
 
+        // Final validation before submission
+        if (!files.medical_certificate || !files.police_clearance || !files.proof_of_residence) {
+            toast.error('Please upload all required documents (Medical Certificate, Police Clearance, Proof of Residence)');
+            return;
+        }
+
+        if (files.passport_photos.length === 0) {
+            toast.error('Please upload at least one passport photo');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -294,7 +305,7 @@ export default function CompleteApplications() {
             formDataToSend.append('storage_description', permitData.storage_description);
             formDataToSend.append('references', JSON.stringify(references));
 
-            // Add file uploads
+            // Add required file uploads
             files.passport_photos.forEach((file) => {
                 formDataToSend.append('passport_photos', file);
             });
@@ -311,6 +322,7 @@ export default function CompleteApplications() {
                 formDataToSend.append('proof_of_residence', files.proof_of_residence);
             }
 
+            // Add optional file uploads
             if (files.letter_of_intent) {
                 formDataToSend.append('letter_of_intent', files.letter_of_intent);
             }
@@ -319,9 +331,26 @@ export default function CompleteApplications() {
                 formDataToSend.append('storage_photos', file);
             });
 
-            // Submit to API
-            // Submit to API
-            await apiClient.post('/applications', formDataToSend);
+            // Log FormData contents for debugging
+            console.log('Submitting permit application with:');
+            console.log('- Purpose:', permitData.purpose);
+            console.log('- Storage Description:', permitData.storage_description);
+            console.log('- References:', references.length);
+            console.log('- Passport Photos:', files.passport_photos.length);
+            console.log('- Medical Certificate:', files.medical_certificate?.name);
+            console.log('- Police Clearance:', files.police_clearance?.name);
+            console.log('- Proof of Residence:', files.proof_of_residence?.name);
+            console.log('- Letter of Intent:', files.letter_of_intent?.name || 'Not provided');
+            console.log('- Storage Photos:', files.storage_photos.length);
+
+            // Submit to API with proper headers for multipart/form-data
+            const response = await apiClient.post('/permits/apply', formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log('Application submitted successfully:', response.data);
 
             // Update onboarding context
             const onboardingContext = {
@@ -336,9 +365,15 @@ export default function CompleteApplications() {
                 navigate('/dashboard');
             }, 1500);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error submitting application:', error);
-            toast.error('Failed to submit application. Please try again.');
+            console.error('Error response:', error.response?.data);
+
+            const errorMessage = error.response?.data?.message
+                || error.response?.data?.error
+                || 'Failed to submit application. Please try again.';
+
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

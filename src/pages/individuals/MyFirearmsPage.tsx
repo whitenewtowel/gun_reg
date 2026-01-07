@@ -1,27 +1,38 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import {
     ShieldCheckIcon,
     MagnifyingGlassIcon,
     ExclamationTriangleIcon,
     ClockIcon,
     EyeIcon,
-    ArrowPathIcon
+    ArrowPathIcon,
+    EllipsisVerticalIcon,
+    ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import apiClient from '@/lib/apiClient';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useReportStolen } from '@/hooks/useReportStolen';
+import { useReportLost } from '@/hooks/useReportLost';
+import { ReportStolenModal } from '@/components/firearms/ReportStolenModal';
+import { ReportLostModal } from '@/components/firearms/ReportLostModal';
 
 interface Firearm {
     id: string;
-    make: string;
-    model: string;
-    serialNumber: string;
+    serial_number: string;
     type: string;
-    caliber: string;
+    model: string;
+    calibre: string;
     status: string;
-    registeredAt: string;
-    licenseExpiresAt?: string;
+    current_owner_user_id: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export default function MyFirearmsPage() {
@@ -30,47 +41,45 @@ export default function MyFirearmsPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        fetchFirearms();
-    }, []);
-
+    // Fetch firearms function
     const fetchFirearms = async () => {
         try {
-            const response = await apiClient.get('/dashboard/firearms');
-            const data = response.data;
-            setFirearms(data.firearms || []);
+            const response = await apiClient.get('/firearms');
+            if (response.data.success && response.data.data) {
+                // Add test expired firearm for renewal flow testing
+                const testExpiredFirearm = {
+                    id: 'GHA-2026-F283105',
+                    serial_number: 'GHA-2026-F283105',
+                    type: 'HANDGUN',
+                    model: 'Glock 19 (EXPIRED - Test)',
+                    calibre: '9mm',
+                    status: 'EXPIRED',
+                    current_owner_user_id: 'current-user',
+                    created_at: '2020-01-15T10:00:00Z',
+                    updated_at: '2024-12-31T23:59:59Z'
+                };
+
+                setFirearms([testExpiredFirearm, ...response.data.data]);
+            } else {
+                setFirearms([]);
+            }
         } catch (error) {
             console.error('Error fetching firearms:', error);
-            // Fallback to mock data
-            setFirearms([
-                {
-                    id: '1',
-                    make: 'Glock',
-                    model: '19 Gen5',
-                    serialNumber: 'GLK-2024-001234',
-                    type: 'HANDGUN',
-                    caliber: '9mm',
-                    status: 'ACTIVE',
-                    registeredAt: '2024-01-15T10:00:00Z',
-                    licenseExpiresAt: '2026-01-15T10:00:00Z'
-                },
-                {
-                    id: '2',
-                    make: 'Remington',
-                    model: '870 Express',
-                    serialNumber: 'REM-2023-005678',
-                    type: 'SHOTGUN',
-                    caliber: '12 Gauge',
-                    status: 'ACTIVE',
-                    registeredAt: '2023-06-20T14:30:00Z',
-                    licenseExpiresAt: '2025-06-20T14:30:00Z'
-                }
-            ]);
-            toast.error('Failed to load firearms');
+            setFirearms([]);
         } finally {
             setLoading(false);
         }
     };
+
+    // Custom hooks for clean architecture
+    const reportStolen = useReportStolen(fetchFirearms);
+    const reportLost = useReportLost(fetchFirearms);
+
+    useEffect(() => {
+        fetchFirearms();
+    }, []);
+
+
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -87,21 +96,76 @@ export default function MyFirearmsPage() {
         }
     };
 
-    const getTypeIcon = () => {
-        return <ShieldCheckIcon className="w-6 h-6" />;
-    };
-
-    const isExpiringSoon = (expiryDate?: string) => {
-        if (!expiryDate) return false;
-        const daysUntilExpiry = Math.floor((new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-        return daysUntilExpiry <= 90 && daysUntilExpiry > 0;
-    };
-
     const filteredFirearms = firearms.filter(firearm =>
-        firearm.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
         firearm.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        firearm.serialNumber.toLowerCase().includes(searchTerm.toLowerCase())
+        firearm.serial_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        firearm.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Action handlers - using custom hooks for clean architecture
+    const handleReportStolen = (firearm: Firearm) => {
+        reportStolen.openModal(firearm);
+    };
+
+    const handleReportLost = (firearm: Firearm) => {
+        reportLost.openModal(firearm);
+    };
+
+    const handleRenewLicense = (firearm: Firearm) => {
+        navigate(`/applications/renew/${firearm.id}`);
+    };
+
+    // Actions Menu Component
+    const FirearmActionsMenu = ({ firearm }: { firearm: Firearm }) => {
+        const isExpired = firearm.status === 'EXPIRED';
+
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <button
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Actions"
+                    >
+                        <EllipsisVerticalIcon className="w-5 h-5 text-gray-600" />
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                    <DropdownMenuItem onClick={() => navigate(`/firearms/${firearm.id}`)}>
+                        <EyeIcon className="w-4 h-4 mr-2" />
+                        View Details
+                    </DropdownMenuItem>
+
+                    {isExpired && (
+                        <DropdownMenuItem
+                            onClick={() => handleRenewLicense(firearm)}
+                            className="text-blue-600"
+                        >
+                            <ArrowPathIcon className="w-4 h-4 mr-2" />
+                            Renew License
+                        </DropdownMenuItem>
+                    )}
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem
+                        onClick={() => handleReportStolen(firearm)}
+                        className="text-red-600"
+                    >
+                        <ExclamationCircleIcon className="w-4 h-4 mr-2" />
+                        Report Stolen
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                        onClick={() => handleReportLost(firearm)}
+                        className="text-orange-600"
+                    >
+                        <ExclamationCircleIcon className="w-4 h-4 mr-2" />
+                        Report Lost
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    };
 
     if (loading) {
         return (
@@ -149,24 +213,24 @@ export default function MyFirearmsPage() {
 
                 <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
-                        <ClockIcon className="w-8 h-8 text-[#1A2035]" />
+                        <ClockIcon className="w-8 h-8 text-blue-600" />
                         <div>
                             <p className="text-2xl font-bold text-[#1A2035]">
-                                {firearms.filter(f => isExpiringSoon(f.licenseExpiresAt)).length}
+                                {firearms.length}
                             </p>
-                            <p className="text-sm text-gray-500">Expiring Soon</p>
+                            <p className="text-sm text-gray-500">Total Firearms</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
-                        <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+                        <ExclamationTriangleIcon className="w-8 h-8 text-orange-600" />
                         <div>
                             <p className="text-2xl font-bold text-[#1A2035]">
-                                {firearms.filter(f => f.status === 'EXPIRED' || f.status === 'SUSPENDED').length}
+                                {firearms.filter(f => f.status === 'INACTIVE' || f.status === 'SUSPENDED').length}
                             </p>
-                            <p className="text-sm text-gray-500">Needs Attention</p>
+                            <p className="text-sm text-gray-500">Inactive</p>
                         </div>
                     </div>
                 </div>
@@ -193,88 +257,96 @@ export default function MyFirearmsPage() {
                     )}
                 </div>
             ) : (
-                <div className="grid gap-4">
-                    {filteredFirearms.map((firearm, index) => (
-                        <motion.div
-                            key={firearm.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#1A2035]/30 hover:shadow-md transition-all group"
-                        >
-                            <div className="flex items-start justify-between">
-                                <div className="flex gap-4 flex-1">
-                                    <div className={`p-3 rounded-lg ${getStatusColor(firearm.status)}`}>
-                                        {getTypeIcon()}
-                                    </div>
-
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="text-xl font-bold text-[#1A2035] group-hover:text-blue-700 transition-colors">
-                                                {firearm.make} {firearm.model}
-                                            </h3>
-                                            <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(firearm.status)}`}>
-                                                {firearm.status}
-                                            </span>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                            <div>
-                                                <span className="text-gray-500">Serial Number:</span>
-                                                <p className="text-[#1A2035] font-mono">{firearm.serialNumber}</p>
-                                            </div>
-                                            <div>
-                                                <span className="text-gray-500">Type:</span>
-                                                <p className="text-[#1A2035]">{firearm.type}</p>
-                                            </div>
-                                            <div>
-                                                <span className="text-gray-500">Caliber:</span>
-                                                <p className="text-[#1A2035]">{firearm.caliber}</p>
-                                            </div>
-                                            <div>
-                                                <span className="text-gray-500">Registered:</span>
-                                                <p className="text-[#1A2035]">
-                                                    {new Date(firearm.registeredAt).toLocaleDateString('en-GB')}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {firearm.licenseExpiresAt && (
-                                            <div className="mt-3 flex items-center gap-2">
-                                                {isExpiringSoon(firearm.licenseExpiresAt) && (
-                                                    <ExclamationTriangleIcon className="w-4 h-4 text-[#1A2035]" />
-                                                )}
-                                                <span className="text-sm text-gray-500">License Expires:</span>
-                                                <span className={`text-sm font-medium ${isExpiringSoon(firearm.licenseExpiresAt) ? 'text-red-600' : 'text-[#1A2035]'
-                                                    }`}>
-                                                    {new Date(firearm.licenseExpiresAt).toLocaleDateString('en-GB')}
-                                                </span>
-                                                {isExpiringSoon(firearm.licenseExpiresAt) && (
-                                                    <button
-                                                        onClick={() => navigate('/renewal')}
-                                                        className="ml-auto flex items-center gap-2 px-3 py-1 bg-[#1A2035]/10 text-[#1A2035] rounded-lg hover:bg-[#1A2035]/20 text-sm"
-                                                    >
-                                                        <ArrowPathIcon className="w-4 h-4" />
-                                                        Renew Now
-                                                    </button>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={() => navigate(`/firearms/${firearm.id}`)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-[#1A2035] rounded-lg hover:bg-gray-100 transition-colors"
+                <div className="relative overflow-x-auto bg-white shadow-sm rounded-xl border border-gray-200">
+                    <table className="w-full text-sm text-left">
+                        <thead className="text-sm text-gray-700 bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th scope="col" className="px-6 py-3 font-semibold">
+                                    Model
+                                </th>
+                                <th scope="col" className="px-6 py-3 font-semibold">
+                                    Serial Number
+                                </th>
+                                <th scope="col" className="px-6 py-3 font-semibold">
+                                    Type
+                                </th>
+                                <th scope="col" className="px-6 py-3 font-semibold">
+                                    Calibre
+                                </th>
+                                <th scope="col" className="px-6 py-3 font-semibold">
+                                    Status
+                                </th>
+                                <th scope="col" className="px-6 py-3 font-semibold">
+                                    Registered
+                                </th>
+                                <th scope="col" className="px-6 py-3 font-semibold text-right">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredFirearms.map((firearm) => (
+                                <tr
+                                    key={firearm.id}
+                                    className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors"
                                 >
-                                    <EyeIcon className="w-4 h-4" />
-                                    View Details
-                                </button>
-                            </div>
-                        </motion.div>
-                    ))}
+                                    <th scope="row" className="px-6 py-4 font-semibold text-[#1A2035] whitespace-nowrap">
+                                        {firearm.model}
+                                    </th>
+                                    <td className="px-6 py-4 font-mono text-xs text-gray-600">
+                                        {firearm.serial_number}
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-700">
+                                        <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(firearm.status)}`}>
+                                            {firearm.type}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-700">
+                                        {firearm.calibre}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(firearm.status)}`}>
+                                            {firearm.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-700">
+                                        {new Date(firearm.created_at).toLocaleDateString('en-GB')}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <FirearmActionsMenu firearm={firearm} />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             )}
+
+
+            {/* Report Modals - Clean Component Separation */}
+            <ReportStolenModal
+                isOpen={reportStolen.isOpen}
+                onClose={reportStolen.closeModal}
+                firearmModel={reportStolen.selectedFirearm?.model}
+                firearmSerial={reportStolen.selectedFirearm?.serial_number}
+                form={reportStolen.form}
+                onFormChange={reportStolen.updateForm}
+                onSubmit={reportStolen.submitReport}
+                isSubmitting={reportStolen.isSubmitting}
+                isFormValid={reportStolen.isFormValid}
+            />
+
+            <ReportLostModal
+                isOpen={reportLost.isOpen}
+                onClose={reportLost.closeModal}
+                firearmModel={reportLost.selectedFirearm?.model}
+                firearmSerial={reportLost.selectedFirearm?.serial_number}
+                form={reportLost.form}
+                onFormChange={reportLost.updateForm}
+                onSubmit={reportLost.submitReport}
+                isSubmitting={reportLost.isSubmitting}
+                isFormValid={reportLost.isFormValid}
+            />
         </div>
     );
 }
