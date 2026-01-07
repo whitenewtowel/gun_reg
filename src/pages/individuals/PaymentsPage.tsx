@@ -53,8 +53,24 @@ export default function PaymentsPage() {
         try {
             const response = await apiClient.get('/dashboard/payments');
             const data = response.data;
-            if (data.success && data.data) {
-                setPayments(data.data);
+
+            if (data.success) {
+                // Handle paginated response structure (data.data.data) or flat array (data.data)
+                const rawPayments = data.data?.data || (Array.isArray(data.data) ? data.data : []);
+
+                const mappedPayments = rawPayments.map((p: any) => ({
+                    id: p.id,
+                    amount: parseFloat(p.amount),
+                    currency: p.currency,
+                    status: p.status,
+                    purpose: p.application ? `Application Fee - ${p.application?.type || 'License'}` : 'Service Payment',
+                    paymentMethod: p.provider || 'N/A',
+                    createdAt: p.created_at,
+                    referenceNumber: p.provider_reference,
+                    completedAt: p.updated_at // Using updated_at as proxy for completion if not explicitly provided
+                }));
+
+                setPayments(mappedPayments);
             } else {
                 setPayments([]);
             }
@@ -70,13 +86,13 @@ export default function PaymentsPage() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'COMPLETED':
-                return 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100';
+                return 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200 shadow-sm';
             case 'PENDING':
-                return 'bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100';
+                return 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200 shadow-sm';
             case 'FAILED':
-                return 'bg-rose-50 text-rose-700 border-rose-100 hover:bg-rose-100';
+                return 'bg-rose-100 text-rose-800 border-rose-200 hover:bg-rose-200 shadow-sm';
             default:
-                return 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-100';
+                return 'bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200 shadow-sm';
         }
     };
 

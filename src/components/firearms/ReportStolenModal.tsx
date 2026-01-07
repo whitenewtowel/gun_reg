@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 interface ReportStolenModalProps {
     isOpen: boolean;
@@ -28,6 +29,7 @@ interface ReportStolenModalProps {
     onSubmit: () => void;
     isSubmitting: boolean;
     isFormValid: boolean;
+    isSuccess?: boolean;
 }
 
 export const ReportStolenModal = ({
@@ -39,8 +41,29 @@ export const ReportStolenModal = ({
     onFormChange,
     onSubmit,
     isSubmitting,
-    isFormValid
+    isFormValid,
+    isSuccess
 }: ReportStolenModalProps) => {
+
+    if (isSuccess) {
+        return (
+            <Dialog open={isOpen} onOpenChange={onClose}>
+                <DialogContent className="sm:max-w-[425px] text-center">
+                    <div className="flex flex-col items-center justify-center py-6">
+                        <CheckCircleIcon className="h-16 w-16 text-green-500 mb-4" />
+                        <DialogTitle className="text-xl font-bold text-gray-900 mb-2">Report Submitted</DialogTitle>
+                        <DialogDescription className="text-center mb-6 max-w-xs mx-auto">
+                            The theft of {firearmModel} ({firearmSerial}) has been reported. Your license is now suspended pending police investigation.
+                        </DialogDescription>
+                        <Button onClick={onClose} className="w-full bg-gray-900 hover:bg-gray-800">
+                            Acknowledge & Close
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[600px]">

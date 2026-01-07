@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import apiClient from '@/lib/apiClient';
+import { ApiFirearm } from '@/types';
 
 interface ReportStolenForm {
     incidentDate: string;
@@ -11,15 +12,9 @@ interface ReportStolenForm {
     description: string;
 }
 
-interface Firearm {
-    id: string;
-    model: string;
-    serial_number: string;
-}
-
 export const useReportStolen = (onSuccess?: () => void) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedFirearm, setSelectedFirearm] = useState<Firearm | null>(null);
+    const [selectedFirearm, setSelectedFirearm] = useState<ApiFirearm | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [form, setForm] = useState<ReportStolenForm>({
         incidentDate: '',
@@ -30,13 +25,17 @@ export const useReportStolen = (onSuccess?: () => void) => {
         description: ''
     });
 
-    const openModal = (firearm: Firearm) => {
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const openModal = (firearm: ApiFirearm) => {
         setSelectedFirearm(firearm);
         setIsOpen(true);
+        setIsSuccess(false);
     };
 
     const closeModal = () => {
         setIsOpen(false);
+        setIsSuccess(false);
         setForm({
             incidentDate: '',
             incidentTime: '',
@@ -66,21 +65,22 @@ export const useReportStolen = (onSuccess?: () => void) => {
 
         setIsSubmitting(true);
         try {
+            // Collate data into description/reason as requested
+            const finalReason = `${form.description}\n\nTime of Incident: ${form.incidentTime}\nRoported at: ${form.policeStation}`;
+
             const response = await apiClient.post(
                 `/firearms/${selectedFirearm.id}/report-stolen`,
                 {
-                    incident_date: form.incidentDate,
-                    incident_time: form.incidentTime,
-                    police_station: form.policeStation,
-                    police_report_number: form.policeReportNumber,
+                    reason: finalReason,
+                    date: form.incidentDate,
                     location: form.location,
-                    description: form.description
+                    police_report_number: form.policeReportNumber
                 }
             );
 
             if (response.data.success) {
-                toast.success(`${selectedFirearm.model} reported as stolen successfully`);
-                closeModal();
+                toast.success(`${selectedFirearm.model} reported as stolen. Active licence suspended.`);
+                setIsSuccess(true);
                 onSuccess?.();
             }
         } catch (error) {
@@ -96,6 +96,7 @@ export const useReportStolen = (onSuccess?: () => void) => {
         selectedFirearm,
         form,
         isSubmitting,
+        isSuccess,
         isFormValid: isFormValid(),
         openModal,
         closeModal,

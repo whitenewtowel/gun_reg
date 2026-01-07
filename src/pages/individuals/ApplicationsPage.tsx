@@ -132,14 +132,14 @@ export default function ApplicationsPage() {
 
     const getStatusBadge = (status: string) => {
         const styles: Record<string, string> = {
-            APPROVED: "bg-green-100 text-green-700 border-green-200",
-            IN_REVIEW: "bg-blue-100 text-blue-700 border-blue-200",
-            UNDER_REVIEW: "bg-blue-100 text-blue-700 border-blue-200",
-            PENDING: "bg-orange-100 text-orange-700 border-orange-200",
-            SUBMITTED: "bg-orange-100 text-orange-700 border-orange-200",
-            REJECTED: "bg-red-100 text-red-700 border-red-200",
+            APPROVED: "bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm",
+            IN_REVIEW: "bg-blue-100 text-blue-800 border border-blue-200 shadow-sm",
+            UNDER_REVIEW: "bg-blue-100 text-blue-800 border border-blue-200 shadow-sm",
+            PENDING: "bg-amber-100 text-amber-800 border border-amber-200 shadow-sm",
+            SUBMITTED: "bg-amber-100 text-amber-800 border border-amber-200 shadow-sm",
+            REJECTED: "bg-rose-100 text-rose-800 border border-rose-200 shadow-sm",
         };
-        return <Badge className={`${styles[status] || "bg-gray-100"} hover:bg-white`}>{status.replace(/_/g, ' ')}</Badge>;
+        return <Badge className={`${styles[status] || "bg-slate-100 text-slate-800 border-slate-200"} hover:bg-white`}>{status.replace(/_/g, ' ')}</Badge>;
     };
 
     if (loading) {
@@ -257,7 +257,7 @@ export default function ApplicationsPage() {
                                                 {new Date(app.updatedAt).toLocaleDateString()}
                                             </td>
                                             <td className="py-4 px-4 text-center">
-                                                {getStatusBadge(app.status)}
+                                                {getStatusBadge(app.status === 'PENDING_REVIEW' ? 'PENDING' : app.status)}
                                             </td>
                                             <td className="py-4 px-4 text-right">
                                                 <Button
