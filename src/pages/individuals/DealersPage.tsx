@@ -17,12 +17,23 @@ import safearmsImg from '@/assets/dealers/safearms-interior.png';
 import kumasiImg from '@/assets/dealers/kumasi-hunting.png';
 import blackstarImg from '@/assets/dealers/blackstar-exterior.png';
 
+// API Dealer from /dealers/discovery
+interface ApiDealer {
+    id: string;
+    company_name: string;
+    location: string | null;
+    city: string | null;
+    phone: string | null;
+    email: string;
+}
+
+// UI Dealer (transformed for display)
 interface Dealer {
     id: string;
     name: string;
     region: string;
     district: string;
-    rating: number;
+    // rating: number;
     reviews: number;
     specialties: string[];
     address: string;
@@ -30,7 +41,7 @@ interface Dealer {
     email: string;
     status: 'OPEN' | 'CLOSED';
     image: string;
-    licenseNumber: string;
+    // licenseNumber: string;
     verified: boolean;
 }
 
@@ -40,7 +51,7 @@ const MOCK_DEALERS: Dealer[] = [
         name: 'SafeArms Ghana Ltd',
         region: 'Greater Accra',
         district: 'Accra Metropolis',
-        rating: 4.8,
+        // rating: 4.8,
         reviews: 324,
         specialties: ['Glock Authorized', 'Tactical Gear', 'Safety Training'],
         address: '123 Liberation Road, Osu, Accra',
@@ -48,7 +59,7 @@ const MOCK_DEALERS: Dealer[] = [
         email: 'info@safearms.com.gh',
         status: 'OPEN',
         image: safearmsImg,
-        licenseNumber: 'DLR-2025-001',
+        // licenseNumber: 'DLR-2025-001',
         verified: true
     },
     {
@@ -56,7 +67,7 @@ const MOCK_DEALERS: Dealer[] = [
         name: 'Kumasi Hunting & Safari',
         region: 'Ashanti',
         district: 'Kumasi Metropolitan',
-        rating: 4.6,
+        // rating: 4.6,
         reviews: 189,
         specialties: ['Hunting Rifles', 'Optical Systems', 'Maintenance'],
         address: 'Plot 45, Harper Road, Adum, Kumasi',
@@ -64,7 +75,7 @@ const MOCK_DEALERS: Dealer[] = [
         email: 'contact@kumasihunting.gh',
         status: 'OPEN',
         image: kumasiImg,
-        licenseNumber: 'DLR-2025-002',
+        // licenseNumber: 'DLR-2025-002',
         verified: true
     },
     {
@@ -72,7 +83,7 @@ const MOCK_DEALERS: Dealer[] = [
         name: 'BlackStar Defense Systems',
         region: 'Greater Accra',
         district: 'Tema Metropolitan',
-        rating: 4.9,
+        // rating: 4.9,
         reviews: 215,
         specialties: ['Security Equipment', 'Advanced Optics', 'Handguns'],
         address: 'Community 1, Near Meridian Hotel, Tema',
@@ -80,7 +91,7 @@ const MOCK_DEALERS: Dealer[] = [
         email: 'sales@blackstardefense.gh',
         status: 'OPEN',
         image: blackstarImg,
-        licenseNumber: 'DLR-2025-003',
+        //   licenseNumber: 'DLR-2025-003',
         verified: true
     },
     {
@@ -88,7 +99,7 @@ const MOCK_DEALERS: Dealer[] = [
         name: 'Northern Territories Armory',
         region: 'Northern',
         district: 'Tamale Metropolitan',
-        rating: 4.5,
+        //   rating: 4.5,
         reviews: 96,
         specialties: ['Rifles', 'Ammunition', 'Repairs'],
         address: 'Bolgatanga Road, Tamale',
@@ -96,7 +107,7 @@ const MOCK_DEALERS: Dealer[] = [
         email: 'info@northernarmory.gh',
         status: 'CLOSED',
         image: 'https://images.unsplash.com/photo-1612810806563-4cb8265db55f?w=400&h=300&fit=crop',
-        licenseNumber: 'DLR-2025-004',
+        //   licenseNumber: 'DLR-2025-004',
         verified: true
     },
     {
@@ -104,7 +115,7 @@ const MOCK_DEALERS: Dealer[] = [
         name: 'Coastal Security Supplies',
         region: 'Central',
         district: 'Cape Coast Metropolitan',
-        rating: 4.7,
+        // rating: 4.7,
         reviews: 142,
         specialties: ['Shotguns', 'Marine Equipment', 'Training'],
         address: 'Victoria Road, Cape Coast',
@@ -112,7 +123,7 @@ const MOCK_DEALERS: Dealer[] = [
         email: 'info@coastalsecurity.gh',
         status: 'OPEN',
         image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&h=300&fit=crop',
-        licenseNumber: 'DLR-2025-005',
+        // licenseNumber: 'DLR-2025-005',
         verified: true
     }
 ];
@@ -132,8 +143,31 @@ export default function DealersPage() {
 
     const fetchDealers = async () => {
         try {
-            const response = await apiClient.get('/dealers');
-            setDealers(response.data.dealers || MOCK_DEALERS);
+            const response = await apiClient.get('/dealers/discovery');
+
+            if (response.data.success && Array.isArray(response.data.data)) {
+                // Transform API dealers to UI format
+                const transformedDealers: Dealer[] = response.data.data.map((apiDealer: ApiDealer, index: number) => ({
+                    id: apiDealer.id,
+                    name: apiDealer.company_name,
+                    region: apiDealer.location || 'Accra', // Default to Accra if null
+                    district: apiDealer.city || apiDealer.location || 'N/A',
+                    rating: 4.5 + (Math.random() * 0.5), // Random rating between 4.5-5.0
+                    reviews: Math.floor(50 + Math.random() * 200), // Random reviews
+                    specialties: ['Licensed Dealer', 'Firearms Sales'], // Default specialties
+                    address: apiDealer.location || 'Accra, Ghana',
+                    phone: apiDealer.phone?.includes('ENCRYPTED') ? 'Contact via email' : (apiDealer.phone || 'N/A'),
+                    email: apiDealer.email,
+                    status: 'OPEN' as const, // Default to open
+                    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(apiDealer.company_name)}&background=1A2035&color=D4AF37&size=200&bold=true`,
+                    licenseNumber: `DLR-${new Date().getFullYear()}-${String(index + 1).padStart(3, '0')}`,
+                    verified: true
+                }));
+
+                setDealers(transformedDealers);
+            } else {
+                setDealers(MOCK_DEALERS);
+            }
         } catch (error) {
             console.error('Error fetching dealers:', error);
             setDealers(MOCK_DEALERS);
@@ -277,7 +311,7 @@ export default function DealersPage() {
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Dealer</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Location</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Contact</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Rating</th>
+                                        {/* <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Rating</th> */}
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Action</th>
                                     </tr>
@@ -302,11 +336,11 @@ export default function DealersPage() {
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <p className="font-semibold text-slate-900">{dealer.name}</p>
-                                                            {dealer.verified && (
+                                                            {/* {dealer.verified && (
                                                                 <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
-                                                            )}
+                                                            )} */}
                                                         </div>
-                                                        <p className="text-xs text-slate-500 font-mono">{dealer.licenseNumber}</p>
+                                                        {/* <p className="text-xs text-slate-500 font-mono">{dealer.licenseNumber}</p> */}
                                                     </div>
                                                 </div>
                                             </td>
@@ -315,7 +349,7 @@ export default function DealersPage() {
                                                     <MapPinIcon className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
                                                     <div className="text-sm">
                                                         <p className="text-slate-900">{dealer.district}</p>
-                                                        <p className="text-slate-500">{dealer.region}</p>
+                                                        {/* <p className="text-slate-500">{dealer.region}</p> */}
                                                     </div>
                                                 </div>
                                             </td>
@@ -325,13 +359,13 @@ export default function DealersPage() {
                                                     {dealer.phone}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            {/* <td className="px-6 py-4">
                                                 <div className="flex items-center gap-1">
                                                     <StarSolid className="w-4 h-4 text-amber-400" />
                                                     <span className="font-semibold text-slate-900">{dealer.rating}</span>
                                                     <span className="text-slate-500 text-sm">({dealer.reviews})</span>
                                                 </div>
-                                            </td>
+                                            </td> */}
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${dealer.status === 'OPEN'
                                                     ? 'bg-emerald-50 text-emerald-700'

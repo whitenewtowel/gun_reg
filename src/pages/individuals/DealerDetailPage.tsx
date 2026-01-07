@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -8,9 +8,11 @@ import {
     EnvelopeIcon,
     ClockIcon,
     CheckBadgeIcon,
-    GlobeAltIcon} from '@heroicons/react/24/outline';
+    GlobeAltIcon
+} from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
+import apiClient from '@/lib/apiClient';
 
 import safearmsImg from '@/assets/dealers/safearms-interior.png';
 import glockImg from '@/assets/products/glock-19.png';
@@ -18,6 +20,73 @@ import remingtonImg from '@/assets/products/remington-870.png';
 import sigImg from '@/assets/products/sig-p320.png';
 import winchesterImg from '@/assets/products/winchester-70.png';
 import berettaImg from '@/assets/products/beretta-92fs.png';
+
+// API Response type from GET /dealers/{id}
+interface ApiDealerDetail {
+    id: string;
+    user_id: string;
+    company_name: string;
+    tin: string;
+    location: string | null;
+    status: string;
+    business_registration_number: string | null;
+    license_expiry_date: string | null;
+    authorized_importer: boolean;
+    business_hours: string | null;
+    about: string | null;
+    specialties: string | null;
+    website: string | null;
+    phone_number: string | null;
+    verified_by_police: boolean;
+    documents: any[];
+    approved_by: string | null;
+    approved_at: string | null;
+    rejection_reason: string | null;
+    rejected_at: string | null;
+    rejected_by: string | null;
+    reapplication_attempt: number;
+    reapplication_submitted_at: string | null;
+    reapplication_reason: string | null;
+    region_id: string | null;
+    created_at: string;
+    updated_at: string;
+    owner: {
+        id: string;
+        email: string;
+        phone: string;
+        city: string | null;
+        address: string | null;
+        full_name: string;
+        region_id: string | null;
+        regionData: any;
+    };
+    regionData: any;
+    inventory: Array<{
+        id: string;
+        dealer_id: string;
+        firearm_id: string;
+        status: string;
+        stock_status: string;
+        price: number | null;
+        currency: string;
+        condition: string | null;
+        police_approved: boolean;
+        created_at: string;
+        updated_at: string;
+        firearm: {
+            id: string;
+            serial_number: string;
+            type: string;
+            model: string;
+            calibre: string;
+            status: string;
+            created_at: string;
+            updated_at: string;
+            current_owner_user_id: string | null;
+            created_by: string | null;
+        };
+    }>;
+}
 
 interface InventoryItem {
     id: string;
@@ -120,11 +189,118 @@ const INVENTORY: InventoryItem[] = [
 
 export default function DealerDetailPage() {
     const navigate = useNavigate();
-    useParams();
+    const { id } = useParams();
     const [activeTab, setActiveTab] = useState<'inventory' | 'about'>('inventory');
+    const [loading, setLoading] = useState(true);
+    const [dealerData, setDealerData] = useState<any>(null);
+    const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
 
-    const dealer = DEALER_DETAIL;
-    const inventory = INVENTORY;
+    useEffect(() => {
+        fetchDealerDetails();
+    }, [id]);
+
+    const fetchDealerDetails = async () => {
+        if (!id) return;
+
+        try {
+            const response = await apiClient.get(`/dealers/${id}`);
+
+            if (response.data.success && response.data.data) {
+                const apiDealer: ApiDealerDetail = response.data.data;
+
+                // Parse specialties if it's a JSON string
+                let specialtiesList: string[] = ['Licensed Dealer', 'Firearms Sales'];
+                if (apiDealer.specialties) {
+                    try {
+                        specialtiesList = JSON.parse(apiDealer.specialties);
+                    } catch {
+                        specialtiesList = [apiDealer.specialties];
+                    }
+                }
+
+                // Parse business hours if available
+                let businessHours = {
+                    weekday: '8:00 AM - 5:00 PM',
+                    saturday: '9:00 AM - 2:00 PM',
+                    sunday: 'Closed'
+                };
+                if (apiDealer.business_hours) {
+                    try {
+                        businessHours = JSON.parse(apiDealer.business_hours);
+                    } catch {
+                        // Keep defaults
+                    }
+                }
+
+                // Transform inventory from API
+                const transformedInventory: InventoryItem[] = (apiDealer.inventory || []).map(item => {
+                    // Map stock_status to our UI format
+                    let stockStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' = 'IN_STOCK';
+                    if (item.stock_status === 'OUT_OF_STOCK') stockStatus = 'OUT_OF_STOCK';
+                    else if (item.stock_status === 'LOW_STOCK') stockStatus = 'LOW_STOCK';
+
+                    return {
+                        id: item.id,
+                        name: `${item.firearm.type} - ${item.firearm.model}`,
+                        type: item.firearm.type as 'PISTOL' | 'RIFLE' | 'SHOTGUN',
+                        make: item.firearm.type, // Using type as make since make isn't in API
+                        model: item.firearm.model,
+                        caliber: item.firearm.calibre,
+                        price: item.price || 0,
+                        stock: stockStatus,
+                        image: `https://ui-avatars.com/api/?name=${encodeURIComponent(item.firearm.model)}&background=1A2035&color=D4AF37&size=200`,
+                        serialNumber: item.firearm.serial_number
+                    };
+                });
+
+                // Transform to UI format
+                const transformed = {
+                    id: apiDealer.id,
+                    name: apiDealer.company_name,
+                    licenseNumber: apiDealer.tin || `DLR-${new Date().getFullYear()}-${id.slice(0, 3).toUpperCase()}`,
+                    description: apiDealer.about || 'Licensed firearm dealer verified by Ghana Police Service.',
+                    region: apiDealer.location || 'Greater Accra',
+                    district: apiDealer.owner?.city || apiDealer.location || 'Accra',
+                    address: apiDealer.owner?.address || apiDealer.location || 'Accra, Ghana',
+                    phone: apiDealer.phone_number || apiDealer.owner?.phone || 'N/A',
+                    email: apiDealer.owner?.email || 'N/A',
+                    website: apiDealer.website || 'N/A',
+                    rating: 4.5 + (Math.random() * 0.5), // Mock rating
+                    reviews: Math.floor(50 + Math.random() * 200), // Mock reviews
+                    status: apiDealer.status === 'APPROVED' ? 'OPEN' as const : 'CLOSED' as const,
+                    verified: apiDealer.verified_by_police,
+                    hours: businessHours,
+                    specialties: specialtiesList,
+                    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(apiDealer.company_name)}&background=1A2035&color=D4AF37&size=400&bold=true`
+                };
+
+                setDealerData(transformed);
+                setInventoryData(transformedInventory);
+            } else {
+                // Fallback to mock
+                setDealerData(DEALER_DETAIL);
+                setInventoryData(INVENTORY);
+            }
+        } catch (error) {
+            console.error('Error fetching dealer details:', error);
+            setDealerData(DEALER_DETAIL);
+            setInventoryData(INVENTORY);
+            toast.error('Failed to load dealer details');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const dealer = dealerData || DEALER_DETAIL;
+    const inventory = inventoryData.length > 0 ? inventoryData : INVENTORY;
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4AF37]"></div>
+            </div>
+        );
+    }
 
     const handlePurchase = (item: InventoryItem) => {
         if (item.stock === 'OUT_OF_STOCK') {

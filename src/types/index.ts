@@ -118,6 +118,52 @@ export interface FirearmDetails {
   purpose: string;
 }
 
+// API Response Types matching backend snake_case
+export interface ApiFirearm {
+  id: string;
+  serial_number: string;
+  type: string;
+  model: string;
+  calibre: string;
+  status: string;
+  current_owner_user_id: string;
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+  licences?: ApiLicence[];
+  ownership_history?: ApiOwnershipHistory[];
+}
+
+export interface ApiLicence {
+  id: string;
+  firearm_id: string;
+  status: string;
+  application_type: string;
+  issued_date: string;
+  expiry_date: string;
+  renewal_eligible_from: string | null;
+}
+
+export interface ApiOwnershipHistory {
+  id: string;
+  firearm_id: string;
+  from_user_id: string;
+  to_user_id: string;
+  transfer_type: string;
+  approved_by: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  from_user?: {
+    id: string;
+    email: string;
+  };
+  to_user?: {
+    id: string;
+    email: string;
+  };
+}
+
 // Licence Types
 export interface Licence {
   id: string;
