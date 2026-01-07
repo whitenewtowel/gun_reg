@@ -316,137 +316,8 @@ export default function DealerDetailPage() {
             </div>
             <br />
             <div className="max-w-[88rem] mx-auto px-6 py-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Tabs */}
-                        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                            <div className="flex border-b border-slate-200">
-                                <button
-                                    onClick={() => setActiveTab('inventory')}
-                                    className={`flex-1 px-6 py-4 font-semibold transition-colors ${activeTab === 'inventory'
-                                        ? 'bg-[#1A2035] text-white'
-                                        : 'text-slate-600 hover:bg-slate-50'
-                                        }`}
-                                >
-                                    Inventory ({inventory.filter(i => i.stock !== 'OUT_OF_STOCK').length} available)
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('about')}
-                                    className={`flex-1 px-6 py-4 font-semibold transition-colors ${activeTab === 'about'
-                                        ? 'bg-[#1A2035] text-white'
-                                        : 'text-slate-600 hover:bg-slate-50'
-                                        }`}
-                                >
-                                    About
-                                </button>
-                            </div>
-
-                            {/* Inventory Tab */}
-                            {activeTab === 'inventory' && (
-                                <div className="p-6">
-                                    {inventory.length === 0 ? (
-                                        <div className="text-center py-16">
-                                            <BuildingStorefrontIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                                            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Inventory Available</h3>
-                                            <p className="text-slate-600 mb-4">
-                                                This dealer currently has no firearms in stock.
-                                            </p>
-                                            <p className="text-sm text-slate-500">
-                                                Please check back later or contact the dealer directly for more information.
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead className="border-b border-slate-200">
-                                                    <tr>
-                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Firearm</th>
-                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Type</th>
-                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Caliber</th>
-                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Price</th>
-                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Stock</th>
-                                                        <th className="pb-3 text-left text-sm font-semibold text-slate-900">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-slate-100">
-                                                    {inventory.map((item, index) => (
-                                                        <motion.tr
-                                                            key={item.id}
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: index * 0.05 }}
-                                                            className="hover:bg-slate-50 transition-colors"
-                                                        >
-                                                            <td className="py-4">
-                                                                <div className="flex items-center gap-3">
-                                                                    <img
-                                                                        src={item.image}
-                                                                        alt={item.name}
-                                                                        className="w-16 h-12 rounded object-cover"
-                                                                    />
-                                                                    <div>
-                                                                        <p className="font-semibold text-slate-900">{item.name}</p>
-                                                                        <p className="text-xs text-slate-500">{item.make} {item.model}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="py-4">
-                                                                <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
-                                                                    {item.type}
-                                                                </span>
-                                                            </td>
-                                                            <td className="py-4 text-slate-900">{item.caliber}</td>
-                                                            <td className="py-4">
-                                                                <span className="font-bold text-slate-900">GHS {item.price.toLocaleString()}</span>
-                                                            </td>
-                                                            <td className="py-4">{getStockBadge(item.stock)}</td>
-                                                            <td className="py-4">
-                                                                <button
-                                                                    onClick={() => handlePurchase(item)}
-                                                                    disabled={item.stock === 'OUT_OF_STOCK'}
-                                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${item.stock === 'OUT_OF_STOCK'
-                                                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                                        : 'bg-[#D4AF37] text-white hover:bg-[#B4941F]'
-                                                                        }`}
-                                                                >
-                                                                    {item.stock === 'OUT_OF_STOCK' ? 'Unavailable' : 'Purchase'}
-                                                                </button>
-                                                            </td>
-                                                        </motion.tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* About Tab */}
-                            {activeTab === 'about' && (
-                                <div className="p-6 space-y-6">
-                                    <div>
-                                        <h3 className="font-semibold text-slate-900 mb-2">About</h3>
-                                        <p className="text-slate-600 leading-relaxed">{dealer.description}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="font-semibold text-slate-900 mb-3">Specialties</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {dealer.specialties.map((specialty: string) => (
-                                                <span key={specialty} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm">
-                                                    {specialty}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-9">
                     {/* Sidebar */}
-                    <div className="space-y-6">
                         {/* Contact Info */}
                         <div className="bg-white rounded-xl border border-slate-200 p-6">
                             <h3 className="font-bold text-slate-900 mb-4">Contact Information</h3>
@@ -508,6 +379,135 @@ export default function DealerDetailPage() {
                                 Ensure you have a valid firearm license and Permit to Purchase before visiting the dealer.
                             </p>
                         </div>
+                 
+
+               
+                </div>
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Tabs */}
+                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                        <div className="flex border-b border-slate-200">
+                            <button
+                                onClick={() => setActiveTab('inventory')}
+                                className={`flex-1 px-6 py-4 font-semibold transition-colors ${activeTab === 'inventory'
+                                    ? 'bg-[#1A2035] text-white'
+                                    : 'text-slate-600 hover:bg-slate-50'
+                                    }`}
+                            >
+                                Inventory ({inventory.filter(i => i.stock !== 'OUT_OF_STOCK').length} available)
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('about')}
+                                className={`flex-1 px-6 py-4 font-semibold transition-colors ${activeTab === 'about'
+                                    ? 'bg-[#1A2035] text-white'
+                                    : 'text-slate-600 hover:bg-slate-50'
+                                    }`}
+                            >
+                                About
+                            </button>
+                        </div>
+
+                        {/* Inventory Tab */}
+                        {activeTab === 'inventory' && (
+                            <div className="p-6">
+                                {inventory.length === 0 ? (
+                                    <div className="text-center py-16">
+                                        <BuildingStorefrontIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                                        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Inventory Available</h3>
+                                        <p className="text-slate-600 mb-4">
+                                            This dealer currently has no firearms in stock.
+                                        </p>
+                                        <p className="text-sm text-slate-500">
+                                            Please check back later or contact the dealer directly for more information.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead className="border-b border-slate-200">
+                                                <tr>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Firearm</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Type</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Caliber</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Price</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Stock</th>
+                                                    <th className="pb-3 text-left text-sm font-semibold text-slate-900">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {inventory.map((item, index) => (
+                                                    <motion.tr
+                                                        key={item.id}
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: index * 0.05 }}
+                                                        className="hover:bg-slate-50 transition-colors"
+                                                    >
+                                                        <td className="py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <img
+                                                                    src={item.image}
+                                                                    alt={item.name}
+                                                                    className="w-16 h-12 rounded object-cover"
+                                                                />
+                                                                <div>
+                                                                    <p className="font-semibold text-slate-900">{item.name}</p>
+                                                                    <p className="text-xs text-slate-500">{item.make} {item.model}</p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
+                                                                {item.type}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-4 text-slate-900">{item.caliber}</td>
+                                                        <td className="py-4">
+                                                            <span className="font-bold text-slate-900">GHS {item.price.toLocaleString()}</span>
+                                                        </td>
+                                                        <td className="py-4">{getStockBadge(item.stock)}</td>
+                                                        <td className="py-4">
+                                                            <button
+                                                                onClick={() => handlePurchase(item)}
+                                                                disabled={item.stock === 'OUT_OF_STOCK'}
+                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${item.stock === 'OUT_OF_STOCK'
+                                                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                                    : 'bg-[#D4AF37] text-white hover:bg-[#B4941F]'
+                                                                    }`}
+                                                            >
+                                                                {item.stock === 'OUT_OF_STOCK' ? 'Unavailable' : 'Purchase'}
+                                                            </button>
+                                                        </td>
+                                                    </motion.tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* About Tab */}
+                        {activeTab === 'about' && (
+                            <div className="p-6 space-y-6">
+                                <div>
+                                    <h3 className="font-semibold text-slate-900 mb-2">About</h3>
+                                    <p className="text-slate-600 leading-relaxed">{dealer.description}</p>
+                                </div>
+
+                                <div>
+                                    <h3 className="font-semibold text-slate-900 mb-3">Specialties</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {dealer.specialties.map((specialty: string) => (
+                                            <span key={specialty} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm">
+                                                {specialty}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
