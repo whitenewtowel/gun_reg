@@ -257,7 +257,7 @@ export default function ApplicationsPage() {
                                                 {new Date(app.updatedAt).toLocaleDateString()}
                                             </td>
                                             <td className="py-4 px-4 text-center">
-                                                {getStatusBadge(app.status)}
+                                                {getStatusBadge(app.status === 'PENDING_REVIEW' ? 'PENDING' : app.status)}
                                             </td>
                                             <td className="py-4 px-4 text-right">
                                                 <Button

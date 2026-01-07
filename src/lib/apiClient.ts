@@ -5,6 +5,7 @@
 
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL, API_CONFIG } from '@/config/api.config';
+import { toast } from 'sonner';
 
 /**
  * Create Axios instance
@@ -130,6 +131,12 @@ apiClient.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+
+    // Handle 429 Too Many Requests
+    if (error.response?.status === 429) {
+      toast.error('System busy. Please try again in 15 minutes.');
+      return Promise.reject(error);
     }
 
     // Handle other errors

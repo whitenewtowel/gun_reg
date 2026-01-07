@@ -164,6 +164,35 @@ export interface ApiOwnershipHistory {
   };
 }
 
+export interface ApiAcquisition {
+  id: string;
+  user_id: string;
+  dealer_id: string;
+  firearm_id?: string;
+  status: string;
+  price?: number;
+  currency?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  dealer?: {
+    id: string;
+    business_name: string;
+    email: string;
+    phone: string;
+  };
+  firearm?: {
+    id: string;
+    make: string;
+    model: string;
+    serial_number: string;
+    type: string;
+    calibre: string;
+    price: number;
+    currency: string;
+  };
+}
+
 // Licence Types
 export interface Licence {
   id: string;

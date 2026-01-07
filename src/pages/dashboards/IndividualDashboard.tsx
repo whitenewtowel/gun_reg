@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import {
     Plus,
     FileCheck,
-    AlertCircle,
     Search,
     Filter,
     FileText,
@@ -15,7 +14,8 @@ import { Badge } from '@/components/ui/badge';
 
 import { useNavigate } from 'react-router-dom';
 import { dashboardService } from '@/services/dashboardService';
-import type { DashboardData } from '@/types';
+import apiClient from '@/lib/apiClient';
+import type { DashboardData, ApiAcquisition } from '@/types';
 import { cn } from '@/lib/utils';
 
 // --- Components for Folder Design ---
@@ -97,6 +97,7 @@ const SlantedTabs = ({ tabs, activeTab, onTabChange }: any) => {
 export default function IndividualDashboard() {
     const navigate = useNavigate();
     const [data, setData] = useState<DashboardData | null>(null);
+    const [acquisitions, setAcquisitions] = useState<ApiAcquisition[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('Recent Work');
 
@@ -107,10 +108,37 @@ export default function IndividualDashboard() {
     useEffect(() => {
         const loadDashboardData = async () => {
             try {
-                const response = await dashboardService.getDashboardData();
-                if (response.success) {
-                    setData(response.data);
+                // Use allSettled to allow partial success (e.g., if one endpoint hits 429)
+                const [dashboardResult, acquisitionsResult] = await Promise.allSettled([
+                    dashboardService.getDashboardData(),
+                    apiClient.get('/acquisitions/me')
+                ]);
+
+                if (dashboardResult.status === 'fulfilled' && dashboardResult.value.success) {
+                    const dashboardData = dashboardResult.value.data;
+
+                    // Parse acquisitions if successful
+                    if (acquisitionsResult.status === 'fulfilled' && acquisitionsResult.value.data.success) {
+                        const acqRes = acquisitionsResult.value;
+                        const acqData = acqRes.data.data || [];
+
+                        const acqList = Array.isArray(acqData) ? acqData : (acqData.data || []);
+                        setAcquisitions(acqList);
+
+                        const pendingAcquisitions = acqList.filter((acq: any) =>
+                            ['INITIATED', 'PENDING_PAYMENT', 'PENDING_DEALER_APPROVAL'].includes(acq.status)
+                        ).length;
+
+                        if (dashboardData.summary) {
+                            dashboardData.summary.pending_applications = (dashboardData.summary.pending_applications || 0) + pendingAcquisitions;
+                        }
+                    }
+
+                    setData(dashboardData);
                 }
+                // We don't need to explicitly handle the rejected case since the interceptor will show the toast
+                // And loading state will be cleared finally
+
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
             } finally {
@@ -120,7 +148,7 @@ export default function IndividualDashboard() {
 
         loadDashboardData();
     }, []);
- 
+
     const stats = [
         {
             label: 'Total Firearms',
@@ -160,23 +188,48 @@ export default function IndividualDashboard() {
         }
     ];
 
-    const recentActivity = data?.recent_resources?.applications?.length ? data.recent_resources.applications.map(app => ({
-        id: app.tracking_id || app.id.substring(0, 8).toUpperCase(),
-        title: `${app.type.replace('_', ' ')}`,
-        course: "Application", // Generic category
+    const activityApplications = data?.recent_resources?.applications?.map(app => ({
+        id: app.tracking_id || (app.id ? app.id.substring(0, 8).toUpperCase() : 'APP'),
+        title: `${app.type.replace(/_/g, ' ')}`,
+        course: "Application",
         updateTime: app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : 'Draft',
+        timestamp: app.submitted_at ? new Date(app.submitted_at).getTime() : 0,
         status: app.status,
-    })) : [];
+    })) || [];
+
+    const activityAcquisitions = acquisitions.map(acq => ({
+        id: `PO-${acq.id.substring(0, 8).toUpperCase()}`,
+        title: `${acq.firearm?.model || 'Firearm'} Purchase`,
+        course: "Acquisition",
+        updateTime: new Date(acq.created_at).toLocaleDateString(),
+        timestamp: new Date(acq.created_at).getTime(),
+        status: acq.status,
+    }));
+
+    const recentActivity = [...activityApplications, ...activityAcquisitions]
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 10);
 
     const getStatusBadge = (status: string) => {
-        const styles = {
-            APPROVED: "bg-green-100 text-green-700 border-green-200",
-            IN_REVIEW: "bg-blue-100 text-blue-700 border-blue-200",
-            PENDING: "bg-orange-100 text-orange-700 border-orange-200",
-            REJECTED: "bg-red-100 text-red-700 border-red-200",
+        const styles: Record<string, string> = {
+            APPROVED: "text-emerald-800 bg-emerald-100 border-emerald-200 shadow-sm",
+            IN_REVIEW: "text-blue-800 bg-blue-100 border-blue-200 shadow-sm",
+            UNDER_REVIEW: "text-blue-800 bg-blue-100 border-blue-200 shadow-sm",
+            PENDING: "text-amber-800 bg-amber-100 border-amber-200 shadow-sm",
+            SUBMITTED: "text-amber-800 bg-amber-100 border-amber-200 shadow-sm",
+            PENDING_PAYMENT: "text-amber-800 bg-amber-100 border-amber-200 shadow-sm",
+            INITIATED: "text-purple-800 bg-purple-100 border-purple-200 shadow-sm",
+            REJECTED: "text-rose-800 bg-rose-100 border-rose-200 shadow-sm",
+            // Add other statuses as needed
         };
-        // @ts-ignore
-        return <Badge className={`${styles[status] || "bg-gray-100"} hover:bg-white`}>{status.replace('_', ' ')}</Badge>;
+
+        const style = styles[status] || "text-slate-600 bg-slate-100 border-slate-200 shadow-sm";
+
+        return (
+            <Badge variant="outline" className={`${style} hover:${style.split(' ')[1]} border`}>
+                {status.replace(/_/g, ' ')}
+            </Badge>
+        );
     };
 
     if (loading) {
@@ -275,7 +328,7 @@ export default function IndividualDashboard() {
                                                 {item.updateTime}
                                             </td>
                                             <td className="py-4 px-4 text-center">
-                                                {getStatusBadge(item.status)}
+                                                {getStatusBadge(item.status === 'PENDING_REVIEW' ? 'PENDING' : item.status)}
                                             </td>
                                             <td className="py-4 px-4 text-right">
                                                 <div className="flex justify-end gap-2">

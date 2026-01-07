@@ -21,16 +21,20 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { useReportStolen } from '@/hooks/useReportStolen';
 import { useReportLost } from '@/hooks/useReportLost';
 import { ReportStolenModal } from '@/components/firearms/ReportStolenModal';
 import { ReportLostModal } from '@/components/firearms/ReportLostModal';
-import { ApiFirearm } from '@/types';
+import { ApiFirearm, ApiLicence, ApiAcquisition } from '@/types';
+import { format } from 'date-fns';
 
 export default function MyFirearmsPage() {
     const navigate = useNavigate();
     const [firearms, setFirearms] = useState<ApiFirearm[]>([]);
+    const [acquisitions, setAcquisitions] = useState<ApiAcquisition[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -46,21 +50,34 @@ export default function MyFirearmsPage() {
     const fetchFirearms = async (page = 1) => {
         setLoading(true);
         try {
-            const response = await apiClient.get(`/firearms?page=${page}&limit=${pagination.limit}`);
-            if (response.data.success && response.data.data) {
-                setFirearms(response.data.data);
-                if (response.data.pagination) {
+            const [firearmsResult, acquisitionsResult] = await Promise.allSettled([
+                apiClient.get(`/firearms?page=${page}&limit=${pagination.limit}`),
+                apiClient.get('/acquisitions/me')
+            ]);
+
+            if (firearmsResult.status === 'fulfilled' && firearmsResult.value.data.success && firearmsResult.value.data.data) {
+                const firearmsRes = firearmsResult.value;
+                setFirearms(firearmsRes.data.data);
+                if (firearmsRes.data.pagination) {
                     setPagination(prev => ({
                         ...prev,
-                        ...response.data.pagination
+                        ...firearmsRes.data.pagination
                     }));
                 }
             } else {
                 setFirearms([]);
             }
+
+            if (acquisitionsResult.status === 'fulfilled' && acquisitionsResult.value.data.success) {
+                const acquisitionsRes = acquisitionsResult.value;
+                // acquisitions might be paginated or array
+                const acqData = acquisitionsRes.data.data?.data || (Array.isArray(acquisitionsRes.data.data) ? acquisitionsRes.data.data : []) || [];
+                setAcquisitions(acqData);
+            }
+
         } catch (error) {
-            console.error('Error fetching firearms:', error);
-            setFirearms([]);
+            console.error('Error fetching data:', error);
+            // Don't clear firearms on error, maybe just show toast
         } finally {
             setLoading(false);
         }
@@ -271,162 +288,204 @@ export default function MyFirearmsPage() {
                 </div>
             </div>
 
-            {/* Firearms List */}
-            {filteredFirearms.length === 0 ? (
-                <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
-                    <ShieldCheckIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-[#1A2035] mb-2">No Firearms Found</h3>
-                    <p className="text-gray-500 mb-6">
-                        {searchTerm
-                            ? "No firearms match your search"
-                            : "You haven't registered any firearms yet"
-                        }
-                    </p>
-                    {!searchTerm && (
-                        <button
-                            onClick={() => navigate('/complete-applications')}
-                            className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] shadow-lg shadow-gray-200"
-                        >
-                            Apply for Permit
-                        </button>
-                    )}
-                </div>
-            ) : (
-                <>
-                    <div className="relative overflow-x-auto bg-white shadow-sm rounded-xl border border-gray-200">
-                        <table className="w-full text-sm text-left">
-                            <thead className="text-sm text-gray-700 bg-gray-50 border-b border-gray-200">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3 font-semibold">
-                                        Model
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 font-semibold">
-                                        Serial Number
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 font-semibold">
-                                        Type
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 font-semibold">
-                                        Calibre
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 font-semibold">
-                                        Status
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 font-semibold">
-                                        Registered
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 font-semibold text-right">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredFirearms.map((firearm) => (
-                                    <tr
-                                        key={firearm.id}
-                                        className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <th scope="row" className="px-6 py-4 font-semibold text-[#1A2035] whitespace-nowrap">
-                                            {firearm.model}
-                                        </th>
-                                        <td className="px-6 py-4 font-mono text-xs text-gray-600">
-                                            {firearm.serial_number}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-700">
-                                            <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(firearm.status)}`}>
-                                                {firearm.type}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-700">
-                                            {firearm.calibre}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {(() => {
-                                                // If firearm itself is not active (e.g., LOST, STOLEN), show that
-                                                if (firearm.status !== 'ACTIVE') {
-                                                    return (
-                                                        <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(firearm.status)}`}>
-                                                            {firearm.status}
-                                                        </span>
-                                                    );
-                                                }
 
-                                                // Otherwise, show the latest licence status
-                                                const latestLicence = getLatestLicence(firearm);
-                                                const effectiveStatus = latestLicence?.status || firearm.status;
 
-                                                return (
-                                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(effectiveStatus)}`}>
-                                                        {effectiveStatus}
+            <Tabs defaultValue="registered" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                    <TabsTrigger value="registered">Registered Firearms ({pagination.total})</TabsTrigger>
+                    <TabsTrigger value="pending">Pending Purchases ({acquisitions.length})</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="registered" className="mt-6 space-y-6">
+                    {/* Firearms List */}
+                    {filteredFirearms.length === 0 ? (
+                        <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
+                            <ShieldCheckIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-[#1A2035] mb-2">No Firearms Found</h3>
+                            <p className="text-gray-500 mb-6">
+                                {searchTerm
+                                    ? "No firearms match your search"
+                                    : "You haven't registered any firearms yet"
+                                }
+                            </p>
+                            {!searchTerm && (
+                                <button
+                                    onClick={() => navigate('/complete-applications')}
+                                    className="px-6 py-3 bg-[#1A2035] text-white font-bold rounded-xl hover:bg-[#2c3554] shadow-lg shadow-gray-200"
+                                >
+                                    Apply for Permit
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="relative overflow-x-auto bg-white shadow-sm rounded-xl border border-gray-200">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="text-sm text-gray-700 bg-gray-50 border-b border-gray-200">
+                                        <tr>
+                                            <th scope="col" className="px-6 py-3 font-semibold">Model</th>
+                                            <th scope="col" className="px-6 py-3 font-semibold">Serial Number</th>
+                                            <th scope="col" className="px-6 py-3 font-semibold">Type</th>
+                                            <th scope="col" className="px-6 py-3 font-semibold">Calibre</th>
+                                            <th scope="col" className="px-6 py-3 font-semibold">Status</th>
+                                            <th scope="col" className="px-6 py-3 font-semibold">Registered</th>
+                                            <th scope="col" className="px-6 py-3 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {filteredFirearms.map((firearm) => (
+                                            <tr key={firearm.id} className="bg-white hover:bg-gray-50 transition-colors">
+                                                <th scope="row" className="px-6 py-4 font-semibold text-[#1A2035] whitespace-nowrap">
+                                                    {firearm.model}
+                                                </th>
+                                                <td className="px-6 py-4 font-mono text-xs text-gray-600">
+                                                    {firearm.serial_number}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-700">
+                                                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(firearm.status)}`}>
+                                                        {firearm.type}
                                                     </span>
-                                                );
-                                            })()}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-700">
-                                            {new Date(firearm.created_at).toLocaleDateString('en-GB')}
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <FirearmActionsMenu firearm={firearm} />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Pagination Controls */}
-                    {pagination.pages > 1 && (
-                        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-xl">
-                            <div className="flex flex-1 justify-between sm:hidden">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
-                                    disabled={pagination.page === 1}
-                                >
-                                    Previous
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.pages, prev.page + 1) }))}
-                                    disabled={pagination.page === pagination.pages}
-                                >
-                                    Next
-                                </Button>
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-700">
+                                                    {firearm.calibre}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {(() => {
+                                                        if (firearm.status !== 'ACTIVE') {
+                                                            return (
+                                                                <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(firearm.status)}`}>
+                                                                    {firearm.status}
+                                                                </span>
+                                                            );
+                                                        }
+                                                        const latestLicence = getLatestLicence(firearm);
+                                                        const effectiveStatus = latestLicence?.status || firearm.status;
+                                                        return (
+                                                            <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(effectiveStatus)}`}>
+                                                                {effectiveStatus}
+                                                            </span>
+                                                        );
+                                                    })()}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-700">
+                                                    {format(new Date(firearm.created_at), 'MMM d, yyyy')}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <FirearmActionsMenu firearm={firearm} />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
-                            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-700">
-                                        Showing page <span className="font-medium">{pagination.page}</span> of{' '}
-                                        <span className="font-medium">{pagination.pages}</span> (Total <span className="font-medium">{pagination.total}</span>)
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+
+                            {pagination.pages > 1 && (
+                                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-xl">
+                                    <div className="flex flex-1 justify-between sm:hidden">
                                         <Button
                                             variant="outline"
-                                            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
                                             onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                                             disabled={pagination.page === 1}
                                         >
-                                            <span className="sr-only">Previous</span>
-                                            <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                                            Previous
                                         </Button>
                                         <Button
                                             variant="outline"
-                                            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
                                             onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.pages, prev.page + 1) }))}
                                             disabled={pagination.page === pagination.pages}
                                         >
-                                            <span className="sr-only">Next</span>
-                                            <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                                            Next
                                         </Button>
-                                    </nav>
+                                    </div>
+                                    <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-700">
+                                                Showing page <span className="font-medium">{pagination.page}</span> of{' '}
+                                                <span className="font-medium">{pagination.pages}</span> (Total <span className="font-medium">{pagination.total}</span>)
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                                <Button
+                                                    variant="outline"
+                                                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                                                    onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                                                    disabled={pagination.page === 1}
+                                                >
+                                                    <span className="sr-only">Previous</span>
+                                                    <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                                                    onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.pages, prev.page + 1) }))}
+                                                    disabled={pagination.page === pagination.pages}
+                                                >
+                                                    <span className="sr-only">Next</span>
+                                                    <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                                                </Button>
+                                            </nav>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                        </>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="pending" className="mt-6">
+                    {acquisitions.length === 0 ? (
+                        <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
+                            <ClockIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-[#1A2035] mb-2">No Pending Acquisitions</h3>
+                            <p className="text-gray-500 mb-6">
+                                You don't have any pending firearm purchases.
+                            </p>
+                            <Button onClick={() => navigate('/dealers')} className="bg-[#1A2035] text-white">
+                                Browse Dealers
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="relative overflow-x-auto bg-white shadow-sm rounded-xl border border-gray-200">
+                            <table className="w-full text-sm text-left">
+                                <thead className="text-sm text-gray-700 bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3 font-semibold">Firearm</th>
+                                        <th scope="col" className="px-6 py-3 font-semibold">Dealer</th>
+                                        <th scope="col" className="px-6 py-3 font-semibold">Price</th>
+                                        <th scope="col" className="px-6 py-3 font-semibold">Status</th>
+                                        <th scope="col" className="px-6 py-3 font-semibold text-right">Initiated</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {acquisitions.map((acq) => (
+                                        <tr key={acq.id} className="bg-white hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 font-semibold text-[#1A2035]">
+                                                {acq.firearm?.model || 'Unknown Model'} <br />
+                                                <span className="text-xs font-normal text-gray-500">{acq.firearm?.type || 'Firearm'}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {acq.dealer?.business_name || 'Dealer'}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700 font-mono">
+                                                {acq.currency || 'GHS'} {acq.price?.toLocaleString()}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <Badge variant="outline" className={`${getStatusColor(acq.status)} border-0`}>
+                                                    {acq.status.replace(/_/g, ' ')}
+                                                </Badge>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700 text-right">
+                                                {format(new Date(acq.created_at), 'MMM d, yyyy')}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
-                </>
-            )}
+                </TabsContent>
+            </Tabs>
 
             {/* Report Modals */}
             <ReportStolenModal
