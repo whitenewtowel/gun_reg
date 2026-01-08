@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authService } from '@/services/authService'
+import { IMAGES } from '@/assets/images'
 
 const forgotPasswordSchema = z.object({
-    email: z.string().email('Please enter a valid email address'),
+    phone: z.string().min(10, 'Please enter a valid phone number'),
 })
 
 type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>
@@ -24,16 +25,16 @@ export default function ForgotPassword() {
     } = useForm<ForgotPasswordValues>({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
-            email: '',
+            phone: '',
         },
     })
 
     const onSubmit = async (data: ForgotPasswordValues) => {
         try {
-            await authService.requestPasswordReset(data.email)
-            toast.success('Reset OTP sent to your email')
-            // Navigate to Reset Password page with email state
-            navigate('/reset-password', { state: { email: data.email } })
+            const response = await authService.requestPasswordReset(data.phone)
+            toast.success('Reset OTP sent to your phone')
+            // Navigate to Reset Password page with phone and session ID
+            navigate('/reset-password', { state: { phone: data.phone, sessionId: response.sessionId } })
         } catch (error) {
             console.error(error)
             toast.error(error instanceof Error ? error.message : 'Failed to send reset link')
@@ -49,28 +50,38 @@ export default function ForgotPassword() {
                     <Link to="/login" className="inline-flex items-center gap-2 text-[#D4AF37] hover:text-[#B4941F] mb-8 transition-colors">
                         <ArrowLeft className="h-4 w-4" /> Back to Login
                     </Link>
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="h-12 w-12 bg-black/50 border border-[#D4AF37]/30 rounded-lg flex items-center justify-center">
-                            <ShieldCheck className="h-7 w-7 text-[#D4AF37]" />
+
+                    <div className="flex items-center gap-4 mb-5">
+                        <div className="relative group">
+                            <img src={IMAGES.LOGIN2} alt="Logo" className='w-14 h-12 object-contain' />
+                        </div>
+                        <div>
+                            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white leading-none">
+                                NFLTMS
+                            </h1>
+                            <p className="text-[0.65rem] md:text-xs text-[#D4AF37] tracking-widest uppercase mt-1">
+                                National Firearm Licensing
+                            </p>
                         </div>
                     </div>
+
                     <h1 className="text-3xl font-bold text-white mb-2">Forgot Password?</h1>
-                    <p className="text-gray-400">Enter your email address to receive a secure password reset OTP.</p>
+                    <p className="text-gray-400">Enter your phone number to receive a secure password reset OTP.</p>
                 </div>
 
                 <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
                     <div className="space-y-2">
-                        <Label htmlFor="email" className="text-gray-300">Email Address</Label>
+                        <Label htmlFor="phone" className="text-gray-300">Phone Number</Label>
                         <Input
-                            id="email"
-                            type="email"
-                            placeholder="officer@police.gov.gh"
-                            className={`bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 h-12 ${errors.email ? 'border-red-500' : ''
+                            id="phone"
+                            type="tel"
+                            placeholder="+233..."
+                            className={`bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 h-12 ${errors.phone ? 'border-red-500' : ''
                                 }`}
-                            {...register('email')}
+                            {...register('phone')}
                         />
-                        {errors.email && (
-                            <span className="text-sm text-red-500">{errors.email.message}</span>
+                        {errors.phone && (
+                            <span className="text-sm text-red-500">{errors.phone.message}</span>
                         )}
                     </div>
 
@@ -107,7 +118,7 @@ export default function ForgotPassword() {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0B1021]/80 via-transparent to-[#0B1021]/80 z-10"></div>
 
                 <img
-                    src="/CiGN/assets/images/hero-gun.png"
+                    src={IMAGES.LOGIN}
                     alt="Secure Facility"
                     className="h-full w-full object-cover opacity-60 mix-blend-overlay"
                 />
