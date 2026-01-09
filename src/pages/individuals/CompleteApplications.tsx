@@ -27,6 +27,38 @@ interface Reference {
     digital_address: string;
 }
 
+import { z } from 'zod';
+
+// strict regex patterns
+const phoneRegex = /^(0|\+233)[0-9]{9}$/;
+const ghanaCardRegex = /^GHA-\d{9}-\d{1}$/;
+
+const step1Schema = z.object({
+    fullName: z.string().min(2, "Full name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().regex(phoneRegex, "Invalid Ghana phone number (e.g., 0244123456)"),
+    city: z.string().min(2, "City is required"),
+    // Optional/Autofilled but good to validate structure if present
+    ghanaCardNumber: z.string().regex(ghanaCardRegex, "Invalid Ghana Card format").optional().or(z.literal('')),
+});
+
+const referenceSchema = z.object({
+    full_name: z.string().min(2, "Reference full name required"),
+    email: z.string().email("Reference email is invalid"),
+    phone: z.string().regex(phoneRegex, "Reference phone number is invalid"),
+    profession: z.string().min(2, "Reference profession/job title required"),
+    address: z.string().min(5, "Reference residential address required (min 5 chars)"),
+    digital_address: z.string().min(5, "Reference digital address required (min 5 chars)"),
+});
+
+const step2Schema = z.object({
+    purpose: z.enum(['PERSONAL_SECURITY', 'HUNTING', 'SPORT_SHOOTING'], {
+        message: "Please select a valid permit purpose"
+    }),
+    storage_description: z.string().min(10, "Please provide a detailed storage description (min 10 characters)"),
+    references: z.array(referenceSchema).min(2, "At least 2 references are required"),
+});
+
 export default function CompleteApplications() {
     const navigate = useNavigate();
     const { user: authUser } = useAuth();
@@ -205,42 +237,37 @@ export default function CompleteApplications() {
         }
     };
 
+
     const validateStep1 = () => {
-        if (!formData.phone || !formData.email) {
-            toast.error('Please provide your phone number and email address');
+        const result = step1Schema.safeParse(formData);
+        if (!result.success) {
+            // Show the first error message
+            const firstError = result.error.issues[0];
+            toast.error(firstError.message);
             return false;
         }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            toast.error('Please enter a valid email address');
-            return false;
-        }
-
-        const phoneRegex = /^(0|\+233)[0-9]{9}$/;
-        if (!phoneRegex.test(formData.phone)) {
-            toast.error('Please enter a valid Ghana phone number');
-            return false;
-        }
-
         return true;
     };
 
     const validateStep2 = () => {
-        if (!permitData.storage_description) {
-            toast.error('Please describe your firearm storage facility');
+        // Validate Permit Data separately or combined
+        const permitResult = step2Schema.safeParse({ ...permitData, references });
+
+        if (!permitResult.success) {
+            const firstError = permitResult.error.issues[0];
+            // If the error is in the references array, make it clear
+            if (firstError.path[0] === 'references') {
+                const index = firstError.path[1];
+                if (typeof index === 'number') {
+                    toast.error(`Reference ${index + 1}: ${firstError.message}`);
+                } else {
+                    toast.error(firstError.message);
+                }
+            } else {
+                toast.error(firstError.message);
+            }
             return false;
         }
-
-        // Validate references
-        for (let i = 0; i < Math.min(2, references.length); i++) {
-            const ref = references[i];
-            if (!ref.full_name || !ref.email || !ref.phone || !ref.profession) {
-                toast.error(`Please complete all fields for Reference ${i + 1}`);
-                return false;
-            }
-        }
-
         return true;
     };
 
@@ -490,7 +517,7 @@ export default function CompleteApplications() {
                                 <div>
                                     <label className="block text-sm text-gray-600 mb-2">
                                         <MapPinIcon className="w-4 h-4 inline mr-2" />
-                                        City
+                                        City <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -504,7 +531,7 @@ export default function CompleteApplications() {
                                 <div>
                                     <label className="block text-sm text-gray-600 mb-2">
                                         <UserCircleIcon className="w-4 h-4 inline mr-2" />
-                                        Full Name
+                                        Full Name <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -617,14 +644,14 @@ export default function CompleteApplications() {
                                             />
                                             <input
                                                 type="text"
-                                                placeholder="Address"
+                                                placeholder="Address *"
                                                 value={ref.address}
                                                 onChange={(e) => handleReferenceChange(index, 'address', e.target.value)}
                                                 className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"
                                             />
                                             <input
                                                 type="text"
-                                                placeholder="Digital Address (e.g., GA-123-4567)"
+                                                placeholder="Digital Address (e.g., GA-123-4567) *"
                                                 value={ref.digital_address}
                                                 onChange={(e) => handleReferenceChange(index, 'digital_address', e.target.value)}
                                                 className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[#1A2035] focus:outline-none focus:ring-1 focus:ring-[#1A2035]"

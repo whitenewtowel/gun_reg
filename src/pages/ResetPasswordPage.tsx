@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authService } from '@/services/authService'
 import AuthOTPInput from '@/components/auth/AuthOTPInput'
+import { IMAGES } from '@/assets/images'
 
 const passwordSchema = z.object({
     password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -25,16 +26,17 @@ export default function ResetPassword() {
     const navigate = useNavigate()
     const location = useLocation()
     const [step, setStep] = useState<'otp' | 'password'>('otp')
-    const [email, setEmail] = useState('')
+    const [sessionId, setSessionId] = useState('')
     const [resetToken, setResetToken] = useState('')
     const [otp, setOtp] = useState('')
+    const [phone, setPhone] = useState('')
     const [isVerifying, setIsVerifying] = useState(false)
 
     useEffect(() => {
-        if (location.state?.email) {
-            setEmail(location.state.email)
+        if (location.state?.phone && location.state?.sessionId) {
+            setPhone(location.state.phone)
+            setSessionId(location.state.sessionId)
         } else {
-            // If no email in state, redirect back to forgot password
             toast.error('Session expired. Please request reset again.')
             navigate('/forgot-password')
         }
@@ -49,20 +51,17 @@ export default function ResetPassword() {
     })
 
     const handleVerifyOTP = async (code: string) => {
-        // Auto-submit when complete? Or wait for button?
-        // Let's auto-verify for better UX if length is 6
         if (code.length !== 6) return
 
         setIsVerifying(true)
         try {
-            const response = await authService.verifyResetOTP(email, code)
+            const response = await authService.verifyResetOTP(sessionId, code)
             setResetToken(response.resetToken)
             setStep('password')
             toast.success('OTP verified successfully')
         } catch (error) {
             console.error(error)
             toast.error(error instanceof Error ? error.message : 'Invalid OTP')
-            // Clear OTP on error? Maybe not all of it.
         } finally {
             setIsVerifying(false)
         }
@@ -71,8 +70,8 @@ export default function ResetPassword() {
     const onSubmitPassword = async (data: PasswordValues) => {
         try {
             await authService.completePasswordReset({
-                token: resetToken,
-                password: data.password
+                resetToken: resetToken,
+                newPassword: data.password
             })
             toast.success('Password reset successfully')
             navigate('/login')
@@ -88,15 +87,24 @@ export default function ResetPassword() {
             <div className="flex w-full flex-col justify-center px-6 sm:px-8 md:w-1/2 lg:px-24 max-w-2xl mx-auto relative z-10">
 
                 <div className="mb-10">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="h-12 w-12 bg-black/50 border border-[#D4AF37]/30 rounded-lg flex items-center justify-center">
-                            <ShieldCheck className="h-7 w-7 text-[#D4AF37]" />
+                    <div className="flex items-center gap-4 mb-5">
+                        <div className="relative group">
+                            <img src={IMAGES.LOGIN2} alt="Logo" className='w-14 h-12 object-contain' />
+                        </div>
+                        <div>
+                            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white leading-none">
+                                NFLTMS
+                            </h1>
+                            <p className="text-[0.65rem] md:text-xs text-[#D4AF37] tracking-widest uppercase mt-1">
+                                National Firearm Licensing
+                            </p>
                         </div>
                     </div>
+
                     <h1 className="text-3xl font-bold text-white mb-2">Reset Password</h1>
                     <p className="text-gray-400">
                         {step === 'otp'
-                            ? `Enter the secure code sent to ${email}`
+                            ? `Enter the secure code sent to ${phone}`
                             : 'Create a new secure password for your account'}
                     </p>
                 </div>
@@ -115,7 +123,7 @@ export default function ResetPassword() {
                         <div className="text-center text-sm text-gray-500">
                             Didn't receive code?{' '}
                             <button
-                                onClick={() => {/* Resend logic could be added here */ }}
+                                onClick={() => {/* Resend logic */ }}
                                 className="text-[#D4AF37] hover:underline"
                             >
                                 Resend
@@ -186,6 +194,15 @@ export default function ResetPassword() {
                         <ArrowLeft className="h-3 w-3" /> Back to Login
                     </Link>
                 </div>
+
+                <div className="mt-12 pt-6 border-t border-white/5 flex items-center justify-center gap-4 text-xs text-gray-600">
+                    <div className="flex items-center gap-1">
+                        <ShieldCheck className="h-3 w-3" />
+                        <span>AES-256 Encrypted</span>
+                    </div>
+                    <span>•</span>
+                    <span>Official Government Portal</span>
+                </div>
             </div>
 
             {/* Right Side - Same as Login for consistency */}
@@ -194,7 +211,7 @@ export default function ResetPassword() {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0B1021]/80 via-transparent to-[#0B1021]/80 z-10"></div>
 
                 <img
-                    src="/CiGN/assets/images/hero-gun.png"
+                    src={IMAGES.LOGIN}
                     alt="Secure Facility"
                     className="h-full w-full object-cover opacity-60 mix-blend-overlay"
                 />

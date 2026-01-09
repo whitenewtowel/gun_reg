@@ -81,9 +81,34 @@ export const authService = {
   /**
    * Request password reset (sends OTP)
    */
-  async requestPasswordReset(email: string): Promise<void> {
+  /**
+   * Request password reset (sends OTP)
+   */
+  async requestPasswordReset(emailOrPhone: string): Promise<{ sessionId: string }> {
     try {
-      await apiClient.post(API_ENDPOINTS.PASSWORD_RESET.INITIATE, { email });
+      // Define specific response interface based on user provided JSON
+      interface ResetInitiateResponse {
+        success: boolean;
+        data: {
+          sessionId: string;
+          expiresIn: number;
+          expiresAt: string;
+          contactMethod: string;
+          maskedContact: string;
+        };
+        message: string;
+      }
+
+      const response = await apiClient.post<ResetInitiateResponse>(
+        API_ENDPOINTS.PASSWORD_RESET.INITIATE,
+        {
+          emailOrPhone,
+          contactMethod: emailOrPhone.includes('@') ? 'email' : 'sms'
+        }
+      );
+
+      // Return the sessionId from the nested data object
+      return { sessionId: response.data.data.sessionId };
     } catch (error) {
       throw new Error(handleApiError(error));
     }
@@ -92,13 +117,24 @@ export const authService = {
   /**
    * Verify password reset OTP
    */
-  async verifyResetOTP(email: string, otp: string): Promise<{ resetToken: string }> {
+  async verifyResetOTP(sessionId: string, otp: string): Promise<{ resetToken: string }> {
     try {
-      const response = await apiClient.post<{ resetToken: string }>(
+      interface VerifyOtpResponse {
+        success: boolean;
+        data: {
+          resetToken: string;
+          expiresIn: number;
+          expiresAt: string;
+        };
+        message: string;
+      }
+
+      const response = await apiClient.post<VerifyOtpResponse>(
         API_ENDPOINTS.PASSWORD_RESET.VERIFY_OTP,
-        { email, otp }
+        { sessionId, otp }
       );
-      return response.data;
+
+      return { resetToken: response.data.data.resetToken };
     } catch (error) {
       throw new Error(handleApiError(error));
     }
@@ -107,7 +143,7 @@ export const authService = {
   /**
    * Complete password reset
    */
-  async completePasswordReset(data: { token: string; password: string }): Promise<void> {
+  async completePasswordReset(data: { resetToken: string; newPassword: string }): Promise<void> {
     try {
       await apiClient.post(API_ENDPOINTS.PASSWORD_RESET.COMPLETE, data);
     } catch (error) {

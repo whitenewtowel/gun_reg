@@ -31,9 +31,9 @@ export const API_ENDPOINTS = {
 
   // Password Reset
   PASSWORD_RESET: {
-    INITIATE: '/internal-users/password-reset/initiate',
-    VERIFY_OTP: '/internal-users/password-reset/verify-otp',
-    COMPLETE: '/internal-users/password-reset/complete',
+    INITIATE: '/auth/password/reset/initiate',
+    VERIFY_OTP: '/auth/password/reset/verify-otp',
+    COMPLETE: '/auth/password/reset/complete',
   },
 
   // User Profile
@@ -125,7 +125,7 @@ export const API_ENDPOINTS = {
     DEALER_DOCUMENTS: (dealerId: string) => `/uploads/dealer/${dealerId}/documents`,
     FIREARM_DOCUMENTS: (firearmId: string) => `/uploads/firearm/${firearmId}/documents`,
     LICENCE_DOCUMENTS: (licenceId: string) => `/uploads/licence/${licenceId}/documents`,
-    LIST_DOCUMENTS: (documentType: string, entityId: string) => 
+    LIST_DOCUMENTS: (documentType: string, entityId: string) =>
       `/uploads/${documentType}/${entityId}/documents`,
     DELETE_DOCUMENT: (documentId: string) => `/uploads/documents/${documentId}`,
   },
@@ -154,7 +154,7 @@ export const API_ENDPOINTS = {
     INTERNAL_USERS: '/admin/system/internal-users',
     INTERNAL_USER_BY_ID: (id: string) => `/admin/system/internal-users/${id}`,
     ASSIGN_ROLE: (id: string) => `/admin/system/internal-users/${id}/roles`,
-    REVOKE_ROLE: (id: string, role: string) => 
+    REVOKE_ROLE: (id: string, role: string) =>
       `/admin/system/internal-users/${id}/roles/${role}`,
     AUDIT_LOGS: '/admin/system/audit-logs',
     PASSWORD_RESET: (id: string) => `/admin/system/internal-users/${id}/password-reset`,
