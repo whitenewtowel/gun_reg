@@ -7,15 +7,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ShieldCheckIcon, ArrowRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import OTPInput from '@/components/kyc/OTPInput';
 import kycService from '@/services/kycService';
 import { IMAGES } from '@/assets/images';
 
 interface LocationState {
-    kyc_session_id: string;
+    registration_session_id: string;
     emailOrPhone: string;
+    ghana_card_number?: string;
 }
 
 export default function KYCVerifyPage() {
@@ -31,7 +32,7 @@ export default function KYCVerifyPage() {
 
     // Redirect if no session ID
     useEffect(() => {
-        if (!state?.kyc_session_id) {
+        if (!state?.registration_session_id) {
             toast.error('Invalid session', {
                 description: 'Please start the verification process again',
             });
@@ -67,13 +68,13 @@ export default function KYCVerifyPage() {
         setIsLoading(true);
 
         try {
-            const response: any = await kycService.verifyOTP({
-                kyc_session_id: state.kyc_session_id,
+            const response = await kycService.verifyOTP({
+                registration_session_id: state.registration_session_id,
                 otp,
             });
 
             // Allow for different response structures (direct token or nested in data or setup_code)
-            const setupToken = response?.setup_code || response?.resetToken || response?.setupToken || response?.data?.setupToken || response?.token;
+            const setupToken = response.setup_code || 0;
 
             toast.success('Code verified!', {
                 description: 'Now set up your password',
@@ -81,9 +82,10 @@ export default function KYCVerifyPage() {
 
             navigate('/kyc/complete', {
                 state: {
-                    kyc_session_id: state.kyc_session_id,
+                    registration_session_id: state.registration_session_id,
                     emailOrPhone: state.emailOrPhone,
-                    setupToken: setupToken
+                    setupToken: setupToken,
+                    ghana_card_number: state.ghana_card_number
                 },
             });
         } catch (error) {
@@ -100,7 +102,7 @@ export default function KYCVerifyPage() {
         setIsResending(true);
 
         try {
-            await kycService.resendOTP(state.kyc_session_id);
+            await kycService.resendOTP(state.registration_session_id);
 
             toast.success('Code resent!', {
                 description: `A new code has been sent to ${state.emailOrPhone}`,
@@ -118,7 +120,7 @@ export default function KYCVerifyPage() {
         }
     };
 
-    if (!state?.kyc_session_id) {
+    if (!state?.registration_session_id) {
         return null;
     }
 

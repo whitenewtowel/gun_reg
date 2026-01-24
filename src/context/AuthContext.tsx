@@ -97,6 +97,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
+      // Clear any existing session data before new login
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('onboarding_context');
+
       const response = await authService.login({ email, password })
       const { access_token, refresh_token, data } = response
 
@@ -112,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Route based on onboarding_context or role
       if (data.onboarding_context?.type === 'NONE' || !userData.role) {
-        navigate('/onboarding/select-user-type')
+        navigate('/kyc/biometric')
       } else {
         navigate('/dashboard')
       }

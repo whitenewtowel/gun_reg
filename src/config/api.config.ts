@@ -13,11 +13,18 @@ export const API_BASE_URL = env.apiBaseUrl;
 export const API_ENDPOINTS = {
   // KYC & Onboarding (No Auth Required)
   KYC: {
-    GET_SESSION: '/kyc/get-session',
-    START: '/kyc/start',
-    VERIFY_OTP: '/kyc/verify-otp',
-    RESEND_OTP: '/kyc/resend-otp',
-    USER_STATUS: '/kyc/user-status',
+    GET_SESSION: '/registration/get-session',
+    START: '/registration/start',
+    VERIFY_OTP: '/registration/verify-otp',
+    RESEND_OTP: '/registration/resend-otp',
+    USER_STATUS: '/registration/user-status',
+  },
+
+  // Biometric KYC
+  BIOMETRIC_KYC: {
+    INITIATE: '/biometric-kyc/initiate-ghana',
+    STATUS: (userId: string) => `/biometric-kyc/status/${userId}`,
+    COMPLETE: '/biometric-kyc/complete-kyc',
   },
 
   // Authentication
@@ -176,7 +183,7 @@ export const API_ENDPOINTS = {
  * API Configuration Constants
  */
 export const API_CONFIG = {
-  TIMEOUT: 30000, // 30 seconds
+  TIMEOUT: 60000, // 60 seconds
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 second
 } as const;
