@@ -21,7 +21,6 @@ import kycService from '@/services/kycService';
 import logo from '@/assets/images/logo2.png'
 // --- Validation Schema ---
 const phoneRegex = /^(0|\+233)[0-9]{9}$/;
-
 const kycStartSchema = z.object({
     ghana_card_number: z.string().min(1, 'Ghana Card number is required').regex(/^GHA-\d{9}-\d$/, 'Invalid format (GHA-123456789-0)'),
     region_code: z.string().min(1, 'Region is required'),
@@ -32,8 +31,6 @@ const kycStartSchema = z.object({
     emergency_contact: z.object({
         name: z.string().optional(),
         phone: z.string().optional(), // Make optional first to allow empty, but refine if needed. User prompt implies optional? "emergency_contact { description: Optional... }" YES.
-        relationship: z.string().optional(),
-        email: z.string().email('Invalid emergency email').optional().or(z.literal('')),
     }).optional(),
 });
 
@@ -79,8 +76,6 @@ export default function KYCStartPage() {
             emergency_contact: {
                 name: '',
                 phone: '',
-                relationship: '',
-                email: ''
             }
         }
     });
@@ -102,19 +97,19 @@ export default function KYCStartPage() {
         setIsLoading(true);
         try {
             const response = await kycService.startKYC(data);
-
             if (response.success) {
-                toast.success('Verification started', {
-                    description: response.message || `Code sent to your ${data.delivery_channel === 'sms' ? 'phone' : 'email'}`,
+                toast.success(response.message, {
+                    description: `Code sent to your ${data.delivery_channel === 'sms' ? 'phone' : 'email'}`,
                 });
                 navigate('/kyc/verify', {
                     state: {
-                        kyc_session_id: response.data.kyc_session_id,
-                        emailOrPhone: data.delivery_channel === 'sms' ? data.phone : data.email
+                        registration_session_id: response.data.registration_session_id,
+                        emailOrPhone: data.delivery_channel === 'sms' ? data.phone : data.email,
+                        ghana_card_number: data.ghana_card_number
                     }
                 });
             } else {
-                toast.error('Failed to start verification', {
+                toast.error(response.message, {
                     description: response.message || 'Please try again',
                 });
             }
@@ -129,7 +124,7 @@ export default function KYCStartPage() {
                 try {
                     const session = await kycService.getSession(contact);
                     // Check both direct and nested data structure
-                    const sessionId = session?.data?.kyc_session_id || session?.kyc_session_id;
+                    const sessionId = session?.data?.registration_session_id || session?.registration_session_id || session?.data?.kyc_session_id || session?.kyc_session_id;
 
                     if (sessionId) {
                         toast.dismiss(toastId);
@@ -139,7 +134,7 @@ export default function KYCStartPage() {
 
                         navigate('/kyc/verify', {
                             state: {
-                                kyc_session_id: sessionId,
+                                registration_session_id: sessionId,
                                 emailOrPhone: contact
                             }
                         });
@@ -173,7 +168,7 @@ export default function KYCStartPage() {
             {/* Header */}
             <header className="border-b border-white/5 bg-[#0B1021]/95 backdrop-blur-md sticky top-0 z-40">
                 <Link className="container mx-auto px-4 py-4 flex items-center justify-between" to="/">
-             
+
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10  flex items-center justify-center">
                             <img src={logo} alt="Logo" className='w-14 h-12 object-contain' />
@@ -406,24 +401,17 @@ export default function KYCStartPage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Full Name</label>
-                                            <input
-                                                {...register('emergency_contact.name')}
-                                                placeholder="Next of Kin Name"
-                                                className="w-full bg-[#1A2035] border-none text-white p-4 focus:ring-1 focus:ring-[#D4AF37]"
-                                            />
-                                        </div>
 
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Relationship</label>
+                                                <label className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Full Name</label>
                                                 <input
-                                                    {...register('emergency_contact.relationship')}
-                                                    placeholder="Spouse, Sibling, etc."
+                                                    {...register('emergency_contact.name')}
+                                                    placeholder="Emergency Contact Name"
                                                     className="w-full bg-[#1A2035] border-none text-white p-4 focus:ring-1 focus:ring-[#D4AF37]"
                                                 />
                                             </div>
+
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Phone</label>
                                                 <input
@@ -434,14 +422,6 @@ export default function KYCStartPage() {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Email (Optional)</label>
-                                            <input
-                                                {...register('emergency_contact.email')}
-                                                placeholder="emergency@example.com"
-                                                className="w-full bg-[#1A2035] border-none text-white p-4 focus:ring-1 focus:ring-[#D4AF37]"
-                                            />
-                                        </div>
                                     </div>
 
                                     <div className="bg-[#D4AF37]/5 p-4 border-l-2 border-[#D4AF37] mt-6">

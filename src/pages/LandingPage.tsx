@@ -38,22 +38,22 @@ import logo from '@/assets/images/logo2.png';
 export default function LandingPage() {
     const licenseCategories = [
         {
-            title: 'Pistol Licenses',
+            title: 'Personal Defense',
             image: pistolLicenseImg,
-            description: 'Personal defense and sport shooting',
-            count: '2,500+ active',
-        }, 
-        {   
-            title: 'Rifle Licenses',
-            image: rifleLicenseImg,
-            description: 'Hunting and sport shooting',
-            count: '1,800+ active',
+            description: 'Handguns for personal protection',
+            count: '45,000+ active',
         },
         {
-            title: 'Shotgun Licenses',
+            title: 'Hunting & Protection',
             image: shotgunLicenseImg,
-            description: 'Hunting and clay shooting',
-            count: '3,200+ active',
+            description: 'Shotguns for farm security & game',
+            count: '85,000+ active',
+        },
+        {
+            title: 'Sport & Precision',
+            image: rifleLicenseImg,
+            description: 'Authorized rifles for club use',
+            count: '12,000+ active',
         },
     ];
 
@@ -335,7 +335,7 @@ export default function LandingPage() {
                                                 <h3 className="text-white font-bold text-xs mb-1 uppercase">
                                                     100% Verified
                                                 </h3>
-                                                <p className="text-gray-400 text-[10px] leading-relaxed">
+                                                <p className="text-gray-400 text-sm leading-relaxed">
                                                     Every license linked to Ghana Card for complete identity assurance
                                                 </p>
                                             </div>
@@ -384,9 +384,11 @@ export default function LandingPage() {
                                         <select className="w-full h-14 pl-4 lg:pl-20 pr-4 bg-transparent text-white border-none focus:ring-0 font-medium uppercase tracking-wide cursor-pointer appearance-none">
                                             <option value="">Select Make...</option>
                                             <option value="glock">Glock</option>
-                                            <option value="sig">SIG Sauer</option>
+                                            <option value="taurus">Taurus</option>
                                             <option value="beretta">Beretta</option>
-                                            <option value="smith">Smith & Wesson</option>
+                                            <option value="browning">Browning</option>
+                                            <option value="remington">Remington</option>
+                                            <option value="mossberg">Mossberg</option>
                                         </select>
                                         <div className="absolute right-4 pointer-events-none text-[#D4AF37]">
                                             <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
@@ -399,10 +401,13 @@ export default function LandingPage() {
                                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#D4AF37] text-xs font-bold uppercase tracking-widest hidden lg:block">Model</span>
                                         <select className="w-full h-14 pl-4 lg:pl-24 pr-4 bg-transparent text-white border-none focus:ring-0 font-medium uppercase tracking-wide cursor-pointer appearance-none">
                                             <option value="">Select Model...</option>
-                                            <option value="g17">Glock 17</option>
-                                            <option value="g19">Glock 19</option>
-                                            <option value="p320">P320</option>
-                                            <option value="92fs">92FS</option>
+                                            <option value="g17">Glock 17 Gen5</option>
+                                            <option value="g19">Glock 19 Gen5</option>
+                                            <option value="g2c">Taurus G2C</option>
+                                            <option value="ts9">Taurus TS9</option>
+                                            <option value="92fs">Beretta 92FS</option>
+                                            <option value="rem870">Remington 870</option>
+                                            <option value="moss500">Mossberg 500</option>
                                         </select>
                                         <div className="absolute right-4 pointer-events-none text-[#D4AF37]">
                                             <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>

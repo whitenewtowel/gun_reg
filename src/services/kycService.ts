@@ -24,7 +24,7 @@ export interface KYCStartData {
 }
 
 export interface KYCStartResponseData {
-  kyc_session_id: string;
+  registration_session_id: string;
   email_masked: string;
   phone_masked: string;
   delivery_channel: string;
@@ -39,7 +39,7 @@ export interface KYCStartResponse {
 }
 
 export interface OTPVerificationData {
-  kyc_session_id: string;
+  registration_session_id: string;
   otp: string;
 }
 
@@ -81,7 +81,19 @@ export const kycService = {
   /**
    * Verify OTP and create account
    */
-  async verifyOTP(data: OTPVerificationData): Promise<{ success: boolean; setup_code?: string; message?: string }> {
+  async verifyOTP(data: OTPVerificationData): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      user_id: string;
+      email: string;
+      kyc_status: string;
+    };
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    setup_code: string;
+  }> {
     try {
       const response = await apiClient.post(API_ENDPOINTS.KYC.VERIFY_OTP, data);
       return response.data;
@@ -96,7 +108,7 @@ export const kycService = {
   async resendOTP(sessionId: string): Promise<{ success: boolean }> {
     try {
       const response = await apiClient.post(API_ENDPOINTS.KYC.RESEND_OTP, {
-        kyc_session_id: sessionId,
+        registration_session_id: sessionId,
       });
       return response.data;
     } catch (error) {

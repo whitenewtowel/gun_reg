@@ -22,9 +22,10 @@ import authService from '@/services/authService';
 import { useAuth } from '@/context/AuthContext';
 
 interface LocationState {
-    kyc_session_id?: string;
+    registration_session_id?: string;
     emailOrPhone?: string;
     setupToken?: string;
+    ghana_card_number?: string;
 }
 
 // Password validation schema
@@ -108,8 +109,13 @@ export default function KYCCompletePage() {
                 description: 'You are now logged in.',
             });
 
-            // Redirect to user type selection
-            navigate('/onboarding/select-user-type');
+            // Redirect to biometric verification
+            navigate('/kyc/biometric', {
+                state: {
+                    ghana_card_number: state?.ghana_card_number,
+                    userId: response.data.user_id || response.data.id // Ensure we pass the ID
+                }
+            });
 
         } catch (error) {
             toast.error('Failed to create account', {

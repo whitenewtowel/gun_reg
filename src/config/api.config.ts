@@ -13,11 +13,18 @@ export const API_BASE_URL = env.apiBaseUrl;
 export const API_ENDPOINTS = {
   // KYC & Onboarding (No Auth Required)
   KYC: {
-    GET_SESSION: '/kyc/get-session',
-    START: '/kyc/start',
-    VERIFY_OTP: '/kyc/verify-otp',
-    RESEND_OTP: '/kyc/resend-otp',
-    USER_STATUS: '/kyc/user-status',
+    GET_SESSION: '/registration/get-session',
+    START: '/registration/start',
+    VERIFY_OTP: '/registration/verify-otp',
+    RESEND_OTP: '/registration/resend-otp',
+    USER_STATUS: '/registration/user-status',
+  },
+
+  // Biometric KYC
+  BIOMETRIC_KYC: {
+    INITIATE: '/biometric-kyc/initiate-ghana',
+    STATUS: (userId: string) => `/biometric-kyc/status/${userId}`,
+    COMPLETE: '/biometric-kyc/complete-kyc',
   },
 
   // Authentication
@@ -122,12 +129,13 @@ export const API_ENDPOINTS = {
 
   // Document Uploads
   UPLOADS: {
-    DEALER_DOCUMENTS: (dealerId: string) => `/uploads/dealer/${dealerId}/documents`,
-    FIREARM_DOCUMENTS: (firearmId: string) => `/uploads/firearm/${firearmId}/documents`,
-    LICENCE_DOCUMENTS: (licenceId: string) => `/uploads/licence/${licenceId}/documents`,
-    LIST_DOCUMENTS: (documentType: string, entityId: string) =>
-      `/uploads/${documentType}/${entityId}/documents`,
-    DELETE_DOCUMENT: (documentId: string) => `/uploads/documents/${documentId}`,
+    USER_DOCUMENTS: '/uploads/users/documents',
+    DEALER_DOCUMENTS: '/uploads/dealers/documents', // Dealer ID is a query param
+    FIREARM_DOCUMENTS: (firearmId: string) => `/uploads/firearms/${firearmId}/documents`,
+    LICENCE_DOCUMENTS: (licenceId: string) => `/uploads/licences/${licenceId}/documents`,
+    MY_DOCUMENTS: '/uploads/my-documents',
+    VIEW_DOCUMENT: (documentType: string, id: string) => `/uploads/${documentType}/${id}/view`,
+    REPLACE_DOCUMENT: (documentType: string, id: string) => `/uploads/${documentType}/${id}/replace`,
   },
 
   // Reports (Admin)
@@ -176,7 +184,7 @@ export const API_ENDPOINTS = {
  * API Configuration Constants
  */
 export const API_CONFIG = {
-  TIMEOUT: 30000, // 30 seconds
+  TIMEOUT: 60000, // 60 seconds
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 second
 } as const;

@@ -14,6 +14,7 @@ import DealerRegistration from './pages/DealerRegistration'
 import KYCStartPage from './pages/kyc/KYCStartPage'
 import KYCVerifyPage from './pages/kyc/KYCVerifyPage'
 import KYCCompletePage from './pages/kyc/KYCCompletePage'
+import KYCBiometricPage from './pages/kyc/KYCBiometricPage'
 import SelectUserTypePage from './pages/onboarding/SelectUserTypePage'
 import CompleteApplications from './pages/individuals/CompleteApplications'
 import ApplicationsPage from './pages/individuals/ApplicationsPage'
@@ -49,6 +50,7 @@ function App() {
           <Route path="/kyc/start" element={<KYCStartPage />} />
           <Route path="/kyc/verify" element={<KYCVerifyPage />} />
           <Route path="/kyc/complete" element={<KYCCompletePage />} />
+          <Route path="/kyc/biometric" element={<KYCBiometricPage />} />
           <Route path="/auth/password-setup" element={<KYCCompletePage />} />
 
           {/* Main App Routes - Protected by Auth only (Roles handled internally) */}
