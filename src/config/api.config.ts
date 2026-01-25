@@ -129,12 +129,13 @@ export const API_ENDPOINTS = {
 
   // Document Uploads
   UPLOADS: {
-    DEALER_DOCUMENTS: (dealerId: string) => `/uploads/dealer/${dealerId}/documents`,
-    FIREARM_DOCUMENTS: (firearmId: string) => `/uploads/firearm/${firearmId}/documents`,
-    LICENCE_DOCUMENTS: (licenceId: string) => `/uploads/licence/${licenceId}/documents`,
-    LIST_DOCUMENTS: (documentType: string, entityId: string) =>
-      `/uploads/${documentType}/${entityId}/documents`,
-    DELETE_DOCUMENT: (documentId: string) => `/uploads/documents/${documentId}`,
+    USER_DOCUMENTS: '/uploads/users/documents',
+    DEALER_DOCUMENTS: '/uploads/dealers/documents', // Dealer ID is a query param
+    FIREARM_DOCUMENTS: (firearmId: string) => `/uploads/firearms/${firearmId}/documents`,
+    LICENCE_DOCUMENTS: (licenceId: string) => `/uploads/licences/${licenceId}/documents`,
+    MY_DOCUMENTS: '/uploads/my-documents',
+    VIEW_DOCUMENT: (documentType: string, id: string) => `/uploads/${documentType}/${id}/view`,
+    REPLACE_DOCUMENT: (documentType: string, id: string) => `/uploads/${documentType}/${id}/replace`,
   },
 
   // Reports (Admin)

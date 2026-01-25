@@ -10,6 +10,7 @@ export interface BiometricInitiationData {
     userId: string;
     ghanaCardNumber: string;
     selfie: File;
+    idCard?: File;
 }
 
 export interface BiometricCompletionData {
@@ -42,6 +43,9 @@ export const biometricService = {
             formData.append('userId', data.userId);
             formData.append('ghanaCardNumber', data.ghanaCardNumber);
             formData.append('selfie', data.selfie);
+            if (data.idCard) {
+                formData.append('idCard', data.idCard);
+            }
 
             const response = await apiClient.post<BiometricResponse>(
                 API_ENDPOINTS.BIOMETRIC_KYC.INITIATE,

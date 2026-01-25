@@ -24,14 +24,21 @@ const SmileCamera: React.FC<SmileCameraProps> = ({ onSuccess, onClose, captureId
             if (onClose) onClose();
         };
 
-        // Listen for both event types to be safe
+        // Listen for standard and granular events
         camera.addEventListener('smart-camera-web.publish', handleResult);
         camera.addEventListener('images-success', handleResult);
+
+        // Granular capture events
+        camera.addEventListener('selfie-capture-screens.publish', handleResult);
+        camera.addEventListener('document-capture-screens.publish', handleResult);
+
         camera.addEventListener('smart-camera-web.close', handleClose);
 
         return () => {
             camera.removeEventListener('smart-camera-web.publish', handleResult);
             camera.removeEventListener('images-success', handleResult);
+            camera.removeEventListener('selfie-capture-screens.publish', handleResult);
+            camera.removeEventListener('document-capture-screens.publish', handleResult);
             camera.removeEventListener('smart-camera-web.close', handleClose);
         };
     }, [onSuccess, onClose]);

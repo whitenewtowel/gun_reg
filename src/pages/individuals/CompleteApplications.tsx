@@ -220,19 +220,79 @@ export default function CompleteApplications() {
         }
     };
 
+    // Validation Constants
+    const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
+    const ACCEPTED_DOC_TYPES = [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/jpg',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+
+    const validateFile = (file: File, fieldName: keyof typeof files) => {
+        // 1. Determine allowed types based on field
+        const isImageField = fieldName === 'passport_photos' || fieldName === 'storage_photos';
+        const allowedTypes = isImageField ? ACCEPTED_IMAGE_TYPES : ACCEPTED_DOC_TYPES;
+
+        // 2. Type Check
+        if (!allowedTypes.includes(file.type)) {
+            // Friendly error message
+            const typeMsg = isImageField ? 'Images (JPEG, PNG)' : 'Documents (PDF, Word, Images)';
+            toast.error(`Invalid file type. Please upload: ${typeMsg}`);
+            return false;
+        }
+
+        // 3. Duplicate Check
+        // Gather all currently uploaded files to check against
+        const currentFiles: File[] = [
+            ...files.passport_photos,
+            files.medical_certificate,
+            files.police_clearance,
+            files.proof_of_residence,
+            files.letter_of_intent,
+            ...files.storage_photos
+        ].filter((f): f is File => f !== null);
+
+        const isDuplicate = currentFiles.some(existingFile =>
+            existingFile.name === file.name && existingFile.size === file.size
+        );
+
+        if (isDuplicate) {
+            toast.error('This file has already been uploaded.');
+            return false;
+        }
+
+        return true;
+    };
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof files) => {
         const selectedFiles = e.target.files;
-        if (!selectedFiles) return;
+        if (!selectedFiles || selectedFiles.length === 0) return;
+
+        // Create array from FileList
+        const newFiles = Array.from(selectedFiles);
+
+        // Validate each file
+        const validFiles = newFiles.filter(file => validateFile(file, fieldName));
+
+        if (validFiles.length === 0) {
+            // Clear input if invalid to allow retrying same file if needed (though browser handle this)
+            e.target.value = '';
+            return;
+        }
 
         if (fieldName === 'passport_photos' || fieldName === 'storage_photos') {
             setFiles(prev => ({
                 ...prev,
-                [fieldName]: Array.from(selectedFiles)
+                [fieldName]: [...prev[fieldName], ...validFiles]
             }));
         } else {
+            // For single file inputs, strictly take the first valid one
             setFiles(prev => ({
                 ...prev,
-                [fieldName]: selectedFiles[0]
+                [fieldName]: validFiles[0]
             }));
         }
     };

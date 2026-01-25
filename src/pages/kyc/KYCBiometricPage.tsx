@@ -3,7 +3,7 @@
  * Final verification step using Smile ID SDK
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -47,18 +47,24 @@ export default function KYCBiometricPage() {
 
     const [ghanaCardInput, setGhanaCardInput] = useState(state?.ghana_card_number || user?.ghanaCardNumber || '');
     const [file, setFile] = useState<File | null>(null);
+    const [idCardFile, setIdCardFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [status, setStatus] = useState<'IDLE' | 'FAILED'>('IDLE');
+    const hasCheckedStatus = useRef(false);
 
     // Check status on mount
     useEffect(() => {
         const checkInitialStatus = async () => {
             const effectiveUserId = state?.userId || user?.id;
-            if (!effectiveUserId) {
-                setIsLoading(false);
+
+            // Prevent multiple checks or missing ID
+            if (!effectiveUserId || hasCheckedStatus.current) {
+                if (!effectiveUserId) setIsLoading(false);
                 return;
             }
+
+            hasCheckedStatus.current = true;
 
             try {
                 const response = await biometricService.getStatus(effectiveUserId);
@@ -98,29 +104,41 @@ export default function KYCBiometricPage() {
     const handleImagesSuccess = (detail: any) => {
         console.log('Smile ID Images Success:', detail);
         const images = detail.images;
+
         if (images && images.length > 0) {
-            const selfieImage = images[0].image;
-            const dataUrl = selfieImage.startsWith('data:image')
-                ? selfieImage
-                : `data:image/jpeg;base64,${selfieImage}`;
+            // Logic: Take the selfie (usually first)
+            const mainImage = images[0];
+            const dataUrl = mainImage.image.startsWith('data:image')
+                ? mainImage.image
+                : `data:image/jpeg;base64,${mainImage.image}`;
 
-            const capturedFile = dataURLtoFile(dataUrl, 'smile_id_selfie.jpg');
-
-            setFile(capturedFile);
+            const capturedSelfie = dataURLtoFile(dataUrl, 'smile_id_selfie.jpg');
+            setFile(capturedSelfie);
             setPreview(dataUrl);
+
+            // Check for ID Card image (often second image)
+            if (images.length > 1) {
+                const secondImage = images[1];
+                const idDataUrl = secondImage.image.startsWith('data:image')
+                    ? secondImage.image
+                    : `data:image/jpeg;base64,${secondImage.image}`;
+
+                const capturedId = dataURLtoFile(idDataUrl, 'smile_id_document.jpg');
+                setIdCardFile(capturedId);
+                console.log("Captured ID Card image as well");
+            }
         }
     };
 
     const handleSubmit = async () => {
         if (!file) {
-            toast.error('Selfie required', {
-                description: 'Please capture a selfie first.'
+            toast.error('Capture required', {
+                description: 'Please complete the capture process first.'
             });
             return;
         }
 
         const effectiveUserId = state?.userId || user?.id;
-        // Use the manually entered value or fallback
         const ghanaCard = ghanaCardInput;
 
         if (!effectiveUserId) {
@@ -143,7 +161,8 @@ export default function KYCBiometricPage() {
             const response = await biometricService.initiateBiometric({
                 userId: effectiveUserId,
                 ghanaCardNumber: ghanaCard,
-                selfie: file
+                selfie: file,
+                // idCard: idCardFile || undefined
             });
 
             if (response.success) {
