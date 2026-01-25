@@ -23,7 +23,11 @@ export interface BiometricResponse {
     data: {
         userId?: string;
         jobId: string;
-        status: 'PENDING' | 'COMPLETED' | 'FAILED';
+        status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'VERIFIED';
+        verificationData?: {
+            resultCode: string;
+            resultText: string;
+        };
     };
 }
 
