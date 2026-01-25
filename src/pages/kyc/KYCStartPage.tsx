@@ -344,9 +344,8 @@ export default function KYCStartPage() {
                                                     <p className="text-xs text-gray-500 pl-7">Fastest delivery to your provided number</p>
                                                 </div>
 
-                                                {/* <div
-                                                    // onClick={() => setValue('delivery_channel', 'email')}
-                                                    onClick={() => null}
+                                                <div
+                                                    onClick={() => setValue('delivery_channel', 'email')}
                                                     className={`cursor-pointer p-4 border ${deliveryChannel === 'email' ? 'border-[#D4AF37] bg-[#D4AF37]/10' : 'border-white/10 bg-[#1A2035]'} transition-all`}
                                                     
                                                 >
@@ -357,7 +356,7 @@ export default function KYCStartPage() {
                                                         <span className={`font-bold ${deliveryChannel === 'email' ? 'text-[#D4AF37]' : 'text-gray-400'}`}>Email</span>
                                                     </div>
                                                     <p className="text-xs text-gray-500 pl-7">Receive code via your email address</p>
-                                                </div> */}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
