@@ -74,7 +74,7 @@ export default function KYCVerifyPage() {
             });
 
             // Allow for different response structures (direct token or nested in data or setup_code)
-            const setupToken = response.setup_code || 0;
+            const setupToken = response.setup_code;
 
             toast.success('Code verified!', {
                 description: 'Now set up your password',
@@ -85,7 +85,7 @@ export default function KYCVerifyPage() {
                     registration_session_id: state.registration_session_id,
                     emailOrPhone: state.emailOrPhone,
                     setupToken: setupToken,
-                    ghana_card_number: state.ghana_card_number
+                    ghana_card_number: state.ghana_card_number // Passing this through for consistency
                 },
             });
         } catch (error) {

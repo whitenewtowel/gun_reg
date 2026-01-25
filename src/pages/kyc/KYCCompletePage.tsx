@@ -97,25 +97,41 @@ export default function KYCCompletePage() {
                 password: data.password
             });
 
-            // Store tokens and user data using AuthContext
-            if (response.access_token && response.refresh_token) {
-                setAuth(response.data, {
-                    access_token: response.access_token,
-                    refresh_token: response.refresh_token
+            if (response.success) {
+                toast.success('Account created successfully!', {
+                    description: 'Logging you in...',
                 });
+
+                // Auto-login with the new credential
+                try {
+                    // We need the email to login. Check location state.
+                    if (!state?.emailOrPhone) {
+                        throw new Error("Email not found for auto-login. Please login manually.");
+                    }
+
+                    const loginResponse = await authService.login({
+                        email: state.emailOrPhone, // emailOrPhone maps to email in login
+                        password: data.password
+                    });
+
+                    if (loginResponse && loginResponse.access_token) {
+                        setAuth(loginResponse.data, {
+                            access_token: loginResponse.access_token,
+                            refresh_token: loginResponse.refresh_token
+                        });
+
+                        // Redirect based on role or flow
+                        navigate('/kyc/biometric'); // Or '/kyc/biometric' if that's truly next
+                    }
+                } catch (loginError) {
+                    console.error("Auto-login failed:", loginError);
+                    toast.error('Login failed', {
+                        description: 'Account created but auto-login failed. Please login manually.'
+                    });
+                    navigate('/auth/login');
+                }
             }
 
-            toast.success('Account created successfully!', {
-                description: 'You are now logged in.',
-            });
-
-            // Redirect to biometric verification
-            navigate('/kyc/biometric', {
-                state: {
-                    ghana_card_number: state?.ghana_card_number,
-                    userId: response.data.user_id || response.data.id // Ensure we pass the ID
-                }
-            });
 
         } catch (error) {
             toast.error('Failed to create account', {
