@@ -37,20 +37,33 @@ const dataURLtoFile = (dataurl: string, filename: string) => {
 interface LocationState {
     ghana_card_number: string;
     userId: string;
+    access_token?: string;
+    refresh_token?: string;
+    email?: string;
+    data?: any;
 }
 
 export default function KYCBiometricPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { user } = useAuth();
+    const { user, setAuth } = useAuth(); // Ensure setAuth is destructured
     const state = location.state as LocationState;
+    // Persist auth if provided in navigation state (handling auto-login flow)
+    useEffect(() => {
+        if (state?.access_token && state?.data && !user) {
+            setAuth(state.data, {
+                access_token: state.access_token,
+                refresh_token: state.refresh_token || ''
+            });
+        }
+    }, [state, setAuth, user]);
 
     const [ghanaCardInput, setGhanaCardInput] = useState(state?.ghana_card_number || user?.ghanaCardNumber || '');
     const [file, setFile] = useState<File | null>(null);
-    const [idCardFile, setIdCardFile] = useState<File | null>(null);
+    // const [idCardFile, setIdCardFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [status, setStatus] = useState<'IDLE' | 'FAILED'>('IDLE');
+    // const [status, setStatus] = useState<'IDLE' | 'FAILED'>('IDLE');
     const hasCheckedStatus = useRef(false);
 
     // Check status on mount
@@ -89,7 +102,7 @@ export default function KYCBiometricPage() {
                     // Stay on page and show camera
                     setIsLoading(false);
                     if (backendStatus === 'FAILED' || resultCode === '0815') {
-                        setStatus('FAILED');
+                        // setStatus('FAILED');
                     }
                 }
             } catch (error) {
@@ -124,13 +137,14 @@ export default function KYCBiometricPage() {
                     : `data:image/jpeg;base64,${secondImage.image}`;
 
                 const capturedId = dataURLtoFile(idDataUrl, 'smile_id_document.jpg');
-                setIdCardFile(capturedId);
+                // setIdCardFile(capturedId);
                 console.log("Captured ID Card image as well");
             }
         }
     };
 
     const handleSubmit = async () => {
+
         if (!file) {
             toast.error('Capture required', {
                 description: 'Please complete the capture process first.'
@@ -138,7 +152,7 @@ export default function KYCBiometricPage() {
             return;
         }
 
-        const effectiveUserId = state?.userId || user?.id;
+        const effectiveUserId = state?.data?.user_id ||state?.userId || user?.id;
         const ghanaCard = ghanaCardInput;
 
         if (!effectiveUserId) {
