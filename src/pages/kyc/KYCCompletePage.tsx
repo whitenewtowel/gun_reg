@@ -121,7 +121,16 @@ export default function KYCCompletePage() {
                         });
 
                         // Redirect based on role or flow
-                        navigate('/kyc/biometric'); // Or '/kyc/biometric' if that's truly next
+                        navigate('/kyc/biometric', {
+                            state: {
+                                userId: loginResponse.data.id,
+                                email: loginResponse.data.email,
+                                access_token: loginResponse.access_token,
+                                refresh_token: loginResponse.refresh_token,
+                                ghana_card_number: loginResponse.data.ghanaCardNumber,
+                                data: loginResponse.data
+                            }
+                        });
                     }
                 } catch (loginError) {
                     console.error("Auto-login failed:", loginError);

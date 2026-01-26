@@ -74,6 +74,12 @@ apiClient.interceptors.response.use(
 
     // Handle 401 Unauthorized - Token expired
     if (error.response?.status === 401 && !originalRequest._retry) {
+      const isLoginRequest = originalRequest.url?.includes('/auth/login');
+
+      if (isLoginRequest) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         // If already refreshing, queue this request
         return new Promise((resolve, reject) => {

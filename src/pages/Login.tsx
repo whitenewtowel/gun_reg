@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Eye, EyeOff, ArrowLeft, ShieldCheck, Lock } from 'lucide-react'
+import { Eye, EyeOff, ArrowLeft, ShieldCheck, Lock, AlertCircle } from 'lucide-react'
+import { motion, useAnimation } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -22,11 +23,14 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
+  const [loginError, setLoginError] = useState<string | null>(null)
+  const controls = useAnimation()
   const { login } = useAuth()
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -38,17 +42,32 @@ export default function Login() {
   })
 
   const onSubmit = async (data: LoginFormValues) => {
+    setLoginError(null)
     try {
       const success = await login(data.email, data.password)
       if (!success) {
+        setLoginError('Invalid email or password. Please try again.')
+        controls.start({
+          x: [0, -10, 10, -10, 10, 0],
+          transition: { duration: 0.5 }
+        })
+        setValue('password', '')
         toast.error('Invalid credentials')
       } else {
         toast.success('Logged in successfully')
       }
     } catch (error) {
-      console.error(error)
+      console.error('ERRORRRR')
+      setLoginError('An unexpected error occurred. Please try again later.')
       toast.error('An error occurred during login')
     }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (loginError) {
+      setLoginError(null)
+    }
+    return e
   }
 
   return (
@@ -77,7 +96,21 @@ export default function Login() {
           <p className="text-gray-400">Please enter your credentials to access the secure system.</p>
         </div>
 
-        <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+        <motion.form
+          className="flex flex-col gap-6"
+          onSubmit={handleSubmit(onSubmit)}
+          animate={controls}
+        >
+          {loginError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 flex items-center gap-3 text-red-500 text-sm"
+            >
+              <AlertCircle size={18} />
+              <span className="font-medium">{loginError}</span>
+            </motion.div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-gray-300">Email Address</Label>
             <Input
@@ -86,7 +119,11 @@ export default function Login() {
               placeholder="officer@police.gov.gh"
               className={`bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 h-12 ${errors.email ? 'border-red-500' : ''
                 }`}
-              {...register('email')}
+              className={`bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 h-12 ${errors.email ? 'border-red-500' : ''
+                }`}
+              {...register('email', {
+                onChange: handleChange
+              })}
             />
             {errors.email && (
               <span className="text-sm text-red-500">{errors.email.message}</span>
@@ -102,7 +139,11 @@ export default function Login() {
                 placeholder="••••••••"
                 className={`bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 h-12 pr-10 ${errors.password ? 'border-red-500' : ''
                   }`}
-                {...register('password')}
+                className={`bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 h-12 pr-10 ${errors.password ? 'border-red-500' : ''
+                  }`}
+                {...register('password', {
+                  onChange: handleChange
+                })}
               />
               <button
                 type="button"
@@ -156,7 +197,7 @@ export default function Login() {
               Start Application
             </Link>
           </div>
-        </form>
+        </motion.form>
 
         <div className="mt-12 pt-6 border-t border-white/5 flex items-center justify-center gap-4 text-xs text-gray-600">
           <div className="flex items-center gap-1">

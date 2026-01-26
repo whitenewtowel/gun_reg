@@ -120,7 +120,7 @@ const UserTypeCard = ({
 
 export default function SelectUserTypePage() {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [selectedType, setSelectedType] = useState<string | null>(null);
 
     const userTypes = [
@@ -148,6 +148,15 @@ export default function SelectUserTypePage() {
             route: '/agency/register',
         },
     ];
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#0B1021] text-white font-technical relative overflow-hidden selection:bg-[#D4AF37] selection:text-black">
@@ -225,10 +234,10 @@ export default function SelectUserTypePage() {
                     className="mt-16 text-center"
                 >
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={handleLogout}
                         className="text-gray-500 hover:text-[#D4AF37] text-xs uppercase tracking-widest transition-colors border-b border-transparent hover:border-[#D4AF37]"
                     >
-                        Skip Initialization &rarr;
+                        Cancel &rarr;
                     </button>
                     <p className="mt-4 text-[10px] text-gray-600 font-mono">
                         SECURE CONNECTION ESTABLISHED // ENCRYPTED: AES-256
